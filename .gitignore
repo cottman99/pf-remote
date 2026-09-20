@@ -1,0 +1,54 @@
+# Secrets and local identity
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+*.p12
+*.secret
+secrets/
+/identity/
+
+# Local deployment state
+data/
+backups/
+dist/
+artifacts/
+coverage/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.log
+
+# Go
+bin/
+vendor/
+*.test
+*.out
+
+# .NET / WinUI
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Agent scratch space
+.codex_tmp/
+.scratch/
+reports/_scratch/
+
+# Historical visual captures are private review material, not source distribution.
+/docs/status/evidence/**/*.png
+/docs/status/evidence/**/*.jpg
+/docs/status/evidence/**/*.jpeg

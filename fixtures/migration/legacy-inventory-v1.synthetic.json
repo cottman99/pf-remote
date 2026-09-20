@@ -1,0 +1,48 @@
+{
+  "schema_version": "pfremote.legacy-inventory/v1",
+  "devices": [
+    {
+      "legacy_ref": "legacy-device-alpha",
+      "name": "lab-computer",
+      "display_name": "Lab computer A",
+      "capabilities": [
+        {
+          "legacy_ref": "legacy-capability-desktop-alpha",
+          "name": "current-screen",
+          "display_name": "Current screen",
+          "kind": "desktop",
+          "path_count": 3
+        },
+        {
+          "legacy_ref": "legacy-capability-shell-alpha",
+          "name": "automation",
+          "display_name": "Automation",
+          "kind": "shell",
+          "path_count": 2
+        }
+      ]
+    },
+    {
+      "legacy_ref": "legacy-device-beta",
+      "name": "lab-computer",
+      "display_name": "Lab computer B",
+      "capabilities": [
+        {
+          "legacy_ref": "legacy-capability-shell-beta",
+          "name": "automation",
+          "display_name": "Automation",
+          "kind": "shell",
+          "path_count": 1
+        }
+      ]
+    }
+  ],
+  "grants": [
+    {
+      "legacy_ref": "legacy-grant-alpha",
+      "subject_device_ref": "legacy-device-beta",
+      "capability_ref": "legacy-capability-desktop-alpha",
+      "state": "active"
+    }
+  ]
+}

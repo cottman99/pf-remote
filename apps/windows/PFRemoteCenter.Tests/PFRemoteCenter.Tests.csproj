@@ -1,0 +1,36 @@
+<Project Sdk="MSTest.Sdk/4.3.2">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\PFRemoteCenter\Presentation\UpdateStatusPresenter.cs" Link="Presentation\UpdateStatusPresenter.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\InteractionQueue.cs" Link="Services\InteractionQueue.cs" />
+    <Compile Include="..\PFRemoteCenter\Presentation\CatalogInteractionState.cs" Link="Presentation\CatalogInteractionState.cs" />
+    <Compile Include="..\PFRemoteCenter\Models\PfRemoteModels.cs" Link="Models\PfRemoteModels.cs" />
+    <Compile Include="..\PFRemoteCenter\Presentation\AuthorizationPresenter.cs" Link="Presentation\AuthorizationPresenter.cs" />
+    <Compile Include="..\PFRemoteCenter\Presentation\ConnectionServicePresenter.cs" Link="Presentation\ConnectionServicePresenter.cs" />
+    <Compile Include="..\PFRemoteCenter\Presentation\DeviceCatalogPresenter.cs" Link="Presentation\DeviceCatalogPresenter.cs" />
+    <Compile Include="..\PFRemoteCenter\Presentation\DesktopFailurePresenter.cs" Link="Presentation\DesktopFailurePresenter.cs" />
+    <Compile Include="..\PFRemoteCenter\Presentation\MigrationPreviewPresenter.cs" Link="Presentation\MigrationPreviewPresenter.cs" />
+	<Compile Include="..\PFRemoteCenter\Presentation\NewComputerHandoffPresenter.cs" Link="Presentation\NewComputerHandoffPresenter.cs" />
+	<Compile Include="..\PFRemoteCenter\Presentation\RecentSessionPresenter.cs" Link="Presentation\RecentSessionPresenter.cs" />
+    <Compile Include="..\PFRemoteCenter\Presentation\AgentHandoffPresenter.cs" Link="Presentation\AgentHandoffPresenter.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\PfRemoteCliClient.cs" Link="Services\PfRemoteCliClient.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\ContextHandoffAudit.cs" Link="Services\ContextHandoffAudit.cs" />
+	<Compile Include="..\PFRemoteCenter\Services\DaemonRecoveryPolicy.cs" Link="Services\DaemonRecoveryPolicy.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\BackgroundRecoveryPolicy.cs" Link="Services\BackgroundRecoveryPolicy.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\SingleFlightOperationTracker.cs" Link="Services\SingleFlightOperationTracker.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\PfRemoteDaemon.cs" Link="Services\PfRemoteDaemon.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\PfRemoteMigrationClient.cs" Link="Services\PfRemoteMigrationClient.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\PfRemoteRecoveryClient.cs" Link="Services\PfRemoteRecoveryClient.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\PfRemoteLifecycleClient.cs" Link="Services\PfRemoteLifecycleClient.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\AgentIntegrationService.cs" Link="Services\AgentIntegrationService.cs" />
+    <Compile Include="..\PFRemoteCenter\Services\LegacyCenterLauncher.cs" Link="Services\LegacyCenterLauncher.cs" />
+  </ItemGroup>
+</Project>

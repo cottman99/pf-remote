@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="CenterWindowTitle" xml:space="preserve"><value>PF Remote Center</value></data>
+  <data name="AppTitleBarTitle" xml:space="preserve"><value>PF Remote Center</value></data>
+  <data name="TrayTooltip" xml:space="preserve"><value>PF Remote</value></data>
+  <data name="TrayOpenLabel" xml:space="preserve"><value>Open PF Remote</value></data>
+  <data name="TrayExitLabel" xml:space="preserve"><value>Exit</value></data>
+  <data name="MainNavigation.PaneTitle" xml:space="preserve"><value>PF Remote</value></data>
+  <data name="ComputersNavigationItem.Content" xml:space="preserve"><value>Computers</value></data>
+  <data name="ActivityNavigationItem.Content" xml:space="preserve"><value>Activity</value></data>
+  <data name="SettingsNavigationItem.Content" xml:space="preserve"><value>Settings &amp; recovery</value></data>
+  <data name="ComputersHeading.Text" xml:space="preserve"><value>Computers</value></data>
+  <data name="SessionsNavigationItem.Content" xml:space="preserve"><value>Recent activity</value></data>
+  <data name="SessionsHeading.Text" xml:space="preserve"><value>Recent activity</value></data>
+  <data name="SessionsDescription.Text" xml:space="preserve"><value>Recent desktops and Agent actions. No addresses, commands, or content.</value></data>
+  <data name="SettingsHeading.Text" xml:space="preserve"><value>Settings &amp; recovery</value></data>
+  <data name="SettingsDescription.Text" xml:space="preserve"><value>Manage Codex control, computer sync, version status, and recovery.</value></data>
+  <data name="SessionsEmptyHeading.Text" xml:space="preserve"><value>No recent activity yet</value></data>
+  <data name="SessionsEmptyDescription.Text" xml:space="preserve"><value>Open a desktop or ask an Agent to act and the result will appear here.</value></data>
+  <data name="VersionHeading.Text" xml:space="preserve"><value>Internal test build</value></data>
+  <data name="VersionRollbackNote.Text" xml:space="preserve"><value>PF Remote keeps the previous version so you can return to it if needed.</value></data>
+  <data name="VersionCurrentText" xml:space="preserve"><value>Current version: {0}</value></data>
+  <data name="VersionPreviousText" xml:space="preserve"><value>Available for rollback: {0}</value></data>
+  <data name="VersionNoPreviousText" xml:space="preserve"><value>This is the first installation, so there is no previous version yet.</value></data>
+  <data name="VersionDevelopmentText" xml:space="preserve"><value>Development preview</value></data>
+  <data name="VersionDevelopmentNote" xml:space="preserve"><value>Install an internal test build to see the current version and one-click rollback here.</value></data>
+  <data name="VersionStateUnavailableText" xml:space="preserve"><value>The installed version is temporarily unavailable</value></data>
+  <data name="VersionStateRecoveryText" xml:space="preserve"><value>Existing connections were not changed. Reopen PF Remote to check again.</value></data>
+  <data name="RollbackVersionButton.Content" xml:space="preserve"><value>Return to previous version</value></data>
+  <data name="RollbackConfirmTitle" xml:space="preserve"><value>Return to the previous version?</value></data>
+  <data name="RollbackConfirmMessage" xml:space="preserve"><value>PF Remote will switch to the retained previous version and reopen. Your computer list and existing connections will not be deleted.</value></data>
+  <data name="RollbackConfirmButton" xml:space="preserve"><value>Return and reopen</value></data>
+  <data name="CancelButtonLabel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="RollbackStartingStatus" xml:space="preserve"><value>Returning to the previous PF Remote version and reopening…</value></data>
+  <data name="RollbackFailedStatus" xml:space="preserve"><value>Rollback did not complete, and the current working version remains selected. Reopen PF Remote and retry.</value></data>
+  <data name="RecentDesktopAction" xml:space="preserve"><value>Remote desktop · {0}</value></data>
+  <data name="RecentSessionOpenedStatus" xml:space="preserve"><value>Opened</value></data>
+  <data name="RecentAgentAction" xml:space="preserve"><value>Agent automation</value></data>
+  <data name="RecentSessionCompletedStatus" xml:space="preserve"><value>Completed</value></data>
+  <data name="RecentSessionRepeatedStatus" xml:space="preserve"><value>{0} · {1} times</value></data>
+  <data name="RecentSessionJustNow" xml:space="preserve"><value>Just now</value></data>
+  <data name="RecentSessionMinutesAgo" xml:space="preserve"><value>{0} minutes ago</value></data>
+  <data name="RecentSessionHoursAgo" xml:space="preserve"><value>{0} hours ago</value></data>
+  <data name="ReconnectSessionButtonLabel" xml:space="preserve"><value>Connect again</value></data>
+  <data name="HandAgainToAgentButtonLabel" xml:space="preserve"><value>Hand to Agent again</value></data>
+  <data name="SettingsReadyStatus" xml:space="preserve"><value>Settings are ready; changes affect only the new PF Remote.</value></data>
+  <data name="ComputersDescription.Text" xml:space="preserve"><value>Connect to a computer or hand it to an Agent. PF Remote chooses the best path automatically.</value></data>
+  <data name="BootstrapNotice.Title" xml:space="preserve"><value>Early preview</value></data>
+  <data name="BootstrapNotice.Message" xml:space="preserve"><value>You can use authorized computers; adding computers and settings are still in development.</value></data>
+  <data name="LoadingStatus.Text" xml:space="preserve"><value>Loading the local catalog…</value></data>
+  <data name="DevicesList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Available computers</value></data>
+  <data name="CatalogReady" xml:space="preserve"><value>My computers ({0})</value></data>
+  <data name="RefreshingComputersStatus" xml:space="preserve"><value>Refreshing computers…</value></data>
+  <data name="ComputersEmptyHeading" xml:space="preserve"><value>No computers here yet</value></data>
+  <data name="ComputersEmptyDescription" xml:space="preserve"><value>After you add a computer, it appears here when authorization and connection checks finish.</value></data>
+  <data name="ComputersEmptySyncButtonLabel" xml:space="preserve"><value>Add computer</value></data>
+  <data name="ComputersNoMatchHeading" xml:space="preserve"><value>No matching computers</value></data>
+  <data name="ComputersNoMatchDescription" xml:space="preserve"><value>Clear search and show every computer, or choose a different filter.</value></data>
+  <data name="ComputersNoMatchResetButtonLabel" xml:space="preserve"><value>Show all computers</value></data>
+  <data name="CatalogUnavailable" xml:space="preserve"><value>The local catalog is unavailable. Restart PF Remote or repair the local installation.</value></data>
+  <data name="CatalogExpiredStatus" xml:space="preserve"><value>No targets are available until authorization is refreshed.</value></data>
+  <data name="AuthorizationActiveTitle" xml:space="preserve"><value>Computers are ready</value></data>
+  <data name="AuthorizationActiveMessage" xml:space="preserve"><value>You can keep using them offline until {0}.</value></data>
+  <data name="AuthorizationExpiringTitle" xml:space="preserve"><value>Connect soon to update</value></data>
+  <data name="AuthorizationExpiringMessage" xml:space="preserve"><value>Connect before {0} to keep using these computers.</value></data>
+  <data name="AuthorizationExpiredTitle" xml:space="preserve"><value>Computers are temporarily unavailable</value></data>
+  <data name="AuthorizationExpiredMessage" xml:space="preserve"><value>Connect to update before using these computers.</value></data>
+  <data name="AuthorizationAutomationName" xml:space="preserve"><value>{0}. {1}</value></data>
+  <data name="TargetAuthorizationLabel" xml:space="preserve"><value>Authorized until {0}</value></data>
+  <data name="TargetAuthorizationAutomationName" xml:space="preserve"><value>Target authorized until {0}</value></data>
+  <data name="DeviceOnlineLabel" xml:space="preserve"><value>Online</value></data>
+  <data name="DeviceOfflineLabel" xml:space="preserve"><value>Temporarily offline</value></data>
+  <data name="DesktopAndAgentCapabilitiesLabel" xml:space="preserve"><value>{0} remote desktops · Agent control</value></data>
+  <data name="AgentOnlyCapabilitiesLabel" xml:space="preserve"><value>Agent control</value></data>
+  <data name="SetupRequiredCapabilitiesLabel" xml:space="preserve"><value>Remote actions are being prepared</value></data>
+  <data name="OpenDesktopButtonLabel" xml:space="preserve"><value>Smart connect</value></data>
+  <data name="SetupAndOpenDesktopButtonLabel" xml:space="preserve"><value>Set up and open desktop</value></data>
+  <data name="SetupAndOpenNamedDesktopButtonLabel" xml:space="preserve"><value>Set up and open {0}</value></data>
+  <data name="OpenNamedDesktopButtonLabel" xml:space="preserve"><value>Smart connect · {0}</value></data>
+  <data name="ConnectDesktopButtonLabel" xml:space="preserve"><value>Smart connect</value></data>
+  <data name="SmartConnectNamedButtonLabel" xml:space="preserve"><value>Smart connect · {0}</value></data>
+  <data name="OtherDesktopsLabel" xml:space="preserve"><value>Other desktops ({0})</value></data>
+  <data name="LastUsedDesktopLabel" xml:space="preserve"><value>Last used</value></data>
+  <data name="LastConnectedLabel" xml:space="preserve"><value>Last connected: {0}</value></data>
+  <data name="NoRecentConnectionLabel" xml:space="preserve"><value>No recent connections</value></data>
+  <data name="IndependentDesktopNumberLabel" xml:space="preserve"><value>Independent desktop {0}</value></data>
+  <data name="RemoteWorkspaceLabel" xml:space="preserve"><value>Remote workspace</value></data>
+  <data name="DesktopAvailabilitySummaryLabel" xml:space="preserve"><value>{0} remote desktops available · {1}</value></data>
+  <data name="PreferredRouteSummaryLabel" xml:space="preserve"><value>Tries {0} first · {1} remote desktops available</value></data>
+  <data name="CompactDesktopAvailabilitySummaryLabel" xml:space="preserve"><value>{0} desktops available</value></data>
+  <data name="CompactPreferredRouteSummaryLabel" xml:space="preserve"><value>First: {0} · {1} desktops</value></data>
+  <data name="LastDesktopSummaryLabel" xml:space="preserve"><value>Last used: {0}</value></data>
+  <data name="AvailableDesktopsLabel" xml:space="preserve"><value>Available desktops</value></data>
+  <data name="SearchComputersPlaceholder" xml:space="preserve"><value>Search computers</value></data>
+  <data name="FilterComputersAutomationName" xml:space="preserve"><value>Filter computers</value></data>
+  <data name="FilterAllComputersLabel" xml:space="preserve"><value>All computers</value></data>
+  <data name="FilterOnlineComputersLabel" xml:space="preserve"><value>Online only</value></data>
+  <data name="FilterOfflineComputersLabel" xml:space="preserve"><value>Offline only</value></data>
+  <data name="ConnectThisDesktopLabel" xml:space="preserve"><value>Connect to this desktop</value></data>
+  <data name="ComputerSearchBox.PlaceholderText" xml:space="preserve"><value>Search computers</value></data>
+  <data name="FilterAllComputersItem.Text" xml:space="preserve"><value>All computers</value></data>
+  <data name="FilterOnlineComputersItem.Text" xml:space="preserve"><value>Online only</value></data>
+  <data name="FilterOfflineComputersItem.Text" xml:space="preserve"><value>Offline only</value></data>
+  <data name="AvailableDesktopsHeading.Text" xml:space="preserve"><value>Available desktops</value></data>
+  <data name="RefreshComputersButton.AutomationProperties.Name" xml:space="preserve"><value>Refresh computer list</value></data>
+  <data name="AddComputerButton.AutomationProperties.Name" xml:space="preserve"><value>Add a new PF Remote computer</value></data>
+  <data name="AddComputerButtonLabel.Text" xml:space="preserve"><value>Add computer</value></data>
+  <data name="NewComputerDialogTitle" xml:space="preserve"><value>Add a new computer</value></data>
+  <data name="NewComputerDialogDescription" xml:space="preserve"><value>Enter only what you already know. Every field is optional. PF Remote copies a complete task that any Agent can use to continue setup.</value></data>
+  <data name="NewComputerNameLabel" xml:space="preserve"><value>Computer name (optional)</value></data>
+  <data name="NewComputerNamePlaceholder" xml:space="preserve"><value>For example: Study computer</value></data>
+  <data name="NewComputerOperatingSystemLabel" xml:space="preserve"><value>Operating system</value></data>
+  <data name="NewComputerUnknownOption" xml:space="preserve"><value>Not sure</value></data>
+  <data name="NewComputerWindowsOption" xml:space="preserve"><value>Windows</value></data>
+  <data name="NewComputerLinuxOption" xml:space="preserve"><value>Linux</value></data>
+  <data name="NewComputerMacOption" xml:space="preserve"><value>macOS</value></data>
+  <data name="NewComputerUseLabel" xml:space="preserve"><value>What should this computer do?</value></data>
+  <data name="NewComputerUseUnknownOption" xml:space="preserve"><value>Not sure yet</value></data>
+  <data name="NewComputerUseBothOption" xml:space="preserve"><value>Remote Desktop and Agent automation</value></data>
+  <data name="NewComputerUseDesktopOption" xml:space="preserve"><value>Mainly Remote Desktop</value></data>
+  <data name="NewComputerUseAgentOption" xml:space="preserve"><value>Mainly Agent automation</value></data>
+  <data name="NewComputerRouteLabel" xml:space="preserve"><value>Preferred connection path</value></data>
+  <data name="NewComputerRouteAutomaticOption" xml:space="preserve"><value>Choose automatically (recommended)</value></data>
+  <data name="NewComputerRouteLanOption" xml:space="preserve"><value>Same local network</value></data>
+  <data name="NewComputerRouteTailscaleOption" xml:space="preserve"><value>Tailscale private network</value></data>
+  <data name="NewComputerRouteGatewayOption" xml:space="preserve"><value>PF Remote Gateway (for example, Alibaba Cloud)</value></data>
+  <data name="NewComputerRouteUnknownOption" xml:space="preserve"><value>Not sure; let the Agent inspect</value></data>
+  <data name="NewComputerInstallStateLabel" xml:space="preserve"><value>PF Remote installation</value></data>
+  <data name="NewComputerInstallUnknownOption" xml:space="preserve"><value>Not sure</value></data>
+  <data name="NewComputerInstallMissingOption" xml:space="preserve"><value>Not installed</value></data>
+  <data name="NewComputerInstallPresentOption" xml:space="preserve"><value>Already installed</value></data>
+  <data name="NewComputerInstallLocationLabel" xml:space="preserve"><value>Known installation location or version (optional)</value></data>
+  <data name="NewComputerInstallLocationPlaceholder" xml:space="preserve"><value>Leave blank and let the Agent inspect</value></data>
+  <data name="NewComputerNotesLabel" xml:space="preserve"><value>Other notes (optional)</value></data>
+  <data name="NewComputerNotesPlaceholder" xml:space="preserve"><value>For example: This computer is on the same Wi-Fi</value></data>
+  <data name="NewComputerPrivacyTitle" xml:space="preserve"><value>Do not enter secrets</value></data>
+  <data name="NewComputerPrivacyMessage" xml:space="preserve"><value>Do not paste passwords, private keys, tokens, recovery files, or cloud credentials. The Agent should use a safe authorization step only when needed.</value></data>
+  <data name="NewComputerSecretDetectedMessage" xml:space="preserve"><value>A possible password, key, or token was detected. Remove secret information before copying.</value></data>
+  <data name="NewComputerCopyFailedMessage" xml:space="preserve"><value>PF Remote could not copy the task. Try again.</value></data>
+  <data name="NewComputerCopyAgentTaskButtonLabel" xml:space="preserve"><value>Copy for Agent</value></data>
+  <data name="NewComputerCopiedStatus" xml:space="preserve"><value>New-computer setup task copied.</value></data>
+  <data name="NewComputerCopiedTitle" xml:space="preserve"><value>Setup task copied</value></data>
+  <data name="NewComputerCopiedMessage" xml:space="preserve"><value>Paste it into Codex or another Agent. It does not need the previous conversation.</value></data>
+  <data name="NewComputerHandoffMissingValue" xml:space="preserve"><value>Not provided; confirm safely on the new computer</value></data>
+  <data name="NewComputerHandoffGoal" xml:space="preserve"><value>Goal: add one new computer to the current PF Remote so it is visible, connectable, and available to authorized Agents.</value></data>
+  <data name="NewComputerHandoffInformationHeading" xml:space="preserve"><value>Known user information</value></data>
+  <data name="NewComputerHandoffInformationHelp" xml:space="preserve"><value>Confirm missing information safely on the new computer. Do not ask the user to use a command line.</value></data>
+  <data name="NewComputerHandoffRequirementsHeading" xml:space="preserve"><value>Required work</value></data>
+  <data name="NewComputerHandoffRequirementInspect" xml:space="preserve"><value>Read-only inspect the current PF Remote installation, Device identity, and computer list; do not infer a target from prior chat.</value></data>
+  <data name="NewComputerHandoffRequirementInstall" xml:space="preserve"><value>Install a PF Remote client compatible with the current Fabric and enable normal background startup.</value></data>
+  <data name="NewComputerHandoffRequirementEnroll" xml:space="preserve"><value>Create an independent Device identity, join, and authorize it without copying another computer's private key or credential.</value></data>
+  <data name="NewComputerHandoffRequirementCapabilities" xml:space="preserve"><value>Publish Remote Desktop and/or Agent automation capabilities with names the user understands.</value></data>
+  <data name="NewComputerHandoffRequirementRoutes" xml:space="preserve"><value>Inspect eligible local-network, existing Tailscale, and PF Remote Gateway paths; use only routes that are actually reachable.</value></data>
+  <data name="NewComputerHandoffRequirementVerify" xml:space="preserve"><value>Confirm the computer appears on authorized controllers and complete at least one real connection or safe Agent action.</value></data>
+  <data name="NewComputerHandoffPrivacyHeading" xml:space="preserve"><value>Privacy and operating boundaries</value></data>
+  <data name="NewComputerHandoffPrivacyNoSecrets" xml:space="preserve"><value>Do not put real addresses, accounts, passwords, private keys, tokens, certificate keys, or cloud configuration in a public repository, log, screenshot, or report.</value></data>
+  <data name="NewComputerHandoffPrivacyNoGlobalNetwork" xml:space="preserve"><value>Do not change the system proxy, DNS, default route, VPN, TUN, Clash, or global Tailscale configuration.</value></data>
+  <data name="NewComputerHandoffPrivacyPreserve" xml:space="preserve"><value>Preserve existing computers, connections, and rollback paths; verify another independent path when one route fails.</value></data>
+  <data name="NewComputerHandoffGuideReference" xml:space="preserve"><value>Public guide: if the PF Remote source is available, read docs/user/ADDING_A_COMPUTER.md. Otherwise this task is self-contained.</value></data>
+  <data name="NewComputerHandoffAcceptance" xml:space="preserve"><value>Done when the computer appears by its user-facing name, the requested capabilities work, route availability is truthful, and existing computers remain unaffected.</value></data>
+  <data name="RefreshComputersStatus.Text" xml:space="preserve"><value>Last refreshed: just now</value></data>
+  <data name="NoDesktopButtonLabel" xml:space="preserve"><value>No remote desktop</value></data>
+  <data name="DesktopSetupRequiredButtonLabel" xml:space="preserve"><value>Preparing</value></data>
+  <data name="HandToAgentButton.Content" xml:space="preserve"><value>Hand to Agent</value></data>
+  <data name="HandToAgentButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Copy this computer's Agent context</value></data>
+  <data name="ContextCopiedStatus" xml:space="preserve"><value>Copied the control context for {0}.</value></data>
+  <data name="ContextCopiedReadyStatus" xml:space="preserve"><value>Copied the control context for {0}.</value></data>
+  <data name="AgentHandoffReadyTitle" xml:space="preserve"><value>Context copied; continue in Codex</value></data>
+  <data name="AgentHandoffReadyMessage" xml:space="preserve"><value>Paste it into Codex, or simply name this computer there.</value></data>
+  <data name="AgentHandoffSetupTitle" xml:space="preserve"><value>Context copied; Codex control needs one more step</value></data>
+  <data name="AgentHandoffSetupMessage" xml:space="preserve"><value>Enable Codex control before the Agent can inspect or operate this computer.</value></data>
+  <data name="AgentHandoffUpdateMessage" xml:space="preserve"><value>PF Remote was upgraded. Update the Codex entry before asking the Agent to operate this computer.</value></data>
+  <data name="AgentHandoffConflictMessage" xml:space="preserve"><value>Codex already has a custom entry with this name. Review it in Settings; PF Remote will not overwrite it.</value></data>
+  <data name="AgentHandoffUnavailableMessage" xml:space="preserve"><value>Codex is not installed on this computer. The context was copied and remote desktop is unaffected.</value></data>
+  <data name="OpenAgentSettingsButton.Content" xml:space="preserve"><value>Open Codex control settings</value></data>
+  <data name="OpenAgentSettingsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Open PF Remote Codex control settings</value></data>
+  <data name="ContextCopyFailedStatus" xml:space="preserve"><value>Agent context could not be copied. Make sure PF Remote is running.</value></data>
+  <data name="ComputerReadyStatus" xml:space="preserve"><value>{0} is connected and verified.</value></data>
+  <data name="ComputerNotReadyStatus" xml:space="preserve"><value>This computer cannot connect yet. PF Remote kept the target information.</value></data>
+  <data name="DesktopOpening" xml:space="preserve"><value>Opening the desktop on {0}…</value></data>
+  <data name="DesktopOpeningVia" xml:space="preserve"><value>Connecting to {0} through {1}…</value></data>
+  <data name="DesktopAlreadyOpening" xml:space="preserve"><value>Connecting to {0}. Please wait…</value></data>
+  <data name="SmartConnectRouteLabel" xml:space="preserve"><value>Choose automatically (recommended)</value></data>
+  <data name="LanRouteLabel" xml:space="preserve"><value>Same-network direct</value></data>
+  <data name="TailscaleRouteLabel" xml:space="preserve"><value>Tailscale private network</value></data>
+  <data name="GatewayRouteLabel" xml:space="preserve"><value>Alibaba Cloud gateway relay</value></data>
+  <data name="ExistingRouteLabel" xml:space="preserve"><value>Existing remote entry</value></data>
+  <data name="RouteAvailableLabel" xml:space="preserve"><value>{0} · Selectable</value></data>
+  <data name="RouteUnavailableLabel" xml:space="preserve"><value>{0} · Currently unavailable</value></data>
+  <data name="RouteRetryLabel" xml:space="preserve"><value>{0} · Last check failed, retry</value></data>
+  <data name="SmartConnectButtonAutomationName" xml:space="preserve"><value>Smart connect to {1} on {0}, or choose a connection path</value></data>
+  <data name="OfflineCapabilitiesLabel" xml:space="preserve"><value>Waiting for this computer to come online; other computers are unaffected</value></data>
+  <data name="DesktopOpened" xml:space="preserve"><value>The desktop on {0} opened in a new window.</value></data>
+  <data name="DesktopOpenedFirstUse" xml:space="preserve"><value>The desktop on {0} opened. On first use, Windows asks you to confirm this computer once before continuing.</value></data>
+  <data name="DesktopUnavailable" xml:space="preserve"><value>Remote desktop is not ready on this computer yet.</value></data>
+  <data name="DesktopFailureTitle" xml:space="preserve"><value>Connection failed</value></data>
+  <data name="DesktopFailureNamedTitle" xml:space="preserve"><value>Could not connect to {0} · {1}</value></data>
+  <data name="SmartRouteFailedMessage" xml:space="preserve"><value>Retry, or choose another Available path beside Connect.</value></data>
+  <data name="ManualRouteFailedMessage" xml:space="preserve"><value>Retry, or use Automatic or another Available path.</value></data>
+  <data name="DesktopFailureRefreshMessage" xml:space="preserve"><value>Retry; if the computer just came online, refresh the list. Other computers are unaffected.</value></data>
+  <data name="RetryDesktopButton.Content" xml:space="preserve"><value>Retry</value></data>
+  <data name="RecoverDesktopButton.Content" xml:space="preserve"><value>Recover connection</value></data>
+  <data name="RetryLastRouteLabel" xml:space="preserve"><value>Retry last choice</value></data>
+  <data name="DesktopPasswordTitle" xml:space="preserve"><value>First connection setup</value></data>
+  <data name="DesktopPasswordHelp" xml:space="preserve"><value>Enter the existing desktop password for {0}. PF Remote saves it securely for the current Windows user so future connections are one click.</value></data>
+  <data name="DesktopPasswordLabel" xml:space="preserve"><value>Desktop password</value></data>
+  <data name="DesktopPasswordPlaceholder" xml:space="preserve"><value>Enter the existing password</value></data>
+  <data name="SaveAndOpenButtonLabel" xml:space="preserve"><value>Save and open</value></data>
+  <data name="DesktopCredentialSavedAndOpened" xml:space="preserve"><value>Setup was saved securely and the desktop on {0} opened. Future connections are one click.</value></data>
+  <data name="DesktopCredentialSaveFailed" xml:space="preserve"><value>Desktop setup was not completed. Check the password and retry; existing connections were not changed.</value></data>
+  <data name="DesktopSetupCanceled" xml:space="preserve"><value>First connection setup was canceled. Existing connections were not changed.</value></data>
+  <data name="DesktopCapabilityLabel" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="VirtualDesktopLabel" xml:space="preserve"><value>Private desktop</value></data>
+  <data name="PhysicalDesktopLabel" xml:space="preserve"><value>Current screen</value></data>
+  <data name="RecoveryButton.Content" xml:space="preserve"><value>Backup and recovery</value></data>
+  <data name="MigrationHeading.Text" xml:space="preserve"><value>Existing PF Remote setup found</value></data>
+  <data name="MigrationSafetyNote.Text" xml:space="preserve"><value>This preview shows computer names and available actions only. The old setup, connections, and passwords stay unchanged.</value></data>
+  <data name="MigrationPreviewButton.Content" xml:space="preserve"><value>Review what will be organized</value></data>
+  <data name="MigrationPreviewButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Review the migration preview for existing computers</value></data>
+  <data name="MigrationEnableButton.Content" xml:space="preserve"><value>Use these computers</value></data>
+  <data name="MigrationEnableButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Add the existing computers to the unified list</value></data>
+  <data name="MigrationEnablingStatus" xml:space="preserve"><value>Adding the existing computers to the unified list…</value></data>
+  <data name="MigrationEnabledSummary" xml:space="preserve"><value>The existing computers are in the unified list. The old version and its connections remain unchanged.</value></data>
+  <data name="MigrationEnabledStatus" xml:space="preserve"><value>The existing computers are now visible in PF Remote. Ready actions can be used immediately.</value></data>
+  <data name="MigrationEnableFailedStatus" xml:space="preserve"><value>These computers could not be added yet. The old version is unchanged; try again later.</value></data>
+  <data name="MigrationDisableButton.Content" xml:space="preserve"><value>Remove from the new list</value></data>
+  <data name="MigrationDisableButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Remove these computers from the new unified list</value></data>
+  <data name="MigrationDisablingStatus" xml:space="preserve"><value>Returning to the local list. Legacy connections will not change…</value></data>
+  <data name="MigrationDisabledSummary" xml:space="preserve"><value>These computers were removed from the new list. The old version remains available.</value></data>
+  <data name="MigrationDisabledStatus" xml:space="preserve"><value>Returned to the local list. Legacy settings, connections, and passwords were not changed.</value></data>
+  <data name="MigrationDisableFailedStatus" xml:space="preserve"><value>PF Remote could not return to the local list yet. Current computers and legacy connections were not changed.</value></data>
+  <data name="MigrationPreviewSummary" xml:space="preserve"><value>{0} computers and {1} remote actions were found and can be organized into one list.</value></data>
+  <data name="MigrationPreviewUnavailable" xml:space="preserve"><value>The existing setup could not be read safely. The old version remains unchanged; try again later.</value></data>
+  <data name="MigrationPreviewDialogTitle" xml:space="preserve"><value>Computers and actions to organize</value></data>
+  <data name="MigrationShellLabel" xml:space="preserve"><value>Agent action</value></data>
+  <data name="MigrationDesktopLabel" xml:space="preserve"><value>Remote desktop</value></data>
+  <data name="MigrationCapabilityLine" xml:space="preserve"><value>{0} · {1} · {2} existing connection paths</value></data>
+  <data name="MigrationOpenLegacyButton.Content" xml:space="preserve"><value>Open the old PF Remote Center</value></data>
+  <data name="MigrationOpenLegacyButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Open the installed old PF Remote Center</value></data>
+  <data name="MigrationOpenLegacyStatus" xml:space="preserve"><value>The old PF Remote Center is open. Its settings and connections were not changed.</value></data>
+  <data name="MigrationOpenLegacyFailedStatus" xml:space="preserve"><value>The old version could not be opened. Its installation and settings were not changed.</value></data>
+  <data name="CloseButtonLabel" xml:space="preserve"><value>Close</value></data>
+  <data name="RecoveryButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Open backup and recovery</value></data>
+  <data name="RecoveryHeading.Text" xml:space="preserve"><value>Your device relationships should outlive the Gateway</value></data>
+  <data name="RecoveryDescription.Text" xml:space="preserve"><value>Create an encrypted recovery file for computer names, identities, and permissions. Use it to restore the device list after replacing or reinstalling the Gateway.</value></data>
+  <data name="RecoverySafetyNote.Text" xml:space="preserve"><value>It excludes computer passwords, private keys, routes, activity history, and desktop content.</value></data>
+  <data name="CreateRecoveryButton.Content" xml:space="preserve"><value>Create recovery file</value></data>
+  <data name="CreateRecoveryButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Create an encrypted recovery file</value></data>
+  <data name="RestoreRecoveryButton.Content" xml:space="preserve"><value>Restore from file</value></data>
+  <data name="RestoreRecoveryButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Restore a new Gateway from an encrypted recovery file</value></data>
+  <data name="RecoveryFileType" xml:space="preserve"><value>PF Remote recovery file</value></data>
+  <data name="RecoveryCreatingStatus" xml:space="preserve"><value>Creating the encrypted recovery file…</value></data>
+  <data name="RecoveryCreatedStatus" xml:space="preserve"><value>The recovery file was saved. Keep the file and recovery password separately.</value></data>
+  <data name="RecoveryCreateFailedStatus" xml:space="preserve"><value>The recovery file could not be created. Existing devices and permissions were not changed.</value></data>
+  <data name="RecoveryRestoringStatus" xml:space="preserve"><value>Checking the recovery file…</value></data>
+  <data name="RecoveryRestoredStatus" xml:space="preserve"><value>The device directory was restored. Reopen PF Remote to use it.</value></data>
+  <data name="RecoveryRestoreFailedStatus" xml:space="preserve"><value>Recovery was not completed and existing setup was not changed. Check the file and password, or retry on a new Gateway.</value></data>
+  <data name="RecoveryPasswordLabel" xml:space="preserve"><value>Recovery password</value></data>
+  <data name="RecoveryPasswordConfirmLabel" xml:space="preserve"><value>Enter the recovery password again</value></data>
+  <data name="RecoveryPasswordCreateHelp" xml:space="preserve"><value>Use at least 12 characters. PF Remote does not save this password, so the file cannot be opened if you forget it.</value></data>
+  <data name="RecoveryPasswordRestoreHelp" xml:space="preserve"><value>Enter the password used when this recovery file was created. Recovery is for a new or reset Gateway.</value></data>
+  <data name="RecoveryPasswordCreateTitle" xml:space="preserve"><value>Protect the recovery file</value></data>
+  <data name="RecoveryPasswordRestoreTitle" xml:space="preserve"><value>Open the recovery file</value></data>
+  <data name="RecoveryPasswordValidation" xml:space="preserve"><value>Use at least 12 characters and enter the same password twice.</value></data>
+  <data name="RecoveryPasswordRequired" xml:space="preserve"><value>Enter a recovery password with at least 12 characters.</value></data>
+  <data name="ContinueButtonLabel" xml:space="preserve"><value>Continue</value></data>
+  <data name="CancelButtonLabel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ConnectionServiceReadyTitle" xml:space="preserve"><value>Computers and Agent are synchronized</value></data>
+  <data name="ConnectionServiceReadyMessage" xml:space="preserve"><value>Confirmed remote actions appear in one list automatically, without entering a Gateway, address, or port.</value></data>
+  <data name="ConnectionServiceLocalTitle" xml:space="preserve"><value>Using the local computer list</value></data>
+  <data name="ConnectionServiceLocalMessage" xml:space="preserve"><value>Existing remote desktops still work. Agent actions will join automatically when the connection service is ready.</value></data>
+  <data name="ConnectionServiceRetryTitle" xml:space="preserve"><value>Restoring computer synchronization</value></data>
+  <data name="ConnectionServiceRetryMessage" xml:space="preserve"><value>The current list and legacy connections are unchanged. PF Remote will retry in the background.</value></data>
+  <data name="ConnectionServiceAutomationName" xml:space="preserve"><value>{0}. {1}</value></data>
+  <data name="ConnectionServiceButton.Content" xml:space="preserve"><value>Connect service</value></data>
+  <data name="ConnectionServiceButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Connect the service with a PF Remote invitation file</value></data>
+  <data name="ConnectionServiceConnectingStatus" xml:space="preserve"><value>Connecting computers and Agent…</value></data>
+  <data name="ConnectionServiceConnectedStatus" xml:space="preserve"><value>Invitation confirmed. PF Remote is synchronizing computers in the background.</value></data>
+  <data name="ConnectionServiceFailedStatus" xml:space="preserve"><value>This invitation cannot be used. Ask the sender for a new file.</value></data>
+  <data name="ConnectionServiceConnectButtonLabel" xml:space="preserve"><value>Connect service</value></data>
+  <data name="ConnectionServiceConnectButtonAutomationName" xml:space="preserve"><value>Connect the service with a PF Remote invitation file</value></data>
+  <data name="ConnectionServiceReplaceButtonLabel" xml:space="preserve"><value>Replace invitation</value></data>
+  <data name="ConnectionServiceReplaceButtonAutomationName" xml:space="preserve"><value>Choose a new PF Remote invitation file to restore computer synchronization</value></data>
+  <data name="AgentIntegrationHeading.Text" xml:space="preserve"><value>Let Codex control these computers</value></data>
+  <data name="AgentIntegrationDescription.Text" xml:space="preserve"><value>After enabling, name a computer in Codex to inspect it, run automation, or open its desktop without copying addresses or connection details.</value></data>
+  <data name="AgentIntegrationNotEnabledStatus" xml:space="preserve"><value>Not enabled. PF Remote will not change Codex until you confirm.</value></data>
+  <data name="AgentIntegrationReadyStatus" xml:space="preserve"><value>Ready. Newly opened Codex sessions can recognize PF Remote computers and authorized actions.</value></data>
+  <data name="AgentIntegrationUpdateStatus" xml:space="preserve"><value>PF Remote was upgraded. Update the Codex entry to keep using the current version.</value></data>
+  <data name="AgentIntegrationConflictStatus" xml:space="preserve"><value>Codex already has a custom entry with this name. PF Remote did not overwrite it; keep or remove it before retrying.</value></data>
+  <data name="AgentIntegrationUnavailableStatus" xml:space="preserve"><value>Codex is not installed on this computer. Remote desktop and other features are unaffected.</value></data>
+  <data name="EnableAgentIntegrationButton.Content" xml:space="preserve"><value>Enable Codex control</value></data>
+  <data name="EnableAgentIntegrationButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Enable PF Remote computer control in Codex</value></data>
+  <data name="EnableAgentIntegrationButtonLabel" xml:space="preserve"><value>Enable Codex control</value></data>
+  <data name="EnableAgentIntegrationButtonAutomationName" xml:space="preserve"><value>Enable PF Remote computer control in Codex</value></data>
+  <data name="UpdateAgentIntegrationButtonLabel" xml:space="preserve"><value>Update Codex entry</value></data>
+  <data name="UpdateAgentIntegrationButtonAutomationName" xml:space="preserve"><value>Update the PF Remote control entry in Codex</value></data>
+  <data name="DisableAgentIntegrationButton.Content" xml:space="preserve"><value>Remove from Codex</value></data>
+  <data name="DisableAgentIntegrationButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Remove the PF Remote control entry from Codex</value></data>
+  <data name="AgentIntegrationEnablingStatus" xml:space="preserve"><value>Preparing PF Remote computer control for Codex…</value></data>
+  <data name="AgentIntegrationEnabledStatus" xml:space="preserve"><value>Codex control is ready. Reopen Codex, then name the computer you want.</value></data>
+  <data name="AgentIntegrationEnableFailedStatus" xml:space="preserve"><value>Codex control could not be enabled. Existing Codex settings and remote connections were not changed.</value></data>
+  <data name="AgentIntegrationDisablingStatus" xml:space="preserve"><value>Removing the PF Remote entry from Codex…</value></data>
+  <data name="AgentIntegrationDisabledStatus" xml:space="preserve"><value>PF Remote was removed from Codex. Remote desktop and the computer list are unchanged.</value></data>
+  <data name="AgentIntegrationDisableFailedStatus" xml:space="preserve"><value>The Codex entry could not be removed. Existing remote connections were not changed.</value></data>
+  <data name="CatalogStaleTitle" xml:space="preserve"><value>Status not updated</value></data>
+  <data name="CatalogStaleDescription" xml:space="preserve"><value>Current computer status is unavailable. Your previous list is retained; retry to restore connection actions.</value></data>
+  <data name="RetryCatalogButton.Content" xml:space="preserve"><value>Retry loading</value></data>
+  <data name="DialogUnavailableTitle" xml:space="preserve"><value>Unable to show dialog</value></data>
+  <data name="DialogUnavailable" xml:space="preserve"><value>Close the current dialog and try again.</value></data>
+  <data name="CatalogFirstLoadDescription" xml:space="preserve"><value>The computer list could not be loaded. Retry to recover the local service and reload your computers.</value></data>
+  <data name="UpdateStatusText.Text" xml:space="preserve"><value>Reading update status…</value></data>
+  <data name="UpdatesScheduled" xml:space="preserve"><value>Automatic updates are enabled. Checks run in the background.</value></data>
+  <data name="UpdatesCurrent" xml:space="preserve"><value>This is the latest version in your release channel.</value></data>
+  <data name="UpdatesDownloading" xml:space="preserve"><value>Downloading and verifying an update. You can keep working.</value></data>
+  <data name="UpdatesInstalling" xml:space="preserve"><value>Installing the update. The app will restart and retain your settings.</value></data>
+  <data name="UpdatesBusy" xml:space="preserve"><value>The update is ready and will install after remote connections finish.</value></data>
+  <data name="UpdatesIncompatible" xml:space="preserve"><value>This update needs compatibility changes. Your current version is retained.</value></data>
+  <data name="UpdatesHeld" xml:space="preserve"><value>This update is paused. Your current version remains usable while awaiting a later release.</value></data>
+  <data name="UpdatesRetry" xml:space="preserve"><value>Unable to check for updates now. A background retry is scheduled.</value></data>
+  <data name="UpdatesAvailable" xml:space="preserve"><value>A verified update is available.</value></data>
+  <data name="UpdatesBootstrap" xml:space="preserve"><value>Automatic updates are not configured. Install a trusted release first.</value></data>
+</root>

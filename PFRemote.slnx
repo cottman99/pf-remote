@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/apps/" />
+  <Folder Name="/apps/windows/">
+    <Project Path="apps/windows/PFRemoteCenter/PFRemoteCenter.csproj" />
+    <Project Path="apps/windows/PFRemoteCenter.Tests/PFRemoteCenter.Tests.csproj" />
+  </Folder>
+</Solution>

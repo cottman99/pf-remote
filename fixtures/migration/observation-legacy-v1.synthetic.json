@@ -1,0 +1,23 @@
+{
+  "schema_version": "pfremote.migration-observation/v1",
+  "source": "legacy",
+  "observed_at": "2026-08-29T12:00:00Z",
+  "targets": [
+    {
+      "mapping_key": "migration-capability-4001d6093dc35b51",
+      "computer_name": "Lab computer A",
+      "capability_name": "Current screen",
+      "kind": "desktop",
+      "result": "ready",
+      "timing_class": "normal"
+    },
+    {
+      "mapping_key": "migration-capability-89d58faf8915d8df",
+      "computer_name": "Lab computer B",
+      "capability_name": "Automation",
+      "kind": "shell",
+      "result": "revoked",
+      "timing_class": "not-measured"
+    }
+  ]
+}

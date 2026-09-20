@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PFRemoteCenter (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PFRemoteCenter (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

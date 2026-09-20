@@ -1,0 +1,60 @@
+{
+  "deviceId": "legacy-controller",
+  "defaultRoute": "gateway",
+  "generatedAt": 1788081600000,
+  "services": [
+    {
+      "id": "legacy-service-rdp",
+      "deviceId": "legacy-device-lab",
+      "deviceName": "Lab computer",
+      "name": "Engineering desktop",
+      "kind": "rdp",
+      "username": "synthetic-operator",
+      "aliyun": null,
+      "tailscale": {
+        "host": "lab-device.example.invalid",
+        "port": 3389
+      },
+      "webUrl": null,
+      "external": null,
+      "lan": {
+        "hosts": [
+          "192.0.2.40"
+        ],
+        "port": 3389
+      }
+    },
+    {
+      "id": "legacy-service-shell",
+      "deviceId": "legacy-device-lab",
+      "deviceName": "Lab computer",
+      "name": "Automation",
+      "kind": "ssh",
+      "username": "synthetic-operator",
+      "aliyun": null,
+      "tailscale": {
+        "host": "lab-device.example.invalid",
+        "port": 22
+      },
+      "webUrl": null,
+      "external": null,
+      "lan": null
+    },
+    {
+      "id": "legacy-service-vnc",
+      "deviceId": "legacy-device-office",
+      "deviceName": "Office computer",
+      "name": "Current screen",
+      "kind": "vnc",
+      "username": null,
+      "aliyun": null,
+      "tailscale": {
+        "host": "office-device.example.invalid",
+        "port": 5900
+      },
+      "webUrl": null,
+      "external": null,
+      "lan": null
+    }
+  ]
+}

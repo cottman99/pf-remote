@@ -1,0 +1,10 @@
+interface:
+  display_name: "PF Remote"
+  short_description: "Control authorized computers by their PF Remote names"
+  default_prompt: "Use $pf-remote to inspect and operate the named PF Remote computer."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "pf_remote"
+      description: "PF Remote named-computer control"

@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PFRemoteCenter.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:PFRemoteCenter.Models"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+
+    <NavigationView
+        x:Name="RootNavigation"
+        IsBackButtonVisible="Collapsed"
+        IsSettingsVisible="False"
+        PaneDisplayMode="Auto"
+        OpenPaneLength="180"
+        CompactModeThresholdWidth="640"
+        ExpandedModeThresholdWidth="1100"
+        SelectionChanged="RootNavigation_SelectionChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Name="ComputersNavigationItem" x:Uid="ComputersNavigationItem" Tag="computers">
+                <NavigationViewItem.Icon><SymbolIcon Symbol="Home" /></NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem x:Name="SessionsNavigationItem" x:Uid="SessionsNavigationItem" Tag="sessions" AutomationProperties.AutomationId="SessionsNavigationItem">
+                <NavigationViewItem.Icon><SymbolIcon Symbol="Clock" /></NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem x:Name="SettingsNavigationItem" x:Uid="SettingsNavigationItem" Tag="settings" AutomationProperties.AutomationId="SettingsNavigationItem">
+                <NavigationViewItem.Icon><SymbolIcon Symbol="Setting" /></NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+    <Border Padding="24,20,24,28">
+    <Grid x:Name="RootContentGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="ComputersHeader" ColumnSpacing="24" SizeChanged="ComputersHeader_SizeChanged">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+            <StackPanel Spacing="6">
+                <TextBlock
+                    x:Uid="ComputersHeading"
+                    Style="{StaticResource TitleTextBlockStyle}" />
+                <TextBlock
+                    x:Uid="ComputersDescription"
+                    MaxWidth="820"
+                    HorizontalAlignment="Left"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+			<Button
+				x:Name="AddComputerButton"
+				x:Uid="AddComputerButton"
+				Grid.Column="1"
+				MinHeight="40"
+				MinWidth="142"
+				VerticalAlignment="Center"
+				Style="{StaticResource AccentButtonStyle}"
+				Click="AddComputerButton_Click">
+				<StackPanel Orientation="Horizontal" Spacing="8">
+					<FontIcon Glyph="&#xE710;" FontSize="16" />
+					<TextBlock x:Uid="AddComputerButtonLabel" />
+				</StackPanel>
+			</Button>
+        </Grid>
+
+        <StackPanel x:Name="SessionsHeader" Visibility="Collapsed" Spacing="6">
+            <TextBlock x:Uid="SessionsHeading" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock x:Uid="SessionsDescription" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <StackPanel x:Name="SettingsHeader" Visibility="Collapsed" Spacing="6">
+            <TextBlock x:Uid="SettingsHeading" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock x:Uid="SettingsDescription" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+
+		<InfoBar
+			x:Name="SettingsActionInfoBar"
+			Margin="0,16,0,0"
+			IsClosable="True"
+			IsOpen="False"
+			AutomationProperties.AutomationId="SettingsActionStatus"
+			AutomationProperties.LiveSetting="Polite" />
+
+        <InfoBar
+            x:Name="AuthorizationInfoBar"
+            Grid.Row="1"
+            Margin="0,20,0,0"
+            IsClosable="False"
+            IsOpen="False"
+            AutomationProperties.LiveSetting="Polite" />
+
+        <InfoBar x:Name="CatalogStatusInfoBar" Grid.Row="2" Margin="0,8,0,0"
+                 IsClosable="False" IsOpen="False" Severity="Warning"
+                 AutomationProperties.AutomationId="CatalogRecoveryStatus" AutomationProperties.LiveSetting="Polite">
+            <InfoBar.ActionButton>
+                <Button x:Name="RetryCatalogButton" x:Uid="RetryCatalogButton" Click="RefreshComputersButton_Click" />
+            </InfoBar.ActionButton>
+        </InfoBar>
+
+        <Grid x:Name="ConnectionServicePanel" Grid.Row="2" Margin="0,8,0,0" ColumnSpacing="12" SizeChanged="SettingsPanel_SizeChanged">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <InfoBar
+                x:Name="ConnectionServiceInfoBar"
+                IsClosable="False"
+                IsOpen="False"
+                AutomationProperties.AutomationId="ConnectionServiceStatus"
+                AutomationProperties.LiveSetting="Polite" />
+            <Button
+                x:Name="ConnectionServiceButton"
+                Grid.Column="1"
+                MinWidth="124"
+                VerticalAlignment="Center"
+                AutomationProperties.AutomationId="ConnectionServiceButton"
+                Click="ConnectionServiceButton_Click" />
+        </Grid>
+
+        <InfoBar
+            x:Name="DesktopActionInfoBar"
+            Grid.Row="4"
+            Margin="0,4,0,12"
+            IsClosable="True"
+            IsOpen="False"
+            Severity="Error"
+            AutomationProperties.AutomationId="DesktopActionError"
+            AutomationProperties.LiveSetting="Assertive">
+            <InfoBar.ActionButton>
+                <DropDownButton
+                    x:Name="RecoverDesktopButton"
+                    x:Uid="RecoverDesktopButton"
+                    Visibility="Collapsed"
+                    AutomationProperties.AutomationId="RetryDesktopButton" />
+            </InfoBar.ActionButton>
+        </InfoBar>
+
+        <InfoBar
+            x:Name="AgentHandoffInfoBar"
+            Grid.Row="4"
+            Margin="0,4,0,12"
+            IsClosable="True"
+            IsOpen="False"
+            Severity="Warning"
+            AutomationProperties.AutomationId="AgentHandoffNotice"
+            AutomationProperties.LiveSetting="Polite">
+            <InfoBar.ActionButton>
+                <Button
+                    x:Name="OpenAgentSettingsButton"
+                    x:Uid="OpenAgentSettingsButton"
+                    AutomationProperties.AutomationId="OpenAgentSettingsButton"
+                    Click="OpenAgentSettingsButton_Click" />
+            </InfoBar.ActionButton>
+        </InfoBar>
+
+        <Border
+            x:Name="VersionPanel"
+            Grid.Row="1"
+            Margin="0,20,0,0"
+            Padding="20,18"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="10"
+            SizeChanged="SettingsPanel_SizeChanged"
+            Visibility="Collapsed">
+            <Grid x:Name="VersionPanelGrid" ColumnSpacing="28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel Spacing="5">
+					<TextBlock x:Uid="VersionHeading" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" MaxLines="2" />
+                    <TextBlock x:Name="VersionTextBlock" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                    <TextBlock x:Name="VersionRollbackNote" x:Uid="VersionRollbackNote" Foreground="{ThemeResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
+                    <TextBlock x:Name="UpdateStatusText" x:Uid="UpdateStatusText" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+                </StackPanel>
+                <Button
+                    x:Name="RollbackVersionButton"
+                    x:Uid="RollbackVersionButton"
+                    Grid.Column="1"
+                    MinWidth="124"
+                    VerticalAlignment="Center"
+                    Visibility="Collapsed"
+                    AutomationProperties.AutomationId="RollbackVersionButton"
+                    Click="RollbackVersionButton_Click" />
+            </Grid>
+        </Border>
+
+        <Border
+            x:Name="AgentIntegrationPanel"
+            Grid.Row="2"
+            Margin="0,4,0,16"
+            Padding="20,18"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="10"
+            SizeChanged="SettingsPanel_SizeChanged"
+            Visibility="Collapsed">
+            <Grid x:Name="AgentIntegrationPanelGrid" ColumnSpacing="28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel Spacing="5">
+                    <TextBlock
+                        x:Uid="AgentIntegrationHeading"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        TextWrapping="Wrap"
+                        MaxLines="2" />
+                    <TextBlock
+                        x:Uid="AgentIntegrationDescription"
+                        MaxWidth="720"
+                        HorizontalAlignment="Left"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        x:Name="AgentIntegrationStatusText"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        TextWrapping="Wrap"
+                        AutomationProperties.AutomationId="AgentIntegrationStatus" />
+                </StackPanel>
+                <StackPanel
+                    x:Name="AgentIntegrationActionsPanel"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Spacing="8">
+                    <Button
+                        x:Name="EnableAgentIntegrationButton"
+                        x:Uid="EnableAgentIntegrationButton"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource AccentButtonStyle}"
+                        AutomationProperties.AutomationId="EnableAgentIntegrationButton"
+                        Click="EnableAgentIntegrationButton_Click" />
+                    <Button
+                        x:Name="DisableAgentIntegrationButton"
+                        x:Uid="DisableAgentIntegrationButton"
+                        HorizontalAlignment="Stretch"
+                        Visibility="Collapsed"
+                        AutomationProperties.AutomationId="DisableAgentIntegrationButton"
+                        Click="DisableAgentIntegrationButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid
+            x:Name="ComputersToolbar"
+            Grid.Row="3"
+            Margin="0,16,0,12"
+            ColumnSpacing="12"
+            SizeChanged="ComputersToolbar_SizeChanged">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid ColumnSpacing="10" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ProgressRing
+                    x:Name="OperationProgressRing"
+                    Width="20"
+                    Height="20"
+                    IsActive="False"
+                    IsTabStop="False"
+                    Visibility="Collapsed"
+                    AutomationProperties.AccessibilityView="Raw" />
+                <TextBlock
+                    x:Name="StatusTextBlock"
+                    x:Uid="LoadingStatus"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="18"
+                    FontWeight="SemiBold"
+                    MaxLines="3"
+                    TextWrapping="Wrap"
+                    AutomationProperties.AutomationId="CatalogStatus"
+                    AutomationProperties.LiveSetting="Polite" />
+            </Grid>
+            <Grid
+                x:Name="ComputerSearchActions"
+                Grid.Column="1"
+                ColumnSpacing="8"
+                HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <AutoSuggestBox
+                    x:Name="ComputerSearchBox"
+                    x:Uid="ComputerSearchBox"
+                    MinWidth="180"
+                    HorizontalAlignment="Stretch"
+                    QueryIcon="Find"
+                    TextChanged="ComputerSearchBox_TextChanged" />
+                <Button
+                    x:Name="ComputerFilterButton"
+                    Grid.Column="1"
+                    Width="44"
+                    AutomationProperties.Name="{x:Bind FilterComputersAutomationName}">
+                    <FontIcon Glyph="&#xE71C;" FontSize="16" />
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <ToggleMenuFlyoutItem x:Name="FilterAllComputersItem" x:Uid="FilterAllComputersItem" Tag="all" IsChecked="True" Click="ComputerFilterItem_Click" />
+                            <ToggleMenuFlyoutItem x:Name="FilterOnlineComputersItem" x:Uid="FilterOnlineComputersItem" Tag="online" Click="ComputerFilterItem_Click" />
+                            <ToggleMenuFlyoutItem x:Name="FilterOfflineComputersItem" x:Uid="FilterOfflineComputersItem" Tag="offline" Click="ComputerFilterItem_Click" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                <Button
+                    x:Name="RefreshComputersButton"
+                    x:Uid="RefreshComputersButton"
+                    Grid.Column="2"
+                    Width="44"
+                    Click="RefreshComputersButton_Click">
+                    <FontIcon Glyph="&#xE72C;" FontSize="15" />
+                </Button>
+            </Grid>
+        </Grid>
+
+        <Border
+            x:Name="MigrationPanel"
+            Grid.Row="4"
+            Margin="0,4,0,16"
+            Padding="20,18"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="10"
+            SizeChanged="SettingsPanel_SizeChanged"
+            Visibility="Collapsed">
+            <Grid x:Name="MigrationPanelGrid" ColumnSpacing="28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel Spacing="5">
+                    <TextBlock
+                        x:Uid="MigrationHeading"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        TextWrapping="Wrap"
+                        MaxLines="2" />
+                    <TextBlock
+                        x:Name="MigrationSummaryText"
+                        MaxWidth="720"
+                        HorizontalAlignment="Left"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        x:Uid="MigrationSafetyNote"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                    x:Name="MigrationActionsPanel"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Spacing="8">
+                    <Button
+                        x:Name="MigrationEnableButton"
+                        x:Uid="MigrationEnableButton"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource AccentButtonStyle}"
+                        AutomationProperties.AutomationId="MigrationEnableButton"
+                        Click="MigrationEnableButton_Click" />
+                    <Button
+                        x:Name="MigrationDisableButton"
+                        x:Uid="MigrationDisableButton"
+                        HorizontalAlignment="Stretch"
+                        Visibility="Collapsed"
+                        AutomationProperties.AutomationId="MigrationDisableButton"
+                        Click="MigrationDisableButton_Click" />
+                    <Button
+                        x:Name="MigrationPreviewButton"
+                        x:Uid="MigrationPreviewButton"
+                        HorizontalAlignment="Stretch"
+                        AutomationProperties.AutomationId="MigrationPreviewButton"
+                        Click="MigrationPreviewButton_Click" />
+                    <Button
+                        x:Name="MigrationOpenLegacyButton"
+                        x:Uid="MigrationOpenLegacyButton"
+                        HorizontalAlignment="Stretch"
+                        Visibility="Collapsed"
+                        AutomationProperties.AutomationId="MigrationOpenLegacyButton"
+                        Click="MigrationOpenLegacyButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border
+            x:Name="RecoveryPanel"
+            Grid.Row="5"
+            Margin="0,4,0,16"
+            Padding="20,18"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="10"
+            SizeChanged="SettingsPanel_SizeChanged"
+            Visibility="Collapsed">
+            <Grid x:Name="RecoveryPanelGrid" ColumnSpacing="28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel Spacing="5">
+                    <TextBlock
+                        x:Uid="RecoveryHeading"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        TextWrapping="Wrap"
+                        MaxLines="2" />
+                    <TextBlock
+                        x:Uid="RecoveryDescription"
+                        MaxWidth="720"
+                        HorizontalAlignment="Left"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        x:Uid="RecoverySafetyNote"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                    x:Name="RecoveryActionsPanel"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="10">
+                    <Button
+                        x:Name="CreateRecoveryButton"
+                        x:Uid="CreateRecoveryButton"
+                        Style="{StaticResource AccentButtonStyle}"
+                        AutomationProperties.AutomationId="CreateRecoveryButton"
+                        Click="CreateRecoveryButton_Click" />
+                    <Button
+                        x:Name="RestoreRecoveryButton"
+                        x:Uid="RestoreRecoveryButton"
+                        AutomationProperties.AutomationId="RestoreRecoveryButton"
+                        Click="RestoreRecoveryButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer
+            x:Name="SettingsScrollViewer"
+            Grid.Row="0"
+            Grid.RowSpan="7"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto"
+            VerticalScrollMode="Auto"
+            Visibility="Collapsed">
+            <StackPanel x:Name="SettingsContentHost" Padding="0,0,12,20" />
+        </ScrollViewer>
+
+        <ListView
+            x:Name="DevicesList"
+            x:Uid="DevicesList"
+            Grid.Row="6"
+            HorizontalContentAlignment="Stretch"
+            ItemsSource="{x:Bind Devices, Mode=OneWay}"
+            SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0,0,0,12" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:DeviceViewModel">
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                                <Grid
+                                    x:Name="DeviceRowGrid"
+                                    MinHeight="100"
+                                    Padding="18,14"
+                                    ColumnSpacing="14"
+                                    SizeChanged="DeviceRowGrid_SizeChanged">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="190" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="32" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Width="14" Height="14" VerticalAlignment="Center">
+                                        <Ellipse Fill="{ThemeResource TextFillColorTertiaryBrush}" Visibility="{x:Bind IsOffline}" />
+                                        <Ellipse Fill="{ThemeResource SystemFillColorSuccessBrush}" Visibility="{x:Bind IsOnline}" />
+                                    </Grid>
+                                    <Border
+                                        x:Name="DeviceIcon"
+                                        Grid.Column="1"
+                                        Width="48"
+                                        Height="48"
+                                        VerticalAlignment="Center"
+                                        Background="{ThemeResource ControlFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8">
+                                        <FontIcon Glyph="&#xE7F4;" FontSize="24" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                    </Border>
+                                    <StackPanel x:Name="DeviceIdentity" Grid.Column="2" VerticalAlignment="Center" Spacing="4">
+                                        <TextBlock
+                                            x:Name="DeviceTitle"
+                                            FontSize="17"
+                                            FontWeight="SemiBold"
+                                            MaxLines="1"
+                                            Text="{x:Bind Title}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <Grid>
+                                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind StatusLabel}" Visibility="{x:Bind IsOffline}" />
+                                            <TextBlock Foreground="{ThemeResource SystemFillColorSuccessBrush}" Text="{x:Bind StatusLabel}" Visibility="{x:Bind IsOnline}" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel
+                                        x:Name="DeviceSummary"
+                                        Grid.Column="3"
+                                        VerticalAlignment="Center"
+                                        Spacing="4">
+                                        <TextBlock
+                                            x:Name="DeviceConnectionSummary"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            MaxLines="1"
+                                            Text="{x:Bind ConnectionSummaryLabel}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Foreground="{ThemeResource TextFillColorTertiaryBrush}" Text="{x:Bind LastDesktopSummaryLabel}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Grid
+                                        x:Name="DeviceActions"
+                                        Grid.Column="4"
+                                        ColumnSpacing="8"
+                                        VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <SplitButton
+                                            MinWidth="250"
+                                            MinHeight="42"
+                                            Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                            Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                            IsEnabled="{x:Bind CanOpenPrimaryDesktop}"
+                                            Tag="{x:Bind PrimaryDesktopCanonical}"
+                                            Visibility="{x:Bind HasPrimaryDesktop}"
+                                            AutomationProperties.AutomationId="{x:Bind PrimaryDesktopAutomationId}"
+                                            Loaded="RouteSplitButton_Loaded"
+                                            DataContextChanged="RouteSplitButton_DataContextChanged"
+                                            Click="UseComputerButton_Click">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <FontIcon Glyph="&#xE7F4;" FontSize="16" />
+                                                <TextBlock Text="{x:Bind PrimaryDesktopActionLabel}" />
+                                            </StackPanel>
+                                        </SplitButton>
+                                        <Button
+                                            x:Name="HandToAgentButton"
+                                            x:Uid="HandToAgentButton"
+                                            Grid.Column="1"
+                                            MinWidth="118"
+                                            MinHeight="42"
+                                            IsEnabled="{x:Bind CanHandToAgent}"
+                                            Tag="{x:Bind AgentCanonical}"
+                                            AutomationProperties.AutomationId="{x:Bind AgentAutomationId}"
+                                            Click="HandToAgentButton_Click" />
+                                    </Grid>
+                                    <ToggleButton
+                                        x:Name="DeviceDetailsToggle"
+                                        Grid.Column="5"
+                                        Width="32"
+                                        Height="32"
+                                        Padding="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        IsChecked="{x:Bind IsExpanded}"
+                                        Tag="{x:Bind Device.Id}"
+                                        Visibility="{x:Bind HasAlternateDesktops}"
+                                        AutomationProperties.AutomationId="{x:Bind DetailsAutomationId}"
+                                        Checked="DeviceDetailsToggle_Toggled"
+                                        Unchecked="DeviceDetailsToggle_Toggled">
+                                        <FontIcon Glyph="&#xE70D;" FontSize="12" />
+                                    </ToggleButton>
+                                </Grid>
+                            <Border
+                                x:Name="DeviceDetailsBorder"
+                                Grid.Row="1"
+                                Padding="18,12,18,14"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="0,1,0,0"
+                                Visibility="Collapsed">
+                                <StackPanel Spacing="6">
+                                    <TextBlock x:Uid="AvailableDesktopsHeading" Margin="4,0,0,4" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    <ItemsRepeater ItemsSource="{x:Bind ExpandedDesktops}">
+                                        <ItemsRepeater.Layout><StackLayout Spacing="0" /></ItemsRepeater.Layout>
+                                        <ItemsRepeater.ItemTemplate>
+                                            <DataTemplate x:DataType="local:DesktopOptionViewModel">
+                                                <Grid x:Name="DesktopRowGrid" MinHeight="54" Padding="12,4" ColumnSpacing="12" SizeChanged="DesktopRowGrid_SizeChanged">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="38" />
+                                                        <ColumnDefinition Width="250" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <Border
+                                                        Grid.ColumnSpan="4"
+                                                        Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                        CornerRadius="6"
+                                                        Opacity="0.08"
+                                                        Visibility="{x:Bind IsLastUsed}" />
+                                                    <FontIcon Glyph="&#xE7F4;" FontSize="18" VerticalAlignment="Center" />
+                                                    <StackPanel x:Name="DesktopIdentity" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                                                        <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{x:Bind DisplayName}" />
+                                                        <Border Padding="7,2" Background="{ThemeResource AccentFillColorTertiaryBrush}" CornerRadius="4" Visibility="{x:Bind IsLastUsed}">
+                                                            <TextBlock FontSize="12" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Text="{x:Bind UsageLabel}" />
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock x:Name="DesktopRecent" Grid.Column="2" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind RecentLabel}" />
+                                                    <SplitButton
+                                                        x:Name="DesktopAction"
+                                                        Grid.Column="3"
+                                                        MinWidth="170"
+                                                        MinHeight="38"
+                                                        Content="{x:Bind SecondaryActionLabel}"
+                                                        IsEnabled="{x:Bind CanOpen}"
+                                                        Tag="{x:Bind Canonical}"
+                                                        AutomationProperties.AutomationId="{x:Bind AutomationId}"
+                                                        Loaded="RouteSplitButton_Loaded"
+                                            DataContextChanged="RouteSplitButton_DataContextChanged"
+                                                        Click="UseComputerButton_Click" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsRepeater.ItemTemplate>
+                                    </ItemsRepeater>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+		<Border
+			x:Name="ComputersEmptyState"
+			Grid.Row="6"
+			Padding="28"
+			Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+			BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+			BorderThickness="1"
+			CornerRadius="10"
+			Visibility="Collapsed">
+			<StackPanel MaxWidth="520" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+				<FontIcon Glyph="&#xE7F4;" FontSize="30" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+				<TextBlock x:Name="ComputersEmptyHeading" FontSize="18" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />
+				<TextBlock x:Name="ComputersEmptyDescription" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextAlignment="Center" TextWrapping="Wrap" />
+				<Button
+					x:Name="ComputersEmptyActionButton"
+					Margin="0,8,0,0"
+					HorizontalAlignment="Center"
+					Click="ComputersEmptyActionButton_Click" />
+			</StackPanel>
+		</Border>
+
+        <Grid x:Name="SessionsPanel" Grid.Row="6" Visibility="Collapsed">
+            <Border
+                x:Name="SessionsEmptyState"
+                Padding="28"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="10">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+                    <FontIcon Glyph="&#xE823;" FontSize="28" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock x:Uid="SessionsEmptyHeading" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock x:Uid="SessionsEmptyDescription" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <ListView
+                x:Name="RecentSessionsList"
+                AutomationProperties.AutomationId="RecentSessionsList"
+                ItemsSource="{x:Bind RecentSessions, Mode=OneWay}"
+                HorizontalContentAlignment="Stretch"
+                SelectionMode="None"
+                Visibility="Collapsed">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:RecentSessionViewModel">
+                        <Border Margin="0,0,0,10" Padding="20,18" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10">
+                            <Grid x:Name="RecentSessionGrid" ColumnSpacing="20" SizeChanged="RecentSessionGrid_SizeChanged">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                <StackPanel x:Name="SessionIdentity" Spacing="5">
+                                    <TextBlock Text="{x:Bind ComputerName}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" MaxLines="2" />
+                                    <TextBlock Text="{x:Bind ActionLabel}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" MaxLines="2" />
+                                </StackPanel>
+                                <StackPanel x:Name="SessionActions" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
+                                    <TextBlock Text="{x:Bind StatusLabel}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                    <TextBlock Text="{x:Bind TimeLabel}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                                    <Button
+                                        Margin="0,7,0,0"
+                                        HorizontalAlignment="Right"
+                                        Content="{x:Bind RepeatActionLabel}"
+                                        Visibility="{x:Bind CanRepeat}"
+                                        AutomationProperties.AutomationId="{x:Bind RepeatAutomationId}"
+                                        Click="RepeatSessionButton_Click" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </Grid>
+    </Border>
+    </NavigationView>
+</Page>
