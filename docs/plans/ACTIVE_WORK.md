@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 59b774b2771b6a8f259acdf34d2df8c630db3846
+base_commit: 214a8c1e7d4ed2ea620f28a3c05fe43057e95950
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -34,7 +34,9 @@ The fourth host was identity-verified through its existing alternate SSH path an
 bootstrapped from alpha.87 to alpha.102. All ten private JSON file hashes remained
 unchanged, 48 history records were retained and the catalog recovered to 11 targets.
 All four fleet reports are current; the fourth successfully sent an update notice.
-Its original PF Remote Shell path still fails independently of update delivery.
+All four subsequently updated independently to alpha.103. The original PF Remote
+Shell path now succeeds through the updated controller, including remote status
+queries. The controller retains all eight private baseline hashes and 50 records.
 The Settings UI is ready for owner-level experience feedback now.
 
 ## Out of scope
@@ -50,8 +52,11 @@ unprobed unreachable LAN selection. Refreshing the controller daemon restored th
 exact PF Remote Shell target. The bounded fix resolves only missing IDs at route
 acquisition, preserves existing pins and probes direct Shell routes before selection.
 Offline/reconnect and changed-node rejection tests cover base and overlay caches.
-Return point: publish the repair and verify Shell through the updated local daemon,
-then owner Settings acceptance. No host network or private configuration edits.
+The fix is published and enabled as alpha.103. All four update reports are current;
+ordinary PF Remote hostname and remote update-status execution succeed. Full checks,
+signed package upgrade/profile retention and privacy scans pass. This side task is
+closed. Return point: owner Settings acceptance. No host network or private
+configuration edits were required.
 
 ## Review gates
 
@@ -64,7 +69,7 @@ R3: full scripts/check.ps1, real signed package upgrade/rollback, SQLite restart
 replay/revocation/failure tests, privacy scans and live three-host automatic upgrade
 passed. The final native Center is responsive and remains running.
 R4: evidence in docs/status/FLEET_UPDATE_REPORT.md. Fleet rollout is complete;
-M10.3 remains open for owner acceptance and the separately recorded Shell defect.
+M10.3 remains open only for owner acceptance; the Shell defect is repaired.
 
 ## Deferred findings
 

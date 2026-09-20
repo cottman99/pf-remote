@@ -30,12 +30,13 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current candidate: alpha.102. Two Windows installations and one Linux node have
-independently updated from the public preview feed. Settings includes Check this
+Current candidate: alpha.103. All four installations have independently updated
+from the public preview feed. Settings includes Check this
 computer, Notify other computers, and named version/last-seen reports. Offline
 notification catch-up is verified. Private configuration remains outside releases.
 The fourth computer was bootstrapped from alpha.87 to alpha.102 with its private
-configuration and history retained. All four report current; its original Shell
-route still fails while the verified alternate management path works. Owner
+configuration and history retained, then independently updated to alpha.103.
+All four report current. Its ordinary PF Remote Shell route now works; cached
+offline routes recover missing node identities when connecting. Owner
 UI acceptance remains open. See docs/status/FLEET_UPDATE_REPORT.md. Native-window
 health is verified without foreground interaction; user visual acceptance is pending.

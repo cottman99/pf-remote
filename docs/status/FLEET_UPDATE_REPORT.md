@@ -111,3 +111,32 @@ not an additional autonomous old-to-new upgrade. The earlier three-host upgrade 
 Linux offline catch-up remain the autonomous-update evidence. The original PF Remote
 Shell route still fails; the alternate SSH path works. Owner visual acceptance and
 that separate connection defect remain open.
+
+## Shell reconnect repair — alpha.103
+
+The original Shell failure was a controller cache defect, not a remote permission
+failure. A peer offline during catalog construction had no cached Tailscale node
+ID. Acquisition rejected that path and selected an unreachable LAN endpoint without
+probing it. The authenticated directory and SSH endpoint were healthy after the
+peer returned. Refreshing only the controller daemon restored a normal PF Remote
+Shell command to the exact immutable target; no private settings were changed.
+
+Alpha.103 resolves only missing node IDs from the authenticated directory at
+acquisition time, including merged private route overlays. Existing node IDs remain
+pinned, and signed SSH host-key verification remains mandatory. The verifier remains
+available even if no peers were online at startup. Direct Shell route acquisition
+now checks reachability before selection; commands are never replayed on a new path.
+
+Base/overlay cached-offline recovery, repeated offline rejection and changed-node
+rejection tests pass. Full checks, package verification, the real alpha.102-to-103
+upgrade/profile-retention fixture and binary/source privacy checks pass. The signed
+Windows and Linux alpha.103 release is published; update-preview metadata was enabled
+only after its artifacts uploaded. A fleet notice initiated independent discovery.
+
+All four then independently updated to alpha.103 and reported current. Through the
+updated controller, ordinary PF Remote Shell execution returned the fourth host's
+expected name, and a second command read its connected fleet status with all four
+reports current. The controller installer recorded phase=complete/sequence=103;
+all eight private baseline hashes match, with 11 targets and 50 recent records.
+Center and daemon each retain one process. This closes the Shell side task; only
+owner-level UI acceptance remains. No foreground desktop interaction was used.

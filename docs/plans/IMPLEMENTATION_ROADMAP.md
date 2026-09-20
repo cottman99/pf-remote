@@ -43,9 +43,9 @@ Alpha.102 is publicly available for Windows and managed Linux nodes. Two Windows
 installations and one Linux node independently updated from alpha.100 to alpha.102.
 Linux also consumed a notice retained while its management service was offline.
 The fourth managed computer was bootstrapped from alpha.87 to alpha.102; all four
-report current and the fourth can send update notices. M10.3 owner UX acceptance
-remains open. Its original Shell route failure is separate from the completed
-rollout; the identity-verified alternate management path remains available.
+report current and the fourth can send update notices. All four subsequently
+updated independently to alpha.103. Its cached-offline Shell route defect is fixed
+and ordinary PF Remote execution is verified. M10.3 owner UX acceptance remains open.
 
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates
