@@ -2,7 +2,7 @@
 
 ## User-facing behavior
 
-Windows Settings > Version and updates provides Check this computer, Notify other
+The Windows Settings and recovery page, in its version section, provides Check this computer, Notify other
 computers, and named version reports with last-seen times. Missing reports are
 explicitly shown; reports older than two minutes are marked stale. The UI uses
 catalog names matched by immutable Device ID. Linux exposes the same authorized
