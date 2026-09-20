@@ -32,7 +32,7 @@ remain because current deployments depend on them; they are not expansion work.
 
 Local candidate: alpha.96, with pinned signed updates, automatic Windows installation,
 retained user data and Settings update status. Local signed download, upgrade and
-rollback are verified; public GitHub channel publication and fleet convergence
-remain open. See docs/status/TRUSTED_UPDATE_REPORT.md. Background native-window
+rollback are verified. Public GitHub preview discovery and artifact verification
+are live; unattended fleet rollout remains open. See docs/status/TRUSTED_UPDATE_REPORT.md. Background native-window
 health is verified; full interactive click verification remains limited by the
 isolated-desktop startup failure described in the interaction recovery report.

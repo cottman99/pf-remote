@@ -4,7 +4,7 @@ roadmap_item: M10.2
 roadmap_milestone: M10
 roadmap_text: Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
 status: active
-base_commit: ef0d534
+base_commit: 75b047e
 ---
 
 # Active work — zero-cost trusted updates
@@ -34,9 +34,14 @@ release, and remote mutations. Cross-device version visibility is the next depen
 Local alpha.96 is installed. Trusted bootstrap seeds the initial signed checkpoint;
 background discovery, verified staging, independent Setup activation, rollback and
 localized Settings status are connected. Active action admission and conservative
-Windows viewer/SSH/RDP checks postpone activation. Public feed publication is the
-remaining M10.2 distribution gate. M10.3 durable Gateway hints and offline fleet
-catch-up remain next; no remote machine was changed by this slice.
+Windows viewer/SSH/RDP checks postpone activation. The owner authorized publication:
+sanitized source and alpha.96 are public, and the update-preview feed is enabled.
+Production discovery plus all three installation artifact downloads were verified
+from public GitHub using the existing trust store and production verifier.
+The running daemon may still show its pre-publication retry until its next check.
+M10.2 remains active for an unattended older-client rollout and Linux installation;
+M10.3 durable Gateway hints and offline fleet catch-up remain next. No remote
+machine was changed by this publication.
 
 ## Blocking side task
 
@@ -53,7 +58,8 @@ independent installer handoff, busy/retry/failed states and additive UI status.
 R3: full scripts/check.ps1 passed; signed real-package alpha.95 to alpha.96
 download/install/data-retention/rollback fixture passed; release verification passed.
 R4: alpha.96 installed locally with unchanged private files and responsive native
-windows. Evidence in TRUSTED_UPDATE_REPORT; M10.2 stays open pending public feed.
+windows. Public feed verification passed; evidence in TRUSTED_UPDATE_REPORT.
+M10.2 is not closed from publication alone; unattended rollout remains to verify.
 
 ## Deferred findings
 

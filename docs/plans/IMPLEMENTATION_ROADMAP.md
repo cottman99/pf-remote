@@ -39,8 +39,9 @@ bootstrap older nodes once before they can participate in managed updates.
 Evidence M10.1: [Trusted update foundation](../status/TRUSTED_UPDATE_REPORT.md).
 
 M10.2 local Windows alpha.96 loop is installed and verified, including signed HTTPS
-staging, Setup handoff, retained profile and rollback. It remains unchecked until
-the public channel is published and real GitHub discovery is verified. M10.3
+staging, Setup handoff, retained profile and rollback. The public preview channel
+is published and real GitHub discovery/artifact verification passed. M10.2 remains
+unchecked pending unattended older-client rollout and Linux installation. M10.3
 Gateway hints and fleet catch-up are not yet implemented.
 
 The owner clarified that every node must poll GitHub and update itself; a controller

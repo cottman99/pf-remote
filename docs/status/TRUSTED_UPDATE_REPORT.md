@@ -196,3 +196,22 @@ fetches cannot yet deliver a release. Next is approved sanitized source/package
 publication and real feed verification. M10.3 durable Gateway update hints, offline
 reconnect catch-up and multi-host convergence remain unimplemented. Users do not
 need to start all four machines for the local verification already completed.
+
+## Authorized public preview publication — 2026-09-20
+
+The owner explicitly authorized publication and enablement. Sanitized source was
+published to https://github.com/cottman99/pf-remote as a new history with a generic
+release author; existing private Git history was not pushed. Seven generic release
+assets are published at https://github.com/cottman99/pf-remote/releases/tag/update-preview.
+The channel is a prerelease, version 0.1.0-alpha.96, signed sequence 96.
+
+Production Store.Discover fetched and authenticated the public GitHub feed using
+the existing installed trust database and independently provisioned publisher key.
+Production Stage downloaded all three installation artifacts from GitHub, and
+VerifyPackage authenticated the downloaded installer, manifest and payload again.
+All passed. No private runtime content or publisher private key was uploaded.
+
+The running daemon retains its scheduled retry/backoff from the previously absent
+feed until its next poll; publication does not remotely trigger or force an install.
+No machine was downgraded just to demonstrate an upgrade. Unattended older-client
+rollout, automatic Linux installation and M10.3 Gateway hints remain follow-ups.
