@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/cottman99/pf-remote/internal/releaseauth"
@@ -20,6 +21,19 @@ import (
 // never enter a client, Gateway, repository, or deployment package.
 var PublisherKey string
 var Channel = "preview"
+
+func InstallerName() string {
+	if runtime.GOOS == "linux" {
+		return "pfremote-update-linux-x64"
+	}
+	return "PFRemoteSetup.exe"
+}
+func ArtifactNames(version string) []string {
+	if runtime.GOOS == "linux" {
+		return []string{"pfremote-linux-x64", "pfremoted-linux-x64", "pfremote-update-linux-x64"}
+	}
+	return []string{"PFRemoteSetup.exe", "release-manifest.json", "PFRemote-Windows-x64-" + version + ".zip"}
+}
 
 type Status struct {
 	Schema   string    `json:"schema_version"`
@@ -43,7 +57,7 @@ func Policy() (releaseauth.Policy, error) {
 	if err != nil || len(key) != ed25519.PublicKeySize {
 		return releaseauth.Policy{}, errors.New("publisher trust is not configured")
 	}
-	return releaseauth.Policy{PublicKey: ed25519.PublicKey(key), Channel: Channel, Platform: "windows-x64", Now: time.Now()}, nil
+	return releaseauth.Policy{PublicKey: ed25519.PublicKey(key), Channel: Channel, Platform: runtime.GOOS + "-x64", Now: time.Now()}, nil
 }
 
 // Bootstrap is called only by an explicitly installed, trusted package. A marker
@@ -134,7 +148,7 @@ func Stage(ctx context.Context, r releaseauth.Release, client *http.Client, base
 		return "", errors.New("update is not data compatible")
 	}
 	m := r.Metadata()
-	names := []string{"PFRemoteSetup.exe", "release-manifest.json", "PFRemote-Windows-x64-" + m.Version + ".zip"}
+	names := ArtifactNames(m.Version)
 	if err := os.MkdirAll(root, 0700); err != nil {
 		return "", err
 	}
@@ -161,7 +175,7 @@ func Stage(ctx context.Context, r releaseauth.Release, client *http.Client, base
 			return "", err
 		}
 	}
-	if err = os.WriteFile(filepath.Join(dir, "windows-x64.release.json"), r.Document(), 0600); err != nil {
+	if err = os.WriteFile(filepath.Join(dir, runtime.GOOS+"-x64.release.json"), r.Document(), 0600); err != nil {
 		return "", err
 	}
 	ok = true
@@ -182,7 +196,7 @@ func VerifyPackage(directory, version string) (releaseauth.Release, error) {
 		return releaseauth.Release{}, err
 	}
 	defer s.Close()
-	f, err := os.Open(filepath.Join(directory, "windows-x64.release.json"))
+	f, err := os.Open(filepath.Join(directory, runtime.GOOS+"-x64.release.json"))
 	if err != nil {
 		return releaseauth.Release{}, err
 	}
@@ -198,7 +212,7 @@ func VerifyPackage(directory, version string) (releaseauth.Release, error) {
 	if !r.Compatible(1, 1) || r.Metadata().Version != version {
 		return releaseauth.Release{}, errors.New("update compatibility mismatch")
 	}
-	for _, name := range []string{"PFRemoteSetup.exe", "release-manifest.json", "PFRemote-Windows-x64-" + version + ".zip"} {
+	for _, name := range ArtifactNames(version) {
 		f, err := os.Open(filepath.Join(directory, name))
 		if err != nil {
 			return releaseauth.Release{}, err

@@ -348,6 +348,8 @@ func main() {
 		return applyBackgroundUpdate(ctx, r, updateGate)
 	}
 	go updates.Run(ctx)
+	fleet := &fleetUpdates{store: stateStore, signer: deviceIdentity, monitor: updates}
+	go fleet.run(ctx)
 	resumeMonitor := powerresume.NewMonitor(time.Now())
 	go func(initialSettings connectionSettings) {
 		ticker := time.NewTicker(5 * time.Second)
@@ -618,6 +620,7 @@ func main() {
 	}
 	server := localapi.NewServerWithProvider(provider)
 	server.Handler.Gate = updateGate
+	server.Handler.Updates = fleet.action
 	if err := server.Serve(ctx, listener); err != nil {
 		fmt.Fprintln(os.Stderr, "PF Remote daemon stopped:", err)
 		os.Exit(1)

@@ -71,3 +71,14 @@ authoritative drain gate before restarting a content-hosting Gateway.
 ## Evidence
 
 contracts/signed-release-v1.md and docs/status/TRUSTED_UPDATE_REPORT.md.
+
+## Authorized fleet closeout
+
+Owner now requests the complete multi-device update journey without intermediate
+technical acceptance. M10.2 remains mainline; M10.3 notification/status integration
+is an explicitly prioritized dependency of that journey. Authorized scope includes
+bootstrap/update of available managed nodes and release publication, preserving
+private identities/configuration and existing access paths. Current branch main
+was clean at fd18f3c. Acceptance: named device versions, Check now and Notify devices
+controls in Settings, durable authenticated notification across Gateway restart,
+offline catch-up, independent publisher verification and safe local activation.

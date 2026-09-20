@@ -17,6 +17,9 @@ import (
 const maxControlRequestSize = 1 << 20
 
 func registerEnrollmentHandlers(mux *http.ServeMux, manager *enrollment.Manager) {
+	registerJSONAction(mux, "POST /api/v1/updates/sync", func(request enrollment.UpdateRequest) (any, error) {
+		return manager.SyncUpdates(request)
+	})
 	registerJSONAction(mux, "POST /api/v1/owner/initialize", func(request enrollment.OwnerInitializationRequest) (any, error) {
 		return manager.InitializeOwner(request)
 	})

@@ -18,6 +18,9 @@ internal sealed class PfRemoteCliClient
     public Task<DoctorResponse> DoctorAsync(CancellationToken cancellationToken = default) =>
         RunAsync<DoctorResponse>(["doctor", "--json"], cancellationToken);
 
+    public Task<FleetUpdateResponse> UpdatesAsync(string option = "--updates", CancellationToken cancellationToken = default) =>
+        RunAsync<FleetUpdateResponse>(["doctor", option, "--json"], cancellationToken);
+
     public Task<ContextResponse> ContextAsync(string target, CancellationToken cancellationToken = default) =>
         RunAsync<ContextResponse>(CreateContextArguments(target), cancellationToken);
 

@@ -47,7 +47,7 @@ func backgroundUpdates(statePath string) *updatecheck.Monitor {
 }
 
 func applyBackgroundUpdate(ctx context.Context, r releaseauth.Release, gate *localapi.ActionGate) string {
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != "windows" && runtime.GOOS != "linux" {
 		return "incompatible"
 	}
 	_, root, err := autoupdate.Paths()
@@ -98,7 +98,7 @@ func applyBackgroundUpdate(ctx context.Context, r releaseauth.Release, gate *loc
 		gate.CancelUpdate()
 		return "retry"
 	}
-	if err = autoupdate.StartSetup(filepath.Join(directory, "PFRemoteSetup.exe")); err != nil {
+	if err = autoupdate.StartSetup(filepath.Join(directory, autoupdate.InstallerName())); err != nil {
 		gate.CancelUpdate()
 		_ = autoupdate.WriteStatus(root, autoupdate.Status{Phase: "failed", Version: m.Version, Sequence: m.Sequence})
 		return "held"

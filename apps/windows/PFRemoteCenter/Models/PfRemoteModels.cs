@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace PFRemoteCenter.Models;
 
+internal sealed record FleetUpdateResponse(string Status, IReadOnlyList<FleetUpdateReport> Reports);
+internal sealed record FleetUpdateReport([property: JsonPropertyName("device_id")] string DeviceId, string Name, string Version, string Status, DateTimeOffset Seen);
+
 internal sealed record DeviceSummary(
     [property: JsonPropertyName("id")] string Id,
     [property: JsonPropertyName("alias")] string Alias,

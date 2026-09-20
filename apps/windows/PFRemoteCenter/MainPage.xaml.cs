@@ -543,12 +543,49 @@ public sealed partial class MainPage : Page
 		}
 	}
 
+    private async Task RefreshFleetUpdatesAsync()
+    {
+        try
+        {
+            FleetUpdateResponse fleet = await _client.UpdatesAsync();
+            var lines = new List<string>();
+            if (fleet.Status != "connected") lines.Add(_resources.GetString("FleetUnavailable"));
+            foreach (FleetUpdateReport report in fleet.Reports)
+            {
+                string state = DateTimeOffset.UtcNow - report.Seen > TimeSpan.FromMinutes(2)
+                    ? _resources.GetString("FleetStale")
+                    : UpdateStatusPresenter.FromCode(report.Status, _resources.GetString);
+                string name = _allDevices.FirstOrDefault(device => device.Device.Id == report.DeviceId)?.Device.DisplayName ?? report.Name;
+                lines.Add($"{name} · {report.Version}\n{state} · {report.Seen.ToLocalTime():g}");
+            }
+            if (lines.Count == 0) lines.Add(_resources.GetString("FleetEmpty"));
+            FleetStatusText.Text = string.Join("\n\n", lines);
+        }
+        catch (Exception) { FleetStatusText.Text = _resources.GetString("FleetUnavailable"); }
+    }
+
+    private async void CheckUpdatesButton_Click(object sender, RoutedEventArgs e) => await RunUpdateActionAsync(false);
+    private async void NotifyUpdatesButton_Click(object sender, RoutedEventArgs e) => await RunUpdateActionAsync(true);
+    private async Task RunUpdateActionAsync(bool notify)
+    {
+        CheckUpdatesButton.IsEnabled = NotifyUpdatesButton.IsEnabled = false;
+        try
+        {
+            await _client.UpdatesAsync(notify ? "--notify-updates" : "--check-updates");
+            ShowSettingsStatus(_resources.GetString(notify ? "FleetNotified" : "FleetCheckQueued"), InfoBarSeverity.Success);
+            ScheduleRefresh(TimeSpan.FromSeconds(2));
+        }
+        catch (Exception) { ShowSettingsStatus(_resources.GetString("FleetUnavailable"), InfoBarSeverity.Error); }
+        finally { CheckUpdatesButton.IsEnabled = NotifyUpdatesButton.IsEnabled = true; }
+    }
+
 	private async Task RefreshConnectionServiceAsync()
 	{
 		try
 		{
 			DoctorResponse doctor = await RunWithDaemonRecoveryAsync(() => _client.DoctorAsync());
 			UpdateStatusText.Text = UpdateStatusPresenter.Create(doctor, _resources.GetString);
+			await RefreshFleetUpdatesAsync();
 			ConnectionServicePresentation presentation = ConnectionServicePresenter.Create(doctor, _resources.GetString);
 			ApplyConnectionServicePresentation(presentation);
 			if (presentation.Kind is ConnectionServiceNoticeKind.Ready or ConnectionServiceNoticeKind.LocalOnly)

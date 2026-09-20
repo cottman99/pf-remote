@@ -323,4 +323,11 @@
   <data name="UpdatesRetry" xml:space="preserve"><value>Unable to check for updates now. A background retry is scheduled.</value></data>
   <data name="UpdatesAvailable" xml:space="preserve"><value>A verified update is available.</value></data>
   <data name="UpdatesBootstrap" xml:space="preserve"><value>Automatic updates are not configured. Install a trusted release first.</value></data>
+<data name="FleetCheckQueued"><value>An update check is queued; existing retry backoff still applies.</value></data>
+<data name="NotifyUpdatesButton.Label"><value>Notify other computers</value></data>
+<data name="FleetUnavailable"><value>Version sync is unavailable. Check the connection service; older services need an upgrade.</value></data>
+<data name="FleetEmpty"><value>Waiting for computer version reports.</value></data>
+<data name="CheckUpdatesButton.Label"><value>Check this computer</value></data>
+<data name="FleetNotified"><value>The connection service saved the notice. Other computers will check independently when online.</value></data>
+<data name="FleetStale"><value>Offline or not reported recently; showing last report</value></data>
 </root>

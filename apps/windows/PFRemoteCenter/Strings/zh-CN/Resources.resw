@@ -323,4 +323,11 @@
   <data name="UpdatesRetry" xml:space="preserve"><value>暂时无法检查更新，将自动重试，不影响当前使用。</value></data>
   <data name="UpdatesAvailable" xml:space="preserve"><value>已发现通过验证的新版。</value></data>
   <data name="UpdatesBootstrap" xml:space="preserve"><value>此版本尚未配置自动更新，请先安装可信发行版。</value></data>
+<data name="FleetCheckQueued"><value>已安排检查本机更新；正在重试时会遵循现有等待时间。</value></data>
+<data name="NotifyUpdatesButton.Label"><value>通知其他主机检查更新</value></data>
+<data name="FleetUnavailable"><value>暂时无法同步主机版本，请检查连接服务。旧版服务需要先升级。</value></data>
+<data name="FleetEmpty"><value>等待主机上报版本。</value></data>
+<data name="CheckUpdatesButton.Label"><value>检查本机更新</value></data>
+<data name="FleetNotified"><value>通知已由连接服务保存。其他主机上线后会自行检查更新。</value></data>
+<data name="FleetStale"><value>离线或尚未重新上报，显示最后记录</value></data>
 </root>

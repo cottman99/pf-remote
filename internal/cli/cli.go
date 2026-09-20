@@ -21,7 +21,7 @@ Usage:
   pfremote list [--json]
   pfremote inspect <target-or-alias> [--json]
   pfremote context <target-or-alias> [--task <text>] [--constraint <text>] [--json]
-  pfremote doctor [--json]
+  pfremote doctor [--updates|--check-updates|--notify-updates] [--json]
   pfremote connect|exec|open ...
 `
 
@@ -59,7 +59,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 	command := cleanArgs[0]
 	rest := cleanArgs[1:]
 	timeout := 5 * time.Second
-	if command == "connect" || command == "exec" || command == "open" {
+	if command == "connect" || command == "exec" || command == "open" || command == "doctor" {
 		timeout = 30 * time.Second
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -85,7 +85,21 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 		}
 		value, err = client.Context(ctx, rest[0], task, constraints)
 	case "doctor":
-		value, err = client.Doctor(ctx)
+		if len(rest) == 0 {
+			value, err = client.Doctor(ctx)
+		} else {
+			actions := map[string]string{"--updates": "update-status", "--check-updates": "check-updates", "--notify-updates": "notify-updates"}
+			if len(rest) != 1 || actions[rest[0]] == "" {
+				return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "cli", "Unknown update action.", "Run pfremote --help.")
+			}
+			updater, ok := client.(interface {
+				Updates(context.Context, string) (json.RawMessage, error)
+			})
+			if !ok {
+				return writeError(stderr, jsonOutput, "UPDATE_UNAVAILABLE", "updates", "Update actions are unavailable.", "Update the client.")
+			}
+			value, err = updater.Updates(ctx, actions[rest[0]])
+		}
 	case "connect":
 		if len(rest) != 1 {
 			return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "connect", "connect requires one computer target.", "Choose one visible Shell target.")

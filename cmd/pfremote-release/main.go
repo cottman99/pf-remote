@@ -23,6 +23,7 @@ func main() {
 	release := flag.String("release", "", "release directory (omit to generate/read publisher key)")
 	sequence := flag.Uint64("sequence", 0, "monotonic release sequence")
 	channel := flag.String("channel", "preview", "release channel")
+	platform := flag.String("platform", "windows-x64", "signed platform")
 	flag.Parse()
 	if *keyPath == "" {
 		panic("external key path required")
@@ -70,8 +71,14 @@ func main() {
 		panic("manifest invalid")
 	}
 	now := time.Now().UTC()
-	m := releaseauth.Metadata{SchemaVersion: releaseauth.MetadataSchemaV2, Product: "PF Remote", Version: manifest.Version, Channel: *channel, Platform: "windows-x64", Sequence: *sequence, IssuedAt: now.Add(-time.Minute), ExpiresAt: now.Add(89 * 24 * time.Hour), Compatibility: &releaseauth.Compatibility{DataEpoch: 1, ProtocolMin: 1, ProtocolMax: 1}}
-	for _, name := range []string{"PFRemoteSetup.exe", "release-manifest.json", "PFRemote-Windows-x64-" + manifest.Version + ".zip"} {
+	m := releaseauth.Metadata{SchemaVersion: releaseauth.MetadataSchemaV2, Product: "PF Remote", Version: manifest.Version, Channel: *channel, Platform: *platform, Sequence: *sequence, IssuedAt: now.Add(-time.Minute), ExpiresAt: now.Add(89 * 24 * time.Hour), Compatibility: &releaseauth.Compatibility{DataEpoch: 1, ProtocolMin: 1, ProtocolMax: 1}}
+	artifacts := []string{"PFRemoteSetup.exe", "release-manifest.json", "PFRemote-Windows-x64-" + manifest.Version + ".zip"}
+	if *platform == "linux-x64" {
+		artifacts = []string{"pfremote-linux-x64", "pfremoted-linux-x64", "pfremote-update-linux-x64"}
+	} else if *platform != "windows-x64" {
+		panic("unsupported platform")
+	}
+	for _, name := range artifacts {
 		path := filepath.Join(*release, name)
 		info, err := os.Stat(path)
 		if err != nil {
@@ -87,10 +94,16 @@ func main() {
 	if err != nil {
 		panic("release signing failed")
 	}
-	if err = os.WriteFile(filepath.Join(*release, "windows-x64.release.json"), document, 0600); err != nil {
+	if err = os.WriteFile(filepath.Join(*release, *platform+".release.json"), document, 0600); err != nil {
 		panic("signed release write failed")
 	}
-	names := []string{"PFRemoteSetup.exe", "release-manifest.json", "PFRemote-Windows-x64-" + manifest.Version + ".zip", "sbom.spdx.json", "licenses.json", "windows-x64.release.json"}
+	names := append(append([]string{}, artifacts...), *platform+".release.json")
+	checksums := "SHA256SUMS.txt"
+	if *platform == "windows-x64" {
+		names = append(names, "sbom.spdx.json", "licenses.json")
+	} else {
+		checksums = "SHA256SUMS-linux.txt"
+	}
 	sort.Strings(names)
 	lines := make([]string, 0, len(names))
 	for _, name := range names {
@@ -100,7 +113,7 @@ func main() {
 		}
 		lines = append(lines, hash+"  "+name)
 	}
-	if err = os.WriteFile(filepath.Join(*release, "SHA256SUMS.txt"), []byte(strings.Join(lines, "\n")+"\n"), 0600); err != nil {
+	if err = os.WriteFile(filepath.Join(*release, checksums), []byte(strings.Join(lines, "\n")+"\n"), 0600); err != nil {
 		panic("checksum list write failed")
 	}
 	fmt.Println("Signed release metadata written.")

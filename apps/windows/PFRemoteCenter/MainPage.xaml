@@ -198,6 +198,11 @@
                     <TextBlock x:Name="VersionTextBlock" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
                     <TextBlock x:Name="VersionRollbackNote" x:Uid="VersionRollbackNote" Foreground="{ThemeResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
                     <TextBlock x:Name="UpdateStatusText" x:Uid="UpdateStatusText" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+                    <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Left" IsOpen="False">
+                        <AppBarButton x:Name="CheckUpdatesButton" x:Uid="CheckUpdatesButton" Icon="Refresh" Click="CheckUpdatesButton_Click" />
+                        <AppBarButton x:Name="NotifyUpdatesButton" x:Uid="NotifyUpdatesButton" Icon="Send" Click="NotifyUpdatesButton_Click" />
+                    </CommandBar>
+                    <TextBlock x:Name="FleetStatusText" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" AutomationProperties.LiveSetting="Polite" />
                 </StackPanel>
                 <Button
                     x:Name="RollbackVersionButton"

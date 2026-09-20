@@ -36,6 +36,7 @@ type Handler struct {
 	Service  actions.Service
 	Provider ServiceProvider
 	Gate     *ActionGate
+	Updates  func(context.Context, string) (any, error)
 }
 
 func NewHandler() Handler {
@@ -51,6 +52,16 @@ func (h Handler) Handle(request Request) Response {
 func (h Handler) HandleContext(ctx context.Context, request Request) Response {
 	if request.SchemaVersion != SchemaVersion {
 		return failed("UNSUPPORTED_VERSION", "local-api", "Unsupported local API schema version.", "Update PF Remote components together.")
+	}
+	if request.Action == "update-status" || request.Action == "check-updates" || request.Action == "notify-updates" {
+		if h.Updates == nil {
+			return failed("UPDATE_UNAVAILABLE", "updates", "Update controls are unavailable.", "Update this client first.")
+		}
+		result, err := h.Updates(ctx, request.Action)
+		if err != nil {
+			return failed("UPDATE_UNAVAILABLE", "updates", "The connection service could not receive the notification.", "Check the connection service and retry.")
+		}
+		return Response{SchemaVersion: SchemaVersion, Result: result}
 	}
 	if h.Gate != nil && (request.Action == "connect" || request.Action == "exec" || request.Action == "open" || request.Action == "save-desktop-credential-and-open") {
 		leave, ok := h.Gate.Enter()
