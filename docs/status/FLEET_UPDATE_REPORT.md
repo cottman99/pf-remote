@@ -140,3 +140,31 @@ reports current. The controller installer recorded phase=complete/sequence=103;
 all eight private baseline hashes match, with 11 targets and 50 recent records.
 Center and daemon each retain one process. This closes the Shell side task; only
 owner-level UI acceptance remains. No foreground desktop interaction was used.
+
+## Explicit desktop choice — alpha.104
+
+Owner feedback from the second Windows controller identified a misleading default:
+the computer action opened the first internal capability ID, which happened to be
+RDP, while the desired TigerVNC workspaces were hidden under other desktops.
+Multi-desktop computer actions now show Choose desktop, with both click surfaces
+opening the same exact-target menu. All TigerVNC workspaces appear before RDP and
+carry explicit client labels. All desktops expands the full list; individual rows
+retain their Smart connect and route controls. No desktop server, credentials or
+protocol configuration was changed and no arbitrary VNC workspace was chosen.
+
+The second controller's live catalog exposes all three VNC workspaces as available
+and credential-ready, and its standard TigerVNC viewer exists. Tests cover a
+lexically first RDP capability, all three independent VNC targets, target stability,
+and unavailable siblings. All 57 presentation tests, full checks, package checks,
+the alpha.103-to-104 profile-preserving upgrade fixture and privacy scans pass.
+
+Alpha.104 was published and the second Windows controller independently installed it.
+Its running Center process belongs to the alpha.104 installation and all three VNC
+targets remain credential-ready. The other remote Windows and Linux reports also
+advanced to alpha.104. The local controller's download stalled before receiving the
+archive; installation from the already verified local signed package completed it.
+Local native health shows one Center, two responsive top-level windows and the
+alpha.104 process path. Remote SSH cannot enumerate the signed-in interactive
+desktop's windows; remote visual clicks or end-to-end VNC viewing are not claimed.
+No VNC desktop was automatically opened, and all workspaces remain independently
+selectable. The user can now evaluate Choose desktop directly on their controller.

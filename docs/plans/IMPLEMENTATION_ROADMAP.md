@@ -46,6 +46,9 @@ The fourth managed computer was bootstrapped from alpha.87 to alpha.102; all fou
 report current and the fourth can send update notices. All four subsequently
 updated independently to alpha.103. Its cached-offline Shell route defect is fixed
 and ordinary PF Remote execution is verified. M10.3 owner UX acceptance remains open.
+Alpha.104 incorporates owner desktop-selection feedback: explicit TigerVNC/RDP
+choices replace the ambiguous multi-desktop primary action. The second Windows
+controller is running this acceptance build with all VNC workspaces preserved.
 
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates

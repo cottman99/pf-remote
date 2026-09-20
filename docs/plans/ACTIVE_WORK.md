@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 4706fa49c85ff0fbcab5af353ed900cf7036adfa
+base_commit: ed7ceb786ab1867a7e5bea514ecffa5dde03de66
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -51,8 +51,13 @@ retain all TigerVNC workspaces and stop defaulting the Linux computer action to 
 The bounded UI repair makes multi-desktop primary clicks choose an exact desktop,
 labels TigerVNC/RDP explicitly, and keeps all workspace identities unchanged. Main
 and arrow clicks must share the chooser; individual rows retain route selection.
-Validate tests, package, live second-controller deployment and background native
-window health before returning to owner acceptance. No server/protocol migration.
+All 57 presentation tests, full checks, signed package/profile retention and privacy
+checks passed. Alpha.104 is published and enabled; the second controller updated
+independently and its running Center uses the new installation. All three VNC
+workspaces remain available and credential-ready; the installed TigerVNC viewer
+was confirmed. Local alpha.104 retains one Center and two responsive native windows.
+This UI side task is closed; return to owner experience feedback. No server/protocol
+migration and no remote VNC session was opened automatically.
 
 The owner explicitly requested repair of the fourth-host Shell path. Live diagnosis
 found a missing Tailscale node ID cached while the peer was offline, followed by an
