@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$OutputPath,
-    [string]$PrivateTermsPath
+    [string]$PrivateTermsPath,
+    [ValidatePattern('^[0-9a-f]{7,40}$')][string]$PublicBaseCommit
 )
 
 # Export the reviewed working source, not Git metadata, release payloads or state.
@@ -63,6 +64,14 @@ try {
     $archive = [IO.Compression.ZipFile]::Open($output, [IO.Compression.ZipArchiveMode]::Create)
     try {
         foreach ($relative in $selected) {
+            if ($PublicBaseCommit -and $relative -eq 'docs/plans/ACTIVE_WORK.md') {
+                $content = [IO.File]::ReadAllText((Join-Path $repoRoot $relative))
+                $content = [regex]::Replace($content, '(?m)^base_commit: [^\r\n]+', "base_commit: $PublicBaseCommit")
+                $entry = $archive.CreateEntry($relative)
+                $writer = [IO.StreamWriter]::new($entry.Open(), [Text.UTF8Encoding]::new($false))
+                try { $writer.Write($content) } finally { $writer.Dispose() }
+                continue
+            }
             [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, (Join-Path $repoRoot $relative), $relative) | Out-Null
         }
     } finally { $archive.Dispose() }

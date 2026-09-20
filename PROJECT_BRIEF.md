@@ -8,7 +8,7 @@ target to an external Agent. Existing SSH/RDP/VNC clients perform the connection
 ## Current phase
 
 Current milestone: M10
-Current roadmap item: M10.2
+Current roadmap item: M10.3
 
 The owner replaced the old expansion roadmap with a focused closeout.
 See docs/plans/ACTIVE_WORK.md and docs/status/CLOSEOUT_REPORT.md.
@@ -30,9 +30,10 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Local candidate: alpha.96, with pinned signed updates, automatic Windows installation,
-retained user data and Settings update status. Local signed download, upgrade and
-rollback are verified. Public GitHub preview discovery and artifact verification
-are live; unattended fleet rollout remains open. See docs/status/TRUSTED_UPDATE_REPORT.md. Background native-window
-health is verified; full interactive click verification remains limited by the
-isolated-desktop startup failure described in the interaction recovery report.
+Current candidate: alpha.102. Two Windows installations and one Linux node have
+independently updated from the public preview feed. Settings includes Check this
+computer, Notify other computers, and named version/last-seen reports. Offline
+notification catch-up is verified. Private configuration remains outside releases.
+The fourth computer's management connection is unavailable; its rollout and owner
+UI acceptance remain open. See docs/status/FLEET_UPDATE_REPORT.md. Native-window
+health is verified without foreground interaction; user visual acceptance is pending.

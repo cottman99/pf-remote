@@ -29,7 +29,7 @@ Evidence: [Interaction recovery report](../status/INTERACTION_RECOVERY_REPORT.md
 ## M10 — zero-cost trusted updates
 
 - [x] Verify signed release metadata and artifacts against an independently provisioned publisher key.
-- [ ] Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
+- [x] Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
 - [ ] Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 
 Paid code-signing services are not required for update authenticity. Public OS
@@ -37,18 +37,21 @@ publisher reputation is separate. Existing private deployment remains usable;
 bootstrap older nodes once before they can participate in managed updates.
 
 Evidence M10.1: [Trusted update foundation](../status/TRUSTED_UPDATE_REPORT.md).
+Evidence M10.2: [Live fleet update delivery](../status/FLEET_UPDATE_REPORT.md).
 
-M10.2 local Windows alpha.96 loop is installed and verified, including signed HTTPS
-staging, Setup handoff, retained profile and rollback. The public preview channel
-is published and real GitHub discovery/artifact verification passed. M10.2 remains
-unchecked pending unattended older-client rollout and Linux installation. M10.3
-Gateway hints and fleet catch-up are not yet implemented.
+Alpha.102 is publicly available for Windows and managed Linux nodes. Two Windows
+installations and one Linux node independently updated from alpha.100 to alpha.102.
+Linux also consumed a notice retained while its management service was offline.
+M10.3 notification/status features are implemented; the remaining rollout and
+owner UX acceptance await availability of the fourth managed computer.
 
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates
 status. Background checks use jitter/backoff; verified downloads and safe local
 activation must also work when the management UI is closed. Gate activation on
-active sessions, gateway availability and supported mixed-version compatibility.
+PF Remote-owned active operations, gateway availability and supported mixed-version
+compatibility. Independent SSH/RDP/VNC services are preserved, not counted as a
+permanent update blocker.
 
 Any authorized member may announce a successful update through the Gateway.
 Persist/coalesce the latest hint for offline members; reconnect and periodic

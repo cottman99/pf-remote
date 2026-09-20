@@ -215,3 +215,10 @@ The running daemon retains its scheduled retry/backoff from the previously absen
 feed until its next poll; publication does not remotely trigger or force an install.
 No machine was downgraded just to demonstrate an upgrade. Unattended older-client
 rollout, automatic Linux installation and M10.3 Gateway hints remain follow-ups.
+
+## Fleet completion evidence
+
+Alpha.102 supersedes the previous slice limitations: independent Windows and Linux
+updates, durable peer notices and Settings controls are implemented and validated
+on three live hosts. See FLEET_UPDATE_REPORT.md for exact evidence and the remaining
+fourth-host availability/owner acceptance step.
