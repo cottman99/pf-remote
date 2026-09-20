@@ -330,4 +330,5 @@
 <data name="CheckUpdatesButton.Label"><value>Check this computer</value></data>
 <data name="FleetNotified"><value>The connection service saved the notice. Other computers will check independently when online.</value></data>
 <data name="FleetStale"><value>Offline or not reported recently; showing last report</value></data>
+<data name="FleetUnreported"><value>Not connected to updates or no first report yet</value></data>
 </root>

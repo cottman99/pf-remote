@@ -330,4 +330,5 @@
 <data name="CheckUpdatesButton.Label"><value>检查本机更新</value></data>
 <data name="FleetNotified"><value>通知已由连接服务保存。其他主机上线后会自行检查更新。</value></data>
 <data name="FleetStale"><value>离线或尚未重新上报，显示最后记录</value></data>
+<data name="FleetUnreported"><value>尚未接入更新或尚未首次上报</value></data>
 </root>

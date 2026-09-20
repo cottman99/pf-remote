@@ -7,6 +7,20 @@ import (
 	"testing"
 )
 
+func TestCorruptRecoveryDoesNotRemoveInstalledBinaries(t *testing.T) {
+	root := t.TempDir()
+	os.MkdirAll(filepath.Join(root, ".update"), 0700)
+	os.WriteFile(filepath.Join(root, "pfremoted"), []byte("retained"), 0700)
+	os.WriteFile(filepath.Join(root, ".update", "pending.json"), []byte(`{"existing":{}}`), 0600)
+	if Recover(root) == nil {
+		t.Fatal("accepted incomplete recovery")
+	}
+	b, _ := os.ReadFile(filepath.Join(root, "pfremoted"))
+	if string(b) != "retained" {
+		t.Fatal("corrupt recovery changed installed binary")
+	}
+}
+
 func TestFailedActivationRestoresAllBinaries(t *testing.T) {
 	root, stage := t.TempDir(), t.TempDir()
 	for _, name := range names {

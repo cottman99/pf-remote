@@ -558,6 +558,8 @@ public sealed partial class MainPage : Page
                 string name = _allDevices.FirstOrDefault(device => device.Device.Id == report.DeviceId)?.Device.DisplayName ?? report.Name;
                 lines.Add($"{name} · {report.Version}\n{state} · {report.Seen.ToLocalTime():g}");
             }
+            foreach (DeviceViewModel device in _allDevices.Where(device => !fleet.Reports.Any(report => report.DeviceId == device.Device.Id)))
+                lines.Add($"{device.Device.DisplayName}\n{_resources.GetString("FleetUnreported")}");
             if (lines.Count == 0) lines.Add(_resources.GetString("FleetEmpty"));
             FleetStatusText.Text = string.Join("\n\n", lines);
         }

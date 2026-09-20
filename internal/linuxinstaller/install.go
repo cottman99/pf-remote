@@ -52,8 +52,13 @@ func Recover(root string) error {
 		return err
 	}
 	var j journal
-	if json.Unmarshal(b, &j) != nil || j.Existing == nil {
+	if json.Unmarshal(b, &j) != nil || len(j.Existing) != len(names) {
 		return errors.New("invalid update recovery record")
+	}
+	for _, name := range names {
+		if _, ok := j.Existing[name]; !ok {
+			return errors.New("incomplete update recovery record")
+		}
 	}
 	for _, name := range names {
 		if j.Existing[name] {
@@ -78,6 +83,7 @@ func Upgrade(root, stage string, activate func() error) error {
 	}
 	j := journal{Existing: map[string]bool{}}
 	for _, name := range names {
+		j.Existing[name] = false
 		path := filepath.Join(root, name)
 		info, err := os.Lstat(path)
 		if err == nil {

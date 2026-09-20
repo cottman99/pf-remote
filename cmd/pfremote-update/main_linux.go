@@ -46,7 +46,7 @@ func run() error {
 	}
 	err = syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
-		if action == "recover" {
+		if action == "recover" && (errors.Is(err, syscall.EWOULDBLOCK) || errors.Is(err, syscall.EAGAIN)) {
 			return nil
 		}
 		return err
