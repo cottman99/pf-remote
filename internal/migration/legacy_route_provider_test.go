@@ -17,6 +17,74 @@ type fixedTailscalePeer struct {
 	nodeID  string
 }
 
+type recoveringTailscalePeer struct {
+	available bool
+	nodeID    string
+}
+
+func (p *recoveringTailscalePeer) ResolvePeer(context.Context, string) (string, error) {
+	if !p.available {
+		return "", errors.New("offline")
+	}
+	return p.nodeID, nil
+}
+
+func (p *recoveringTailscalePeer) VerifyPeer(_ context.Context, _ string, id string) error {
+	if !p.available || id != p.nodeID {
+		return errors.New("identity unavailable")
+	}
+	return nil
+}
+
+func TestCachedOfflineRouteRecoversWithoutRebuildingCatalog(t *testing.T) {
+	for _, overlay := range []bool{false, true} {
+		t.Run(map[bool]string{false: "base", true: "overlay"}[overlay], func(t *testing.T) {
+			const target = "pfremote://fabric-example/devices/device-example/capabilities/shell-main"
+			peer := &recoveringTailscalePeer{nodeID: "node-original"}
+			bound := LegacyEndpointRoutes{byAdapter: map[string]map[string][]legacyBoundEndpoint{
+				"tailscale": {target: {{endpoint: route.Endpoint{ID: "endpoint-example", Address: "192.0.2.20", Port: 22}}}},
+			}, tailscaleVerifier: peer}
+			if overlay {
+				var err error
+				bound, err = mergeLegacyEndpointRoutes(LegacyEndpointRoutes{}, bound)
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			provider := bound.Provider("tailscale")
+			request := route.Request{CanonicalTarget: target}
+			if _, err := provider.Acquire(context.Background(), request); err == nil {
+				t.Fatal("offline route accepted")
+			}
+			peer.available = true
+			a, err := provider.Acquire(context.Background(), request)
+			if err != nil {
+				t.Fatal("cached route did not recover:", err)
+			}
+			a.Close()
+			peer.available = false
+			if _, err := provider.Acquire(context.Background(), request); err == nil {
+				t.Fatal("offline identity reused")
+			}
+		})
+	}
+}
+
+func TestPinnedTailscaleNodeIsNeverReplacedByLateDiscovery(t *testing.T) {
+	const target = "pfremote://fabric-example/devices/device-example/capabilities/shell-main"
+	peer := &recoveringTailscalePeer{available: true, nodeID: "node-replacement"}
+	bound := LegacyEndpointRoutes{byAdapter: map[string]map[string][]legacyBoundEndpoint{
+		"tailscale": {target: {{endpoint: route.Endpoint{ID: "endpoint-example", Address: "192.0.2.20", Port: 22}, nodeID: "node-original"}}},
+	}, tailscaleVerifier: peer}
+	bound, err := mergeLegacyEndpointRoutes(LegacyEndpointRoutes{}, bound)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := bound.Provider("tailscale").Acquire(context.Background(), route.Request{CanonicalTarget: target}); err == nil {
+		t.Fatal("pinned node was silently replaced")
+	}
+}
+
 func (p fixedTailscalePeer) VerifyPeer(_ context.Context, address, nodeID string) error {
 	if address != p.address || nodeID != p.nodeID {
 		return errors.New("unexpected peer")

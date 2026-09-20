@@ -85,6 +85,29 @@ respond to background health messages. The second Windows profile retains its
 identity documents still match the immutable identities resolved before changes.
 Temporary remote bootstrap tasks and download folders were removed.
 
-The fourth host still fails its management connection. It has not been updated or
-reported as current. Its availability and the owner's Settings experience are the
-remaining acceptance items; no additional internal approval is required.
+The fourth-host result below supersedes the earlier unavailable-host observations.
+
+## Fourth-host bootstrap and command diagnosis
+
+The existing alternate SSH path reached the fourth Windows host and its on-disk
+Device identity matched the freshly resolved canonical target. Initial state was
+alpha.87, zero catalog targets and 48 history records. A compound deployment command
+was rejected locally before execution; available policy rules and desktop logs did
+not expose its exact rejection reason. Separately, the remote default PowerShell
+execution policy rejected script files. These are distinct observations.
+
+Separate artifact transfer and direct invocation of the released Setup executable
+succeeded without changing execution policy or host networking. The remote Setup
+SHA-256 matched the verified release package, and Setup returned completed with
+current alpha.102 and previous alpha.87. All ten pre-existing private JSON hashes
+remained unchanged. The catalog recovered to 11 targets; all 48 history records
+remained. Identity, connection-service and update checks pass. Center and daemon
+each have one process. All four fresh fleet reports show alpha.102/current, and
+the fourth host successfully sent a notice through the deployed Gateway. Temporary
+fourth-host installation media and the unused verification script were removed.
+
+This fourth-host result proves trusted bootstrap and subsequent current-feed checks,
+not an additional autonomous old-to-new upgrade. The earlier three-host upgrade and
+Linux offline catch-up remain the autonomous-update evidence. The original PF Remote
+Shell route still fails; the alternate SSH path works. Owner visual acceptance and
+that separate connection defect remain open.

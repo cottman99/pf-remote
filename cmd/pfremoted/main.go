@@ -260,17 +260,10 @@ func main() {
 		if loadErr != nil {
 			return nil, loadErr
 		}
-		var tailscaleIdentityResolved bool
 		if directory, directoryErr := tailscaleroute.LoadDirectory(context.Background(), nil); directoryErr == nil {
-			tailscaleIdentityResolved = migration.ResolveLegacyTailscaleIdentities(context.Background(), &legacySource, directory) > 0
+			migration.ResolveLegacyTailscaleIdentities(context.Background(), &legacySource, directory)
 		}
-		var candidate migration.LegacyCandidate
-		var projectErr error
-		if tailscaleIdentityResolved {
-			candidate, projectErr = migration.ProjectLegacyCenterCandidateWithTailscale(legacySource, deviceIdentity.DeviceID(), time.Now(), tailscaleroute.Verifier{})
-		} else {
-			candidate, projectErr = migration.ProjectLegacyCenterCandidate(legacySource, deviceIdentity.DeviceID(), time.Now())
-		}
+		candidate, projectErr := migration.ProjectLegacyCenterCandidateWithTailscale(legacySource, deviceIdentity.DeviceID(), time.Now(), tailscaleroute.Verifier{})
 		if projectErr != nil {
 			return nil, projectErr
 		}

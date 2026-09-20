@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"regexp"
+	"time"
 
 	"github.com/cottman99/pf-remote/internal/actions"
 	opensshexecutor "github.com/cottman99/pf-remote/internal/executor/openssh"
@@ -67,8 +68,8 @@ func (r legacyShellRunner) Run(ctx context.Context, target string, command []str
 		return actions.ShellRunResult{}, errors.New("legacy Shell coordinator is unavailable")
 	}
 	routeProvider := route.Selector{Providers: []route.NamedProvider{
-		{Adapter: "tailscale", Provider: r.routes.Provider("tailscale")},
-		{Adapter: "lan", Provider: r.routes.Provider("lan")},
+		{Adapter: "tailscale", Provider: route.ReachableProvider{Provider: r.routes.Provider("tailscale"), Timeout: 2 * time.Second}},
+		{Adapter: "lan", Provider: route.ReachableProvider{Provider: r.routes.Provider("lan"), Timeout: 750 * time.Millisecond}},
 	}}
 	runner := actions.SessionShell{RemoteUser: user, IdentityFile: r.identityFile, Coordinator: session.Coordinator{
 		SubjectDeviceID: r.subjectDeviceID,

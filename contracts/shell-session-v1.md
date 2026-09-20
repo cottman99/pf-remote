@@ -79,6 +79,13 @@ from the selected address. A different route to the same Capability therefore
 checks the same signed key, while a route that reaches another SSH server fails
 before Shell content is sent.
 
+Private legacy route caches may lack a Tailscale node ID when the peer was offline
+at startup. Only a missing ID may be resolved later through the authenticated
+Tailscale directory; an existing ID is never replaced on verification failure.
+Acquisition still requires online node verification and the same signed SSH keys.
+Shell checks direct endpoint reachability before pinning a route; failed probes
+may select another configured route before execution, never replay a command.
+
 ## Automatic local identity confirmation
 
 A controlled node may confirm its own Shell Capability without asking the user

@@ -34,6 +34,8 @@ Current candidate: alpha.102. Two Windows installations and one Linux node have
 independently updated from the public preview feed. Settings includes Check this
 computer, Notify other computers, and named version/last-seen reports. Offline
 notification catch-up is verified. Private configuration remains outside releases.
-The fourth computer's management connection is unavailable; its rollout and owner
-UI acceptance remain open. See docs/status/FLEET_UPDATE_REPORT.md. Native-window
+The fourth computer was bootstrapped from alpha.87 to alpha.102 with its private
+configuration and history retained. All four report current; its original Shell
+route still fails while the verified alternate management path works. Owner
+UI acceptance remains open. See docs/status/FLEET_UPDATE_REPORT.md. Native-window
 health is verified without foreground interaction; user visual acceptance is pending.

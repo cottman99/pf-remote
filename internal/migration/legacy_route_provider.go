@@ -157,6 +157,14 @@ func (p legacyEndpointProvider) Acquire(ctx context.Context, request route.Reque
 		return nil, errors.New("legacy endpoint is unavailable")
 	}
 	selected := endpoints[0]
+	// A peer offline when the private catalog was cached has no node ID yet.
+	// Resolve only that missing identity from the authenticated directory at
+	// acquisition time. Never replace an already pinned node ID after a mismatch.
+	if p.adapter == "tailscale" && selected.nodeID == "" {
+		if resolver, ok := p.tailscaleVerifier.(TailscalePeerResolver); ok {
+			selected.nodeID, _ = resolver.ResolvePeer(ctx, selected.endpoint.Address)
+		}
+	}
 	if p.adapter == "tailscale" && (selected.nodeID == "" || p.tailscaleVerifier == nil || p.tailscaleVerifier.VerifyPeer(ctx, selected.endpoint.Address, selected.nodeID) != nil) {
 		return nil, errors.New("legacy Tailscale endpoint identity is unavailable")
 	}

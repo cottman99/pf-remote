@@ -137,9 +137,21 @@ type overlayTailscaleVerifier struct {
 func (v overlayTailscaleVerifier) VerifyPeer(ctx context.Context, address, nodeID string) error {
 	verifier := v.byPeer[overlayPeerKey{address: address, nodeID: nodeID}]
 	if verifier == nil {
+		// Only routes that originally had no identity may use late discovery.
+		verifier = v.byPeer[overlayPeerKey{address: address}]
+	}
+	if verifier == nil {
 		return errors.New("legacy Tailscale endpoint identity is unavailable")
 	}
 	return verifier.VerifyPeer(ctx, address, nodeID)
+}
+
+func (v overlayTailscaleVerifier) ResolvePeer(ctx context.Context, address string) (string, error) {
+	resolver, ok := v.byPeer[overlayPeerKey{address: address}].(TailscalePeerResolver)
+	if !ok {
+		return "", errors.New("legacy Tailscale endpoint identity is unavailable")
+	}
+	return resolver.ResolvePeer(ctx, address)
 }
 
 func mergeLegacyEndpointRoutes(base, overlay LegacyEndpointRoutes) (LegacyEndpointRoutes, error) {
