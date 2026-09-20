@@ -84,6 +84,8 @@
   <data name="ConnectDesktopButtonLabel" xml:space="preserve"><value>智能连接</value></data>
   <data name="SmartConnectNamedButtonLabel" xml:space="preserve"><value>智能连接 · {0}</value></data>
   <data name="OtherDesktopsLabel" xml:space="preserve"><value>其他桌面（{0}）</value></data>
+  <data name="AllDesktopsLabel" xml:space="preserve"><value>全部桌面（{0}）</value></data>
+  <data name="ChooseDesktopButtonLabel" xml:space="preserve"><value>选择桌面</value></data>
   <data name="LastUsedDesktopLabel" xml:space="preserve"><value>上次使用</value></data>
   <data name="LastConnectedLabel" xml:space="preserve"><value>最近连接：{0}</value></data>
   <data name="NoRecentConnectionLabel" xml:space="preserve"><value>尚无连接记录</value></data>

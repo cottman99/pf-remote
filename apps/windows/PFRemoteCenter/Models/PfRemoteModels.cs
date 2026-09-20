@@ -97,13 +97,13 @@ internal sealed record DeviceViewModel(
 
 	public DesktopOptionViewModel PrimaryDesktop => DesktopOptions[0];
 
-	public string? PrimaryDesktopCanonical => PrimaryDesktop.Canonical;
+	public string? PrimaryDesktopCanonical => HasAlternateDesktops ? null : PrimaryDesktop.Canonical;
 
 	public string PrimaryDesktopAutomationId => $"primary-{Device.Id}";
 
-	public bool CanOpenPrimaryDesktop => PrimaryDesktop.CanOpen;
+	public bool CanOpenPrimaryDesktop => DesktopOptions.Any(option => option.CanOpen);
 
-	public bool HasPrimaryDesktop => PrimaryDesktop.Canonical is not null;
+	public bool HasPrimaryDesktop => DesktopOptions.Any(option => option.Canonical is not null);
 
 	public IReadOnlyList<DesktopOptionViewModel> ExpandedDesktops => DesktopOptions.Where(option => option.Canonical is not null).ToArray();
 

@@ -26,7 +26,13 @@ computers. In the normal interface the person sees one stable list of named
 computers and capabilities. They can connect with one click, or select a target
 and send its aligned, safe context to an Agent without explaining the network.
 
-Each connect action is a split button attached to that specific computer and
+Computers with multiple Desktops show **Choose desktop** rather than silently
+opening the first internal capability ID. Both the main button and its menu list
+all exact Desktops, with TigerVNC/RDP labels where those clients are used. TigerVNC
+workspaces appear first; selecting one never changes to an RDP sibling. The expanded
+**All desktops** list retains individual Smart connect and route actions.
+
+Each individual desktop connect action is a split button attached to that specific computer and
 capability. Its primary action is **Smart connect**: PF Remote considers current
 route availability for that exact Desktop, then follows a stable, explainable
 fallback order. The adjacent menu lists only the routes currently eligible for

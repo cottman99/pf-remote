@@ -950,6 +950,8 @@ public sealed partial class MainPage : Page
     {
         if (sender is not SplitButton button) return;
         button.Flyout?.Hide();
+        if (button.DataContext is DeviceViewModel { HasAlternateDesktops: true } device)
+            AutomationProperties.SetName(button, device.Title + ": " + _resources.GetString("ChooseDesktopButtonLabel"));
         if (BoundDesktop(button) is { } desktop)
             AutomationProperties.SetName(button, string.Format(CultureInfo.CurrentCulture,
                 _resources.GetString("SmartConnectButtonAutomationName"), desktop.ComputerName, desktop.DisplayName));
@@ -963,11 +965,18 @@ public sealed partial class MainPage : Page
         {
             // Recycled controls must resolve their current model, never a Loaded-time target.
             flyout.Items.Clear();
+            if (splitButton.DataContext is DeviceViewModel { HasAlternateDesktops: true } device)
+            {
+                PopulateDesktopMenu(flyout, device);
+                return;
+            }
             if (BoundDesktop(splitButton)?.Canonical is string canonical &&
                 FindDesktop(canonical) is { CanOpen: true } desktop)
                 PopulateRouteMenu(flyout, desktop);
         };
         splitButton.Flyout = flyout;
+        if (splitButton.DataContext is DeviceViewModel { HasAlternateDesktops: true } device)
+            AutomationProperties.SetName(splitButton, device.Title + ": " + _resources.GetString("ChooseDesktopButtonLabel"));
         if (BoundDesktop(splitButton) is { } bound)
             AutomationProperties.SetName(splitButton, string.Format(
                 CultureInfo.CurrentCulture,
@@ -984,6 +993,21 @@ public sealed partial class MainPage : Page
         {
             AddRouteMenuItem(flyout, desktop, route.Adapter, RouteLabel(route.Adapter),
                 string.Equals(route.Status, "available", StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    private void PopulateDesktopMenu(MenuFlyout flyout, DeviceViewModel device)
+    {
+        foreach (DesktopOptionViewModel option in device.DesktopOptions)
+        {
+            var item = new MenuFlyoutItem
+            {
+                Text = option.DisplayName,
+                IsEnabled = option.Canonical is string canonical && FindDesktop(canonical) is { CanOpen: true },
+                Tag = option.Canonical is string target ? new RouteSelection(target, null) : null,
+            };
+            item.Click += RouteMenuItem_Click;
+            flyout.Items.Add(item);
         }
     }
 
@@ -1236,6 +1260,11 @@ public sealed partial class MainPage : Page
 
     private async void UseComputerButton_Click(SplitButton sender, SplitButtonClickEventArgs e)
     {
+        if (sender.DataContext is DeviceViewModel { HasAlternateDesktops: true })
+        {
+            sender.Flyout?.ShowAt(sender);
+            return;
+        }
         if (BoundDesktop(sender) is { CanOpen: true, Canonical: string canonical })
         {
             await OpenDesktopAsync(canonical, null, sender);

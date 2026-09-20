@@ -617,7 +617,7 @@ public sealed class AuthorizationPresenterTests
 
         Assert.HasCount(2, result.DesktopOptions);
         var labels = result.DesktopOptions.Select(option => option.Label).ToHashSet(StringComparer.Ordinal);
-        Assert.IsTrue(labels.SetEquals(["open current-screen", "open independent-desktop"]));
+        Assert.IsTrue(labels.SetEquals(["open RDP · current-screen", "open RDP · independent-desktop"]));
         Assert.AreEqual("desktop-and-agent 2", result.CapabilityLabel);
     }
 
@@ -643,24 +643,25 @@ public sealed class AuthorizationPresenterTests
             [new RecentSessionSummary("session-recent", recent.Canonical, "open", "opened", Now)]).Single();
 
         Assert.AreEqual(first.Canonical, result.PrimaryDesktop.Canonical);
-        Assert.AreEqual("independent-desktop 1", result.PrimaryDesktop.DisplayName);
-        Assert.AreEqual("smart-connect independent-desktop 1", result.PrimaryDesktopActionLabel);
+        Assert.AreEqual("RDP · independent-desktop 1", result.PrimaryDesktop.DisplayName);
+        Assert.AreEqual("choose-desktop", result.PrimaryDesktopActionLabel);
         Assert.AreEqual("", result.PrimaryDesktop.UsageLabel);
-        Assert.AreEqual("other-desktops 1", result.AlternateDesktopsLabel);
+        Assert.AreEqual("all-desktops 2", result.AlternateDesktopsLabel);
         Assert.HasCount(2, result.ExpandedDesktops);
         Assert.HasCount(1, result.ExpandedDesktops.Where(desktop => !desktop.IsLastUsed));
         Assert.IsFalse(result.PrimaryDesktop.IsLastUsed);
         Assert.AreNotEqual(result.PrimaryDesktopAutomationId, result.PrimaryDesktop.AutomationId);
         var refreshed = DeviceCatalogPresenter.Create([recent, first], DeviceResource, _ => ("label", "automation")).Single();
         Assert.AreEqual(result.PrimaryDesktopCanonical, refreshed.PrimaryDesktopCanonical);
-        Assert.AreEqual(first.Canonical, DeviceCatalogPresenter.BoundDesktop(result)?.Canonical);
+        Assert.IsNull(DeviceCatalogPresenter.BoundDesktop(result));
+        Assert.IsNull(result.PrimaryDesktopCanonical);
         Assert.AreEqual(recent.Canonical, DeviceCatalogPresenter.BoundDesktop(result.DesktopOptions[1])?.Canonical);
         Assert.IsNull(DeviceCatalogPresenter.BoundDesktop(null));
         Assert.IsNull(DeviceCatalogPresenter.BoundDesktop("stale-tag"));
         TargetSummary unavailable = first with { Capability = first.Capability with { State = "unavailable" } };
         var offline = DeviceCatalogPresenter.Create([recent, unavailable], DeviceResource, _ => ("label", "automation")).Single();
         Assert.AreEqual(first.Capability.Id, offline.PrimaryDesktop.AutomationId["desktop-".Length..]);
-        Assert.IsFalse(offline.CanOpenPrimaryDesktop);
+        Assert.IsTrue(offline.CanOpenPrimaryDesktop, "The chooser must keep reachable siblings available.");
     }
 
     [TestMethod]
@@ -682,7 +683,30 @@ public sealed class AuthorizationPresenterTests
             _ => ("target-label", "target-automation")).Single();
 
         var names = result.DesktopOptions.Select(option => option.DisplayName).ToHashSet(StringComparer.Ordinal);
-        Assert.IsTrue(names.SetEquals(["independent-desktop 1", "remote-workspace"]));
+        Assert.IsTrue(names.SetEquals(["RDP · independent-desktop 1", "RDP · remote-workspace"]));
+    }
+
+    [TestMethod]
+    public void MixedDesktopChooserKeepsAllVncTargetsAndNeverDefaultsToRdp()
+    {
+        var device = new DeviceSummary("device-example", "example", "Example computer", "online");
+        TargetSummary Target(string id, string name, string protocol) => new(
+            $"pfremote://fabric-example/devices/device-example/capabilities/{id}",
+            $"example/{id}", device,
+            new CapabilitySummary(id, id, name, "desktop", "available", new DesktopProfileSummary(protocol, "virtual", "legacy-vnc-password")),
+            true, Authorization("active", Now.AddDays(1)));
+        TargetSummary rdp = Target("aaa-rdp", "xrdp desktop", "rdp");
+        TargetSummary[] vncs = [Target("vnc-two", "Virtual Desktop :2", "vnc"), Target("vnc-three", "Virtual Desktop :3", "vnc"), Target("vnc-four", "Virtual Desktop :4", "vnc")];
+        var result = DeviceCatalogPresenter.Create([rdp, .. vncs], DeviceResource, _ => ("label", "automation")).Single();
+        Assert.AreEqual("choose-desktop", result.PrimaryDesktopActionLabel);
+        Assert.IsNull(result.PrimaryDesktopCanonical);
+        Assert.IsNull(DeviceCatalogPresenter.BoundDesktop(result));
+        Assert.HasCount(4, result.DesktopOptions);
+        CollectionAssert.AreEqual(vncs.Select(v => v.Canonical).ToArray(), result.DesktopOptions.Take(3).Select(v => v.Canonical!).ToArray());
+        Assert.IsTrue(result.DesktopOptions.Take(3).All(v => v.DisplayName.StartsWith("TigerVNC · ", StringComparison.Ordinal)));
+        foreach (var desktop in result.DesktopOptions)
+            Assert.AreEqual(desktop.Canonical, DeviceCatalogPresenter.BoundDesktop(desktop)?.Canonical);
+        Assert.AreEqual(rdp.Canonical, result.DesktopOptions[3].Canonical);
     }
 
 	[TestMethod]
@@ -826,6 +850,8 @@ public sealed class AuthorizationPresenterTests
         "VirtualDesktopLabel" => "independent-desktop",
         "ConnectDesktopButtonLabel" => "connect",
         "OtherDesktopsLabel" => "other-desktops {0}",
+        "AllDesktopsLabel" => "all-desktops {0}",
+        "ChooseDesktopButtonLabel" => "choose-desktop",
         "LastUsedDesktopLabel" => "last-used",
         "LastConnectedLabel" => "last-connected {0}",
         "NoRecentConnectionLabel" => "no-recent",

@@ -84,6 +84,8 @@
   <data name="ConnectDesktopButtonLabel" xml:space="preserve"><value>Smart connect</value></data>
   <data name="SmartConnectNamedButtonLabel" xml:space="preserve"><value>Smart connect · {0}</value></data>
   <data name="OtherDesktopsLabel" xml:space="preserve"><value>Other desktops ({0})</value></data>
+  <data name="AllDesktopsLabel" xml:space="preserve"><value>All desktops ({0})</value></data>
+  <data name="ChooseDesktopButtonLabel" xml:space="preserve"><value>Choose desktop</value></data>
   <data name="LastUsedDesktopLabel" xml:space="preserve"><value>Last used</value></data>
   <data name="LastConnectedLabel" xml:space="preserve"><value>Last connected: {0}</value></data>
   <data name="NoRecentConnectionLabel" xml:space="preserve"><value>No recent connections</value></data>

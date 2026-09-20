@@ -20,7 +20,7 @@ internal static class DeviceCatalogPresenter
 
     internal static DesktopOptionViewModel? BoundDesktop(object? model) => model switch
     {
-        DeviceViewModel device => device.PrimaryDesktop,
+        DeviceViewModel device when !device.HasAlternateDesktops => device.PrimaryDesktop,
         DesktopOptionViewModel desktop => desktop,
         _ => null,
     };
@@ -156,9 +156,11 @@ internal static class DeviceCatalogPresenter
 			: resource("NoRecentConnectionLabel");
 		string alternateLabel = string.Format(
 			CultureInfo.CurrentCulture,
-			resource("OtherDesktopsLabel"),
-			Math.Max(0, desktopOptions.Length - 1));
-		string primaryAction = desktopOptions[0].Canonical is null
+			resource("AllDesktopsLabel"),
+			desktops.Length);
+		string primaryAction = desktops.Length > 1
+			? resource("ChooseDesktopButtonLabel")
+			: desktopOptions[0].Canonical is null
 			? resource("NoDesktopButtonLabel")
 			: string.Format(CultureInfo.CurrentCulture, resource("SmartConnectNamedButtonLabel"), desktopOptions[0].DisplayName);
 		RouteOptionSummary? preferredRoute = desktopOptions[0].RouteOptions
@@ -217,7 +219,9 @@ internal static class DeviceCatalogPresenter
 		}
 
 		TargetSummary[] ordered = desktops
-			.OrderBy(target => target.Capability.Id, StringComparer.Ordinal)
+			.OrderBy(target => target.Capability.DesktopProfile?.Protocol == "vnc" ? 0 : 1)
+			.ThenBy(target => target.Capability.DisplayName, StringComparer.CurrentCultureIgnoreCase)
+			.ThenBy(target => target.Capability.Id, StringComparer.Ordinal)
 			.ToArray();
 		string? lastUsedCanonical = ordered
 			.Where(target => lastDesktopUse.ContainsKey(target.Canonical))
@@ -229,6 +233,8 @@ internal static class DeviceCatalogPresenter
 			{
 				bool ready = IsAvailable(target);
 				string name = DesktopName(target, desktops, resource);
+				string? client = target.Capability.DesktopProfile?.Protocol switch { "vnc" => "TigerVNC", "rdp" => "RDP", _ => null };
+				if (client is not null) name = $"{client} · {name}";
 				string usage = string.Equals(target.Canonical, lastUsedCanonical, StringComparison.Ordinal)
 					? resource("LastUsedDesktopLabel")
 					: "";
