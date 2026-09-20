@@ -5,10 +5,6 @@ package autoupdate
 import (
 	"os"
 	"os/exec"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"syscall"
 )
 
 func StartSetup(path string) error {
@@ -19,30 +15,8 @@ func StartSetup(path string) error {
 	return exec.Command("systemd-run", "--user", "--quiet", "--collect", "--unit=pfremote-update", path, "apply-update").Run()
 }
 func Idle() bool {
-	entries, err := os.ReadDir("/proc")
-	if err != nil {
-		return false
-	}
-	for _, entry := range entries {
-		if _, err := strconv.Atoi(entry.Name()); err != nil {
-			continue
-		}
-		info, err := entry.Info()
-		if err != nil {
-			continue
-		}
-		stat, ok := info.Sys().(*syscall.Stat_t)
-		if !ok || int(stat.Uid) != os.Getuid() {
-			continue
-		}
-		name, err := os.ReadFile(filepath.Join("/proc", entry.Name(), "comm"))
-		if err != nil {
-			continue
-		}
-		switch strings.TrimSpace(string(name)) {
-		case "ssh", "sshd", "sshd-session":
-			return false
-		}
-	}
+	// The daemon's ActionGate drains its own commands before handoff. Incoming
+	// SSH and desktop servers belong to independent services, not pfremote-node's
+	// cgroup. Their persistent logins must not indefinitely prevent an update.
 	return true
 }
