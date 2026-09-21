@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: ef30b741b2777b8f42fa731e1429ec1981d17fd6
+base_commit: 4b3eaae6994912ed0c7a86112ab45d36fe1bcfa4
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -46,6 +46,18 @@ unrelated feature expansion. Do not weaken publisher verification to speed rollo
 
 ## Blocking side task
 
+Live owner use found that the local alpha.104 Windows payload exposed the three
+EDA server TigerVNC desktops but omitted `vncviewer.exe`. Device identity,
+authorization, SSH, all three remote VNC listeners and controller-to-listener TCP
+reachability were healthy. Alpha.105 restores the reviewed signed TigerVNC Viewer
+and GPL license, and makes both required by build and installed-package verification.
+Full checks and isolated package verification pass. The public source, fixed release
+and preview feed are updated; the owner controller runs alpha.105 with alpha.104 as
+rollback. A fleet notice was sent so other Windows members discover and verify the
+update independently. No private profile was copied or compiled into the package,
+and no foreground VNC session was opened during background verification. Return
+point: owner can retry any visible `虚拟桌面 :2/:3/:4` action.
+
 Owner UX feedback now prioritizes desktop selection on the second Windows controller:
 retain all TigerVNC workspaces and stop defaulting the Linux computer action to RDP.
 The bounded UI repair makes multi-desktop primary clicks choose an exact desktop,
@@ -54,8 +66,9 @@ and arrow clicks must share the chooser; individual rows retain route selection.
 All 57 presentation tests, full checks, signed package/profile retention and privacy
 checks passed. Alpha.104 is published and enabled; the second controller updated
 independently and its running Center uses the new installation. All three VNC
-workspaces remain available and credential-ready; the installed TigerVNC viewer
-was confirmed. Local alpha.104 retains one Center and two responsive native windows.
+workspaces remain available and credential-ready. A Viewer was present on that
+controller, but alpha.104 package verification did not require one; the alpha.105
+side task above closes that release gap. Local alpha.104 retained one Center and two responsive native windows.
 This UI side task is closed; return to owner experience feedback. No server/protocol
 migration and no remote VNC session was opened automatically.
 

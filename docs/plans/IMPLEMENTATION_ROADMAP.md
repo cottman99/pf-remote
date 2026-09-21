@@ -49,6 +49,11 @@ and ordinary PF Remote execution is verified. M10.3 owner UX acceptance remains 
 Alpha.104 incorporates owner desktop-selection feedback: explicit TigerVNC/RDP
 choices replace the ambiguous multi-desktop primary action. The second Windows
 controller is running this acceptance build with all VNC workspaces preserved.
+Alpha.105 repairs the Windows release payload after live use found that alpha.104
+could publish the VNC choices without the TigerVNC executable. Windows release
+build and verification now require the reviewed Viewer, its signature and GPL
+license. The owner controller is running alpha.105; other Windows members were
+notified to discover and verify the update independently.
 
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates

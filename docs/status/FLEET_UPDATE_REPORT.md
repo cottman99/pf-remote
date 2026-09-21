@@ -168,3 +168,28 @@ alpha.104 process path. Remote SSH cannot enumerate the signed-in interactive
 desktop's windows; remote visual clicks or end-to-end VNC viewing are not claimed.
 No VNC desktop was automatically opened, and all workspaces remain independently
 selectable. The user can now evaluate Choose desktop directly on their controller.
+
+## TigerVNC release repair — alpha.105
+
+Live use on the owner controller found that alpha.104 displayed all three EDA
+server TigerVNC desktops but could not start them because the public Windows payload
+omitted `vncviewer.exe`. The EDA server remained online and authorized: PF Remote
+Shell succeeded, all three remote VNC listeners were present, and the controller
+reached each listener. The fault was confined to the local protocol executor.
+
+Alpha.105 makes the reviewed TigerVNC Viewer, its fixed hash, publisher signature
+and GPL-2.0 license mandatory build inputs. Release verification now requires the
+Viewer and license in the archive, the TigerVNC license inventory entry, the
+installed Viewer and its valid signature. The 542-file Windows package passed
+isolated installation verification and the full project checks. The owner
+controller upgraded with alpha.104 retained for rollback; Center and daemon each
+remain single-instance, and the exact EDA server catalog, authorization, SSH path
+and three VNC listener paths remain healthy.
+
+Sanitized source commit `4b3eaae` and the alpha.105 Windows release are public.
+The preview feed now serves the signed sequence-105 Windows metadata and matching
+assets; their published digests match the locally verified files. A fleet notice
+was sent for other Windows members to discover and install independently. Linux
+continues on its unchanged alpha.104 assets. No foreground VNC window was opened
+during engineering verification; the next owner action is an ordinary click on
+`虚拟桌面 :2`, `:3` or `:4`.
