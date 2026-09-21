@@ -61,7 +61,7 @@ try {
         finally { $algorithm.Dispose(); $stream.Dispose() }
         if ($actual -ne $file.sha256) { throw "Release payload entry hash does not match: $($file.path)" }
     }
-    foreach ($requiredPayload in @('PFRemoteCenter.exe', 'pfremoted.exe', 'pfremote-gateway.exe', 'PFRemoteCenter.pri', 'App.xbf', 'MainPage.xbf', 'MainWindow.xbf', 'THIRD-PARTY-NOTICES.txt', 'skills/pf-remote/SKILL.md', 'skills/pf-remote/agents/openai.yaml', 'skills/pf-remote/scripts/pfremote.ps1', 'skills/pf-remote/scripts/pfremote-mcp.ps1')) {
+    foreach ($requiredPayload in @('PFRemoteCenter.exe', 'pfremoted.exe', 'pfremote-gateway.exe', 'PFRemoteCenter.pri', 'App.xbf', 'MainPage.xbf', 'MainWindow.xbf', 'THIRD-PARTY-NOTICES.txt', 'protocol-executors/tigervnc/vncviewer.exe', 'protocol-executors/tigervnc/LICENCE.TXT', 'skills/pf-remote/SKILL.md', 'skills/pf-remote/agents/openai.yaml', 'skills/pf-remote/scripts/pfremote.ps1', 'skills/pf-remote/scripts/pfremote-mcp.ps1')) {
         if (-not $entryByPath.ContainsKey($requiredPayload)) { throw "Required release payload is missing: $requiredPayload" }
     }
 }
@@ -75,6 +75,10 @@ foreach ($dependency in $licenses.dependencies) {
     if ([string]::IsNullOrWhiteSpace($dependency.declared_license) -or $dependency.declared_license -eq 'NOASSERTION' -or $dependency.review_status -ne 'engineering-reviewed') {
         throw "Dependency license is unresolved: $($dependency.name)"
     }
+}
+$tigerVNCLicense = @($licenses.dependencies | Where-Object { $_.name -eq 'TigerVNC Viewer' })
+if ($tigerVNCLicense.Count -ne 1 -or $tigerVNCLicense[0].declared_license -ne 'GPL-2.0-only' -or $tigerVNCLicense[0].distribution_scope -ne 'separate-protocol-executor') {
+    throw 'TigerVNC license inventory is missing or invalid.'
 }
 $sbom = Get-Content -LiteralPath $sbomPath -Raw | ConvertFrom-Json
 if ($sbom.spdxVersion -ne 'SPDX-2.3' -or @($sbom.files).Count -ne @($manifest.files).Count) { throw 'Release SBOM is incomplete.' }
@@ -109,6 +113,10 @@ try {
     if ($state.current -ne $manifest.version) { throw 'Installed version does not match the verified release.' }
     $appPath = Join-Path $installRoot ("versions\{0}\PFRemoteCenter.exe" -f $manifest.version)
     if (-not (Test-Path -LiteralPath $appPath)) { throw 'Installed PF Remote Center is missing.' }
+    $viewerPath = Join-Path $installRoot ("versions\{0}\protocol-executors\tigervnc\vncviewer.exe" -f $manifest.version)
+    if (-not (Test-Path -LiteralPath $viewerPath -PathType Leaf)) { throw 'Installed TigerVNC Viewer is missing.' }
+    $viewerSignature = Get-AuthenticodeSignature -LiteralPath $viewerPath
+    if ($viewerSignature.Status -ne 'Valid') { throw 'Installed TigerVNC Viewer signature is invalid.' }
     if (-not $AllowDevelopmentUnsigned) {
         $appSignature = Get-AuthenticodeSignature -LiteralPath $appPath
         if ($appSignature.Status -ne 'Valid' -or $appSignature.SignerCertificate.Subject -cne $ExpectedPublisherSubject) {

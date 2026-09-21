@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: ed7ceb786ab1867a7e5bea514ecffa5dde03de66
+base_commit: ef30b741b2777b8f42fa731e1429ec1981d17fd6
 ---
 
 # Active work — fleet rollout and owner acceptance

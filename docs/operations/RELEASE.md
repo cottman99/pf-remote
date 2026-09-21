@@ -7,10 +7,10 @@ A release candidate must provide:
 - end-to-end encryption and target-authentication evidence;
 - revocation, recovery, cached-expiry, upgrade, and rollback evidence;
 - dependency license inventory and SBOM;
+- the reviewed TigerVNC Viewer and its GPL-2.0 license in every Windows payload;
 - secret-scan and structured-log redaction results;
 - signed installers and published SHA-256 hashes; and
 - a private side-by-side observation report with a proven legacy rollback.
 
 Version tags and public publishing require explicit owner approval. CI builds are
 development artifacts until every gate above is satisfied.
-

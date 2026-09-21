@@ -73,27 +73,24 @@ elseif ($localCertificateSigning) {
 }
 $releaseStatus = if ($DevelopmentUnsigned) { 'development-unsigned' } else { 'development-signed' }
 $tigerVNCValues = @($TigerVNCViewerPath, $TigerVNCLicensePath, $TigerVNCVersion, $TigerVNCViewerSha256, $TigerVNCSignerSubject)
-$includeTigerVNC = @($tigerVNCValues | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }).Count -gt 0
-if ($includeTigerVNC -and @($tigerVNCValues | Where-Object { [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) {
-    throw 'TigerVNC inclusion requires the viewer, license, version, SHA-256, and exact signer subject.'
+if (@($tigerVNCValues | Where-Object { [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) {
+    throw 'Windows releases require the TigerVNC viewer, license, version, SHA-256, and exact signer subject.'
 }
-if ($includeTigerVNC) {
-    if (-not (Test-Path -LiteralPath $TigerVNCViewerPath -PathType Leaf) -or -not (Test-Path -LiteralPath $TigerVNCLicensePath -PathType Leaf)) {
-        throw 'TigerVNC viewer or license evidence is unavailable.'
-    }
-    $TigerVNCViewerPath = (Resolve-Path -LiteralPath $TigerVNCViewerPath).Path
-    $TigerVNCLicensePath = (Resolve-Path -LiteralPath $TigerVNCLicensePath).Path
-    if ((Get-FileHash -LiteralPath $TigerVNCViewerPath -Algorithm SHA256).Hash -cne $TigerVNCViewerSha256.ToUpperInvariant()) {
-        throw 'TigerVNC viewer hash does not match the reviewed binary.'
-    }
-    $viewerSignature = Get-AuthenticodeSignature -LiteralPath $TigerVNCViewerPath
-    if ($viewerSignature.Status -ne 'Valid' -or $null -eq $viewerSignature.SignerCertificate -or $viewerSignature.SignerCertificate.Subject -cne $TigerVNCSignerSubject) {
-        throw 'TigerVNC viewer signature does not match the reviewed publisher.'
-    }
-    $viewerLicenseText = Get-Content -LiteralPath $TigerVNCLicensePath -Raw
-    if ($viewerLicenseText -notmatch 'GNU GENERAL PUBLIC LICENSE\s+Version 2') {
-        throw 'TigerVNC license evidence is not GPL version 2.'
-    }
+if (-not (Test-Path -LiteralPath $TigerVNCViewerPath -PathType Leaf) -or -not (Test-Path -LiteralPath $TigerVNCLicensePath -PathType Leaf)) {
+    throw 'TigerVNC viewer or license evidence is unavailable.'
+}
+$TigerVNCViewerPath = (Resolve-Path -LiteralPath $TigerVNCViewerPath).Path
+$TigerVNCLicensePath = (Resolve-Path -LiteralPath $TigerVNCLicensePath).Path
+if ((Get-FileHash -LiteralPath $TigerVNCViewerPath -Algorithm SHA256).Hash -cne $TigerVNCViewerSha256.ToUpperInvariant()) {
+    throw 'TigerVNC viewer hash does not match the reviewed binary.'
+}
+$viewerSignature = Get-AuthenticodeSignature -LiteralPath $TigerVNCViewerPath
+if ($viewerSignature.Status -ne 'Valid' -or $null -eq $viewerSignature.SignerCertificate -or $viewerSignature.SignerCertificate.Subject -cne $TigerVNCSignerSubject) {
+    throw 'TigerVNC viewer signature does not match the reviewed publisher.'
+}
+$viewerLicenseText = Get-Content -LiteralPath $TigerVNCLicensePath -Raw
+if ($viewerLicenseText -notmatch 'GNU GENERAL PUBLIC LICENSE\s+Version 2') {
+    throw 'TigerVNC license evidence is not GPL version 2.'
 }
 
 $runRoot = Join-Path $scratchRoot ("windows-release-{0}" -f $PID)
@@ -262,12 +259,10 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "Go release build failed: $name" }
     }
 
-    if ($includeTigerVNC) {
-        $viewerDirectory = Join-Path $payloadRoot 'protocol-executors\tigervnc'
-        New-Item -ItemType Directory -Force -Path $viewerDirectory | Out-Null
-        Copy-Item -LiteralPath $TigerVNCViewerPath -Destination (Join-Path $viewerDirectory 'vncviewer.exe')
-        Copy-Item -LiteralPath $TigerVNCLicensePath -Destination (Join-Path $viewerDirectory 'LICENCE.TXT')
-    }
+    $viewerDirectory = Join-Path $payloadRoot 'protocol-executors\tigervnc'
+    New-Item -ItemType Directory -Force -Path $viewerDirectory | Out-Null
+    Copy-Item -LiteralPath $TigerVNCViewerPath -Destination (Join-Path $viewerDirectory 'vncviewer.exe')
+    Copy-Item -LiteralPath $TigerVNCLicensePath -Destination (Join-Path $viewerDirectory 'LICENCE.TXT')
 
     Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination (Join-Path $payloadRoot 'LICENSE.txt')
     Copy-Item -LiteralPath (Join-Path $repoRoot 'skills\pf-remote') -Destination (Join-Path $payloadRoot 'skills\pf-remote') -Recurse
@@ -346,19 +341,17 @@ try {
             evidence_sha256 = $evidenceHash.ToLowerInvariant()
         }
     }
-    if ($includeTigerVNC) {
-        $viewerLicenseText = Get-Content -LiteralPath $TigerVNCLicensePath -Raw
-        $viewerLicenseHash = Get-StringSha256 $viewerLicenseText
-        $noticeSections.Add(("TigerVNC {0}`nSource: external-binary`nLicense: GPL-2.0-only`nEvidence: LICENCE.TXT`n`n{1}`n" -f $TigerVNCVersion, $viewerLicenseText.Trim()))
-        $dependencies += [pscustomobject][ordered]@{
-            name = 'TigerVNC Viewer'
-            version = $TigerVNCVersion
-            source = 'external-binary'
-            declared_license = 'GPL-2.0-only'
-            distribution_scope = 'separate-protocol-executor'
-            review_status = 'engineering-reviewed'
-            evidence_sha256 = $viewerLicenseHash.ToLowerInvariant()
-        }
+    $viewerLicenseText = Get-Content -LiteralPath $TigerVNCLicensePath -Raw
+    $viewerLicenseHash = Get-StringSha256 $viewerLicenseText
+    $noticeSections.Add(("TigerVNC {0}`nSource: external-binary`nLicense: GPL-2.0-only`nEvidence: LICENCE.TXT`n`n{1}`n" -f $TigerVNCVersion, $viewerLicenseText.Trim()))
+    $dependencies += [pscustomobject][ordered]@{
+        name = 'TigerVNC Viewer'
+        version = $TigerVNCVersion
+        source = 'external-binary'
+        declared_license = 'GPL-2.0-only'
+        distribution_scope = 'separate-protocol-executor'
+        review_status = 'engineering-reviewed'
+        evidence_sha256 = $viewerLicenseHash.ToLowerInvariant()
     }
     $noticePathInPayload = Join-Path $payloadRoot 'THIRD-PARTY-NOTICES.txt'
     Write-Utf8NoBom $noticePathInPayload (($noticeSections | ForEach-Object { $_ }) -join "`n-------------------------------------------------------------------------------`n")
