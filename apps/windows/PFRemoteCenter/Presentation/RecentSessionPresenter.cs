@@ -6,6 +6,12 @@ namespace PFRemoteCenter.Presentation;
 
 internal static class RecentSessionPresenter
 {
+	internal static TargetSummary? RepeatAgentTarget(IEnumerable<TargetSummary> targets, string canonical) =>
+		targets.FirstOrDefault(target =>
+			string.Equals(target.Canonical, canonical, StringComparison.Ordinal) &&
+			string.Equals(target.Capability.Kind, "shell", StringComparison.Ordinal) &&
+			string.Equals(target.Capability.State, "available", StringComparison.OrdinalIgnoreCase));
+
 	internal static IReadOnlyList<RecentSessionViewModel> Create(
 		IReadOnlyList<TargetSummary> targets,
 		IReadOnlyList<RecentSessionSummary>? sessions,
@@ -22,6 +28,7 @@ internal static class RecentSessionPresenter
 			target => target.Canonical,
 			StringComparer.Ordinal);
 		return sessions
+			.OrderByDescending(session => session.StartedAt)
 			.Take(20)
 			.Where(session => targetsByCanonical.ContainsKey(session.CanonicalTarget))
 			.GroupBy(session => (session.CanonicalTarget, session.Action))

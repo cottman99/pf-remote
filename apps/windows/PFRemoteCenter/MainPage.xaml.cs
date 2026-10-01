@@ -38,6 +38,7 @@ public sealed partial class MainPage : Page
     private MigrationPreviewPresentation? _migrationPreview;
 	private bool _migrationVisibleForSettings;
 	private IReadOnlyList<DeviceViewModel> _allDevices = [];
+	private IReadOnlyList<TargetSummary> _catalogTargets = [];
 	private string _computerFilter = "all";
 	private DateTimeOffset? _lastBackgroundRecoveryAttempt;
 	private bool _catalogStateKnown;
@@ -445,6 +446,7 @@ public sealed partial class MainPage : Page
 		try
 		{
 			CatalogResponse catalog = await RunWithDaemonRecoveryAsync(() => _client.ListAsync());
+			_catalogTargets = catalog.Targets;
 			_catalogStateKnown = true;
             bool recoveringCatalog = _catalogFeedback.IsUnavailable;
             _catalogFeedback.RecordSuccess();
@@ -987,6 +989,12 @@ public sealed partial class MainPage : Page
     private void PopulateRouteMenu(MenuFlyout flyout, DesktopOptionViewModel desktop)
     {
         AddRouteMenuItem(flyout, desktop, null, _resources.GetString("SmartConnectRouteLabel"), true);
+        if (_catalogTargets.FirstOrDefault(target => target.Canonical == desktop.Canonical)?.Capability.DesktopProfile?.Protocol == "rdp")
+        {
+            var audioItem = new MenuFlyoutItem { Text = _resources.GetString("OpenWithMicrophoneLabel"), Tag = new RouteSelection(desktop.Canonical!, null, true) };
+            audioItem.Click += RouteMenuItem_Click;
+            flyout.Items.Add(audioItem);
+        }
         flyout.Items.Add(new MenuFlyoutSeparator());
 
         foreach (RouteOptionSummary route in desktop.RouteOptions.OrderBy(option => option.Order))
@@ -1254,7 +1262,7 @@ public sealed partial class MainPage : Page
     {
         if (sender is MenuFlyoutItem { Tag: RouteSelection selection } item)
         {
-            await OpenDesktopAsync(selection.Canonical, selection.Adapter, item);
+            await OpenDesktopAsync(selection.Canonical, selection.Adapter, item, selection.Microphone);
         }
     }
 
@@ -1275,13 +1283,35 @@ public sealed partial class MainPage : Page
         .SelectMany(device => device.DesktopOptions)
         .FirstOrDefault(option => string.Equals(option.Canonical, canonical, StringComparison.Ordinal));
 
-    private async Task OpenDesktopAsync(string canonical, string? routeAdapter, Control? initiatingControl)
+    private async Task OpenDesktopAsync(string canonical, string? routeAdapter, Control? initiatingControl, bool microphone = false)
     {
+        if (_catalogFeedback.IsUnavailable) return;
         DesktopOptionViewModel? desktop = FindDesktop(canonical);
         if (desktop is null || !desktop.CanOpen)
         {
             ShowDesktopFailure("TARGET_UNAVAILABLE", routeAdapter, canonical);
             return;
+        }
+		        if (microphone)
+        {
+            bool available = false;
+            try
+            {
+                var devices = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioCaptureSelector());
+                available = devices.Count > 0;
+            }
+            catch (Exception) { /* Fail closed and retain ordinary playback access. */ }
+            if (!available)
+            {
+                DesktopActionInfoBar.Title = _resources.GetString("MicrophoneUnavailableTitle");
+                DesktopActionInfoBar.Message = _resources.GetString("MicrophoneUnavailableMessage");
+                DesktopActionInfoBar.Severity = InfoBarSeverity.Warning;
+                DesktopActionInfoBar.IsOpen = true;
+                RecoverDesktopButton.Visibility = Visibility.Collapsed;
+                return;
+            }
+            desktop = FindDesktop(canonical);
+            if (desktop is null || !desktop.CanOpen) return;
         }
 		if (!_desktopOperations.TryBegin(canonical))
 		{
@@ -1309,7 +1339,7 @@ public sealed partial class MainPage : Page
             routeLabel);
         try
         {
-			DesktopActionResponse response = await RunWithDaemonRecoveryAsync(() => _client.OpenAsync(desktop.Canonical!, routeAdapter));
+			DesktopActionResponse response = await RunWithDaemonRecoveryAsync(() => microphone ? _client.OpenWithMicrophoneAsync(desktop.Canonical!, routeAdapter) : _client.OpenAsync(desktop.Canonical!, routeAdapter));
 			RecordRecentSession(desktop, response);
             OperationStatus = string.Format(
                 CultureInfo.CurrentCulture,
@@ -1340,17 +1370,17 @@ public sealed partial class MainPage : Page
                 }
                 catch (Exception)
                 {
-                    ShowDesktopFailure(null, routeAdapter, canonical);
+                    ShowDesktopFailure(null, routeAdapter, canonical, microphone);
                 }
             }
         }
         catch (PfRemoteCliException exception)
         {
-			ShowDesktopFailure(exception.Code, routeAdapter, canonical);
+			ShowDesktopFailure(exception.Code, routeAdapter, canonical, microphone);
         }
         catch (Exception)
         {
-			ShowDesktopFailure(null, routeAdapter, canonical);
+			ShowDesktopFailure(null, routeAdapter, canonical, microphone);
         }
         finally
         {
@@ -1359,12 +1389,14 @@ public sealed partial class MainPage : Page
             if (initiatingControl is not null)
             {
                 initiatingControl.IsEnabled = !_catalogFeedback.IsUnavailable &&
-                    (DeviceCatalogPresenter.BoundDesktop(initiatingControl.DataContext)?.CanOpen ?? FindDesktop(canonical)?.CanOpen ?? false);
+                    (initiatingControl is MenuFlyoutItem
+                        ? FindDesktop(canonical)?.CanOpen == true
+                        : DeviceCatalogPresenter.CanOpenFromModel(initiatingControl.DataContext));
             }
         }
     }
 
-	private void ShowDesktopFailure(string? code, string? routeAdapter, string? canonical)
+	private void ShowDesktopFailure(string? code, string? routeAdapter, string? canonical, bool microphone = false)
 	{
 		AgentHandoffInfoBar.IsOpen = false;
 		DesktopOptionViewModel? desktop = string.IsNullOrWhiteSpace(canonical) ? null : FindDesktop(canonical);
@@ -1376,7 +1408,7 @@ public sealed partial class MainPage : Page
 			_resources.GetString);
 		_desktopRetryRequest = string.IsNullOrWhiteSpace(canonical)
 			? null
-			: new DesktopRetryRequest(canonical, routeAdapter);
+			: new DesktopRetryRequest(canonical, routeAdapter, microphone);
 		DesktopActionInfoBar.Title = failure.Title;
 		DesktopActionInfoBar.Message = failure.Message;
 		RecoverDesktopButton.Visibility = _desktopRetryRequest is null ? Visibility.Collapsed : Visibility.Visible;
@@ -1394,7 +1426,7 @@ public sealed partial class MainPage : Page
 		var retryItem = new MenuFlyoutItem
 		{
 			Text = _resources.GetString("RetryLastRouteLabel"),
-			Tag = new RouteSelection(retry.Canonical, retry.RouteAdapter),
+			Tag = new RouteSelection(retry.Canonical, retry.RouteAdapter, retry.Microphone),
 		};
 		retryItem.Click += RouteMenuItem_Click;
 		flyout.Items.Add(retryItem);
@@ -1433,8 +1465,8 @@ public sealed partial class MainPage : Page
         _ => _resources.GetString("SmartConnectRouteLabel"),
     };
 
-    private sealed record RouteSelection(string Canonical, string? Adapter);
-	private sealed record DesktopRetryRequest(string Canonical, string? RouteAdapter);
+    private sealed record RouteSelection(string Canonical, string? Adapter, bool Microphone = false);
+	private sealed record DesktopRetryRequest(string Canonical, string? RouteAdapter, bool Microphone = false);
 
     private async Task<string?> PromptForDesktopPasswordAsync(string computerName)
     {
@@ -1471,26 +1503,26 @@ public sealed partial class MainPage : Page
 
     private async void HandToAgentButton_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is not Button { Tag: string canonical } button)
+        if (sender is not Button { DataContext: DeviceViewModel bound } button)
         {
             return;
         }
         DeviceViewModel? device = _allDevices.FirstOrDefault(item =>
-            string.Equals(item.AgentCanonical, canonical, StringComparison.Ordinal));
-        if (device is null)
+            string.Equals(item.Device.Id, bound.Device.Id, StringComparison.Ordinal));
+        if (device is null || !device.CanHandToAgent)
         {
             return;
         }
-		await HandToAgentAsync(button, device);
+		await HandToAgentAsync(button, device.AgentCanonical, device.Title);
 	}
 
-    private async Task HandToAgentAsync(Button button, DeviceViewModel device)
+    private async Task HandToAgentAsync(Button button, string canonical, string computerName)
 	{
         if (_catalogFeedback.IsUnavailable) return;
         button.IsEnabled = false;
         try
         {
-			ContextResponse context = await RunWithDaemonRecoveryAsync(() => _client.ContextAsync(device.AgentCanonical));
+			ContextResponse context = await RunWithDaemonRecoveryAsync(() => _client.ContextAsync(canonical));
             if (!ContextHandoffAudit.TryExport(context.Envelope))
             {
                 var package = new DataPackage();
@@ -1500,7 +1532,7 @@ public sealed partial class MainPage : Page
             }
 			AgentHandoffPresentation handoff = AgentHandoffPresenter.Create(
 				_agentIntegrationKind,
-				device.Title,
+				computerName,
 				_resources.GetString);
 			OperationStatus = handoff.Status;
 			DesktopActionInfoBar.IsOpen = false;
@@ -1546,6 +1578,7 @@ public sealed partial class MainPage : Page
 
 	private async void RepeatSessionButton_Click(object sender, RoutedEventArgs e)
 	{
+		if (_catalogFeedback.IsUnavailable) return;
 		if (sender is not Button { DataContext: RecentSessionViewModel session } button)
 		{
 			return;
@@ -1557,11 +1590,10 @@ public sealed partial class MainPage : Page
 			await OpenDesktopAsync(session.CanonicalTarget, null, button);
 			return;
 		}
-		DeviceViewModel? device = _allDevices.FirstOrDefault(item =>
-			string.Equals(item.AgentCanonical, session.CanonicalTarget, StringComparison.Ordinal));
-		if (device is not null)
+		TargetSummary? target = RecentSessionPresenter.RepeatAgentTarget(_catalogTargets, session.CanonicalTarget);
+		if (target is not null)
 		{
-			await HandToAgentAsync(button, device);
+			await HandToAgentAsync(button, target.Canonical, session.ComputerName);
 		}
 	}
 

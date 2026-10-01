@@ -25,6 +25,14 @@ internal static class DeviceCatalogPresenter
         _ => null,
     };
 
+    internal static bool CanOpenFromModel(object? model) => model switch
+    {
+        DeviceViewModel device => device.CanOpenPrimaryDesktop,
+        DesktopOptionViewModel desktop => desktop.CanOpen,
+        RecentSessionViewModel session => session.CanRepeat,
+        _ => false,
+    };
+
     internal static bool CanAttemptRoute(IReadOnlyList<RouteOptionSummary> options, string? adapter) =>
         adapter is null || options.Any(option =>
             string.Equals(option.Adapter, adapter, StringComparison.Ordinal) &&
@@ -162,6 +170,8 @@ internal static class DeviceCatalogPresenter
 			? resource("ChooseDesktopButtonLabel")
 			: desktopOptions[0].Canonical is null
 			? resource("NoDesktopButtonLabel")
+			: !desktopOptions[0].CanOpen
+			? resource("DesktopSetupRequiredButtonLabel")
 			: string.Format(CultureInfo.CurrentCulture, resource("SmartConnectNamedButtonLabel"), desktopOptions[0].DisplayName);
 		RouteOptionSummary? preferredRoute = desktopOptions[0].RouteOptions
 			.Where(route => string.Equals(route.Status, "available", StringComparison.OrdinalIgnoreCase))
@@ -242,7 +252,7 @@ internal static class DeviceCatalogPresenter
 					? string.Format(CultureInfo.CurrentCulture, resource("LastConnectedLabel"), lastConnected.LocalDateTime.ToString("g", CultureInfo.CurrentCulture))
 					: resource("NoRecentConnectionLabel");
 				return new DesktopOptionViewModel(
-				IsAvailable(target) ? target.Canonical : null,
+				target.Canonical,
 				computerName,
 				name,
 				ready

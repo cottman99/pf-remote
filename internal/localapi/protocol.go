@@ -8,6 +8,7 @@ import (
 	"errors"
 
 	"github.com/cottman99/pf-remote/internal/actions"
+	"github.com/cottman99/pf-remote/internal/desktop"
 	"github.com/cottman99/pf-remote/pkg/contracts"
 )
 
@@ -22,6 +23,7 @@ type Request struct {
 	Command       []string `json:"command,omitempty"`
 	Credential    string   `json:"credential,omitempty"`
 	RouteAdapter  string   `json:"route_adapter,omitempty"`
+	AudioCapture  bool     `json:"audio_capture,omitempty"`
 }
 
 type Response struct {
@@ -108,7 +110,7 @@ func (h Handler) HandleContext(ctx context.Context, request Request) Response {
 		}
 		return Response{SchemaVersion: SchemaVersion, Result: result}
 	case "open":
-		result, err := service.OpenVia(ctx, request.Target, request.RouteAdapter)
+		result, err := service.OpenVia(desktop.WithAudioCapture(ctx, request.AudioCapture), request.Target, request.RouteAdapter)
 		if err != nil {
 			return actionFailure(err)
 		}

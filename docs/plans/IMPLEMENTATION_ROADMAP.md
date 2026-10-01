@@ -55,6 +55,20 @@ build and verification now require the reviewed Viewer, its signature and GPL
 license. The owner controller is running alpha.105; other Windows members were
 notified to discover and verify the update independently.
 
+2026-09-30 UI closeout: local development repairs retain unavailable desktop rows,
+pin historical Agent handoff to the original target and guard stale actions.
+Full checks and isolated native-window validation pass; no new fleet release.
+See [UI and continuity review](../status/UI_CONTINUITY_REVIEW.md). Shared VNC/RDP
+session continuity is technically feasible, while audio integration requires a
+separate live pilot before any existing desktop is replaced.
+
+The owner subsequently authorized implementation of shared xrdp/VNC workspaces
+and bidirectional audio. Administrator setup completed after owner sudo setup;
+all six channel/audio services and six audio nodes are live. No existing
+workspace is replaced. Native shared-workspace/audio controls are installed in the local signed preview.
+Physical microphone acceptance and public/fleet release remain open; see
+[Shared desktop audio](../status/SHARED_DESKTOP_AUDIO.md).
+
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates
 status. Background checks use jitter/backoff; verified downloads and safe local

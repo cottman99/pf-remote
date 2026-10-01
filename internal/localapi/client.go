@@ -69,8 +69,12 @@ func (c Client) Open(ctx context.Context, target string) (contracts.DesktopActio
 }
 
 func (c Client) OpenVia(ctx context.Context, target, routeAdapter string) (contracts.DesktopActionResponse, error) {
+	return c.OpenWithAudioVia(ctx, target, routeAdapter, false)
+}
+
+func (c Client) OpenWithAudioVia(ctx context.Context, target, routeAdapter string, capture bool) (contracts.DesktopActionResponse, error) {
 	var response contracts.DesktopActionResponse
-	err := c.call(ctx, Request{Action: "open", Target: target, RouteAdapter: routeAdapter}, &response)
+	err := c.call(ctx, Request{Action: "open", Target: target, RouteAdapter: routeAdapter, AudioCapture: capture}, &response)
 	return response, err
 }
 

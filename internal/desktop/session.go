@@ -43,6 +43,7 @@ type Session struct {
 	RenderingEnvironment string
 	Authentication       string
 	VisualEffectsPolicy  string
+	SessionSelector      string
 }
 
 type Execution struct {
@@ -128,7 +129,7 @@ func (c Coordinator) Run(ctx context.Context, request Request) (Result, error) {
 		TargetDeviceID: target.Device.ID, CapabilityID: target.Capability.ID,
 		AuthorizationExpiry: target.Authorization.ValidUntil.UTC(), RouteID: candidate.ID, RouteAdapter: candidate.Adapter,
 		Protocol: profile.Protocol, RenderingEnvironment: profile.RenderingEnvironment,
-		Authentication: profile.Authentication, VisualEffectsPolicy: effectiveVisualEffectsPolicy(*profile),
+		Authentication: profile.Authentication, VisualEffectsPolicy: effectiveVisualEffectsPolicy(*profile), SessionSelector: profile.SessionSelector,
 	}
 	deadlineContext, cancel := context.WithDeadline(ctx, session.AuthorizationExpiry)
 	defer cancel()
@@ -170,7 +171,7 @@ func (c Coordinator) Run(ctx context.Context, request Request) (Result, error) {
 func validProfile(profile contracts.DesktopProfile) bool {
 	protocolAuthentication := profile.Protocol == "rdp" && (profile.Authentication == "windows-sso" || profile.Authentication == "tailscale-device") ||
 		profile.Protocol == "vnc" && (profile.Authentication == "x509-route-grant" || profile.Authentication == "tailscale-device" || profile.Authentication == "legacy-vnc-password")
-	return protocolAuthentication && effectiveVisualEffectsPolicy(profile) != ""
+	return protocolAuthentication && effectiveVisualEffectsPolicy(profile) != "" && profile.ValidSessionSelector()
 }
 
 func effectiveVisualEffectsPolicy(profile contracts.DesktopProfile) string {
@@ -217,6 +218,7 @@ func (w pollingAuthorizationWatcher) Wait(ctx context.Context, pinned Session) e
 				target.Capability.DesktopProfile.Protocol != pinned.Protocol ||
 				target.Capability.DesktopProfile.RenderingEnvironment != pinned.RenderingEnvironment ||
 				target.Capability.DesktopProfile.Authentication != pinned.Authentication ||
+				target.Capability.DesktopProfile.SessionSelector != pinned.SessionSelector ||
 				effectiveVisualEffectsPolicy(*target.Capability.DesktopProfile) != pinned.VisualEffectsPolicy ||
 				target.Authorization.ValidUntil.Before(pinned.AuthorizationExpiry) {
 				return errAuthorizationChanged

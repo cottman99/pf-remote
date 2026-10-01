@@ -48,6 +48,24 @@ machine. A physical Desktop rejects virtual-session overrides. The effective
 policy is pinned for the Session and a change ends the Session like any other
 authenticated capability-profile change.
 
+`session_selector` is an optional RDP-only, non-secret configuration section
+identifier (1–64 ASCII letters, digits, underscores or hyphens). The daemon pins
+it with the authenticated profile; callers cannot provide or override it. It
+selects an existing shared workspace inside the selected server, never another
+Device or route. Omission preserves ordinary RDP behavior. Private compatibility
+uses a separate `shared-desktops-v1.json` beside the original catalog, so older
+installations ignore the new workspace entries and retain their original paths.
+
+RDP playback explicitly stays on the controlling computer. Microphone forwarding
+is off for an ordinary open. The protected local API accepts additive
+`audio_capture: true`, exposed by `open --microphone` and the native explicit
+microphone action. Consent is request-scoped, is preserved for that action's
+retry, and is rejected for VNC/external targets. The native UI detects a missing
+capture device before starting; an upstream RDP session must redirect the physical
+client's microphone before it can be forwarded again. No audio is recorded by
+PF Remote. A credential-free temporary native RDP profile is removed on client
+exit or launch failure; native certificate verification remains enabled.
+
 ## Open sequence
 
 Immediately before `open`, the daemon:
@@ -84,9 +102,10 @@ decision. Credentials remain with the operating-system client or its protected
 credential store and never enter a Gateway, relay, target reference, or
 structured diagnostic.
 
-RDP with `windows-sso` launches the Windows client in Remote Credential Guard
-and public modes so credentials are not sent to the remote computer or cached
-by PF Remote. RDP with `tailscale-device` is limited to that exact encrypted
+RDP with `windows-sso` launches the Windows client in public mode with its normal
+credential flow. Remote Credential Guard requires a direct domain/Kerberos path
+and is unsuitable for these existing workgroup/relay targets. RDP with
+`tailscale-device` is limited to that exact encrypted
 route and launches the Windows client without credential arguments; saved
 credentials, certificate prompts, and any first-use sign-in remain owned by
 the Windows client and its protected credential store. It must not fall back

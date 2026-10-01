@@ -112,6 +112,10 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 		value, err = client.Exec(ctx, rest[0], rest[1:])
 	case "open":
 		credentialStdin, openArgs := takeFlag(rest, "--credential-stdin")
+		audioCapture, openArgs := takeFlag(openArgs, "--microphone")
+		if credentialStdin && audioCapture {
+			return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "open", "Microphone requires an RDP desktop.", "Choose an RDP desktop.")
+		}
 		target, routeAdapter, parseErr := parseOpenArgs(openArgs)
 		if parseErr != nil {
 			return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "open", "open requires one computer target.", "Choose one visible Desktop target.")
@@ -126,6 +130,14 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 			clear(credentialBytes)
 			value, err = client.SaveDesktopCredentialAndOpenVia(ctx, target, credential, routeAdapter)
 			credential = ""
+		} else if audioCapture {
+			if audio, ok := client.(interface {
+				OpenWithAudioVia(context.Context, string, string, bool) (contracts.DesktopActionResponse, error)
+			}); ok {
+				value, err = audio.OpenWithAudioVia(ctx, target, routeAdapter, true)
+			} else {
+				return writeError(stderr, jsonOutput, "DESKTOP_AUDIO_UNSUPPORTED", "open", "Microphone forwarding is unavailable.", "Update the local client.")
+			}
 		} else {
 			value, err = client.OpenVia(ctx, target, routeAdapter)
 		}

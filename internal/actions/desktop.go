@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/cottman99/pf-remote/internal/desktop"
 	"github.com/cottman99/pf-remote/pkg/contracts"
 )
 
@@ -42,6 +43,9 @@ func (s Service) OpenVia(ctx context.Context, input, routeAdapter string) (contr
 	}
 	if target.Capability.DesktopProfile == nil {
 		return contracts.DesktopActionResponse{}, &Fault{Code: "DESKTOP_PROFILE_MISSING", Stage: "authorize", Summary: "This desktop is not ready to open.", Remediation: "Refresh its Desktop capability settings and try again."}
+	}
+	if desktop.AudioCaptureRequested(ctx) && target.Capability.DesktopProfile.Protocol != "rdp" {
+		return contracts.DesktopActionResponse{}, &Fault{Code: "DESKTOP_AUDIO_UNSUPPORTED", Stage: "open", Summary: "This desktop does not carry microphone audio.", Remediation: "Choose its RDP desktop to use sound and microphone."}
 	}
 	if s.Desktop == nil {
 		return contracts.DesktopActionResponse{}, &Fault{Code: "DESKTOP_NOT_READY", Stage: "open", Summary: "Remote desktop is not ready on this computer.", Remediation: "Finish Desktop setup for this computer and try again."}

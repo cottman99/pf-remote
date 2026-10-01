@@ -11,6 +11,14 @@ namespace PFRemoteCenter.Tests;
 [TestClass]
 public sealed class AuthorizationPresenterTests
 {
+    [TestMethod]
+    public void MicrophoneOpenKeepsExactTargetAndRequiresExplicitConsent()
+    {
+        const string target = "pfremote://fabric-example/devices/device-example/capabilities/desktop-example";
+        CollectionAssert.AreEqual(new[] { "open", target, "--route", "lan", "--microphone", "--json" },
+            PfRemoteCliClient.CreateOpenArguments(target, "lan", microphone: true).ToArray());
+        Assert.IsFalse(PfRemoteCliClient.CreateOpenArguments(target, "lan").Contains("--microphone"));
+    }
     private static readonly DateTimeOffset Now = new(2026, 8, 18, 12, 0, 0, TimeSpan.Zero);
     private static readonly JsonSerializerOptions WebJson = new(JsonSerializerDefaults.Web);
     private static readonly string[] CliListArguments = ["list", "--json"];
@@ -568,7 +576,11 @@ public sealed class AuthorizationPresenterTests
 
         Assert.IsFalse(result.CanHandToAgent);
         Assert.IsFalse(result.DesktopOptions.Single().CanOpen);
-        Assert.IsNull(result.DesktopOptions.Single().Canonical);
+        Assert.AreEqual(desktop.Canonical, result.DesktopOptions.Single().Canonical);
+        Assert.HasCount(1, result.ExpandedDesktops);
+        Assert.IsTrue(result.HasPrimaryDesktop);
+        Assert.IsFalse(result.CanOpenPrimaryDesktop);
+        Assert.AreEqual("preparing", result.PrimaryDesktopActionLabel);
         Assert.AreEqual("preparing", result.DesktopOptions.Single().Label);
         Assert.AreEqual("setup-required", result.CapabilityLabel);
     }
@@ -662,6 +674,11 @@ public sealed class AuthorizationPresenterTests
         var offline = DeviceCatalogPresenter.Create([recent, unavailable], DeviceResource, _ => ("label", "automation")).Single();
         Assert.AreEqual(first.Capability.Id, offline.PrimaryDesktop.AutomationId["desktop-".Length..]);
         Assert.IsTrue(offline.CanOpenPrimaryDesktop, "The chooser must keep reachable siblings available.");
+        Assert.HasCount(2, offline.ExpandedDesktops);
+        Assert.AreEqual(first.Canonical, offline.PrimaryDesktop.Canonical);
+        Assert.IsFalse(DeviceCatalogPresenter.CanOpenFromModel(offline.PrimaryDesktop));
+        Assert.IsTrue(DeviceCatalogPresenter.CanOpenFromModel(offline));
+        Assert.IsFalse(DeviceCatalogPresenter.CanOpenFromModel(null));
     }
 
     [TestMethod]
@@ -757,9 +774,9 @@ public sealed class AuthorizationPresenterTests
 		IReadOnlyList<RecentSessionViewModel> result = RecentSessionPresenter.Create(
 			[shell, desktop],
 			[
-				new RecentSessionSummary("shell-new", shell.Canonical, "exec", "completed", Now),
-				new RecentSessionSummary("desktop", desktop.Canonical, "open", "opened", Now.AddMinutes(-1)),
 				new RecentSessionSummary("shell-old", shell.Canonical, "exec", "completed", Now.AddMinutes(-2)),
+				new RecentSessionSummary("desktop", desktop.Canonical, "open", "opened", Now.AddMinutes(-1)),
+				new RecentSessionSummary("shell-new", shell.Canonical, "exec", "completed", Now),
 			],
 			Now.AddMinutes(2),
 			CultureInfo.InvariantCulture,
@@ -773,6 +790,13 @@ public sealed class AuthorizationPresenterTests
 		Assert.AreEqual("hand-again", result[0].RepeatActionLabel);
 		Assert.AreEqual("opened", result[1].StatusLabel);
 		Assert.AreEqual("connect-again", result[1].RepeatActionLabel);
+
+		TargetSummary otherShell = shell with { Canonical = shell.Canonical + "-other" };
+		Assert.AreSame(shell, RecentSessionPresenter.RepeatAgentTarget([otherShell, shell], shell.Canonical));
+		Assert.IsNull(RecentSessionPresenter.RepeatAgentTarget([otherShell], shell.Canonical));
+		Assert.IsNull(RecentSessionPresenter.RepeatAgentTarget([desktop], desktop.Canonical));
+		Assert.IsNull(RecentSessionPresenter.RepeatAgentTarget(
+			[shell with { Capability = shell.Capability with { State = "unavailable" } }], shell.Canonical));
 	}
 
     [TestMethod]

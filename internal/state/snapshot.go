@@ -112,7 +112,7 @@ func (s Snapshot) Validate() error {
 			if capability.Kind != contracts.CapabilityDesktop ||
 				(profile.Protocol != "rdp" && profile.Protocol != "vnc" && profile.Protocol != "external") ||
 				(profile.RenderingEnvironment != "virtual" && profile.RenderingEnvironment != "physical") ||
-				!authenticationValid {
+				!authenticationValid || !profile.ValidSessionSelector() {
 				return errors.New("state snapshot contains an invalid Desktop Capability profile")
 			}
 		}

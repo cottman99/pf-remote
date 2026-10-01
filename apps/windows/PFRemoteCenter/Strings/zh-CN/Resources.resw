@@ -333,4 +333,7 @@
 <data name="FleetNotified"><value>通知已由连接服务保存。其他主机上线后会自行检查更新。</value></data>
 <data name="FleetStale"><value>离线或尚未重新上报，显示最后记录</value></data>
 <data name="FleetUnreported"><value>尚未接入更新或尚未首次上报</value></data>
+  <data name="OpenWithMicrophoneLabel" xml:space="preserve"><value>打开并启用麦克风</value></data>
+  <data name="MicrophoneUnavailableTitle" xml:space="preserve"><value>本机没有可用麦克风</value></data>
+  <data name="MicrophoneUnavailableMessage" xml:space="preserve"><value>如果你通过远程桌面使用这台电脑，请在连接这台电脑的远程桌面中打开“从此计算机录制”，然后重新连接。仍可正常打开桌面并播放声音。</value></data>
 </root>

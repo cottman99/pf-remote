@@ -333,4 +333,7 @@
 <data name="FleetNotified"><value>The connection service saved the notice. Other computers will check independently when online.</value></data>
 <data name="FleetStale"><value>Offline or not reported recently; showing last report</value></data>
 <data name="FleetUnreported"><value>Not connected to updates or no first report yet</value></data>
+  <data name="OpenWithMicrophoneLabel" xml:space="preserve"><value>Open with microphone</value></data>
+  <data name="MicrophoneUnavailableTitle" xml:space="preserve"><value>No microphone is available</value></data>
+  <data name="MicrophoneUnavailableMessage" xml:space="preserve"><value>If you access this computer through Remote Desktop, enable Record from this computer in that upstream connection, then reconnect. You can still open the desktop and play sound.</value></data>
 </root>

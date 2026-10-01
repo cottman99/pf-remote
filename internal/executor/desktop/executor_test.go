@@ -39,6 +39,7 @@ type captureCommand struct {
 	name        string
 	args        []string
 	environment map[string]string
+	rdp         *RDPOptions
 }
 
 type fixedTrust struct{ path string }
@@ -49,6 +50,7 @@ func (c *captureCommand) Run(_ context.Context, launch Launch) error {
 	c.name = launch.Name
 	c.args = append([]string(nil), launch.Arguments...)
 	c.environment = launch.Environment
+	c.rdp = launch.RDP
 	return nil
 }
 
@@ -81,7 +83,7 @@ func TestExecutorUsesExistingRDPClientWithoutCredentials(t *testing.T) {
 	if err := (Executor{Command: command, Credentials: fixedCredential{value: []byte("synthetic-secret")}, Lookup: identityLookup, GOOS: "windows"}).Open(context.Background(), execution); err != nil {
 		t.Fatal(err)
 	}
-	if command.name != "mstsc.exe" || !reflect.DeepEqual(command.args, []string{"/v:127.0.0.1:3389", "/public"}) {
+	if command.name != "mstsc.exe" || !reflect.DeepEqual(command.args, []string{"/public"}) {
 		t.Fatalf("command=%q args=%q", command.name, command.args)
 	}
 }
@@ -95,7 +97,7 @@ func TestExecutorUsesClientManagedRDPOnlyForVerifiedTailscaleRoute(t *testing.T)
 	if err := (Executor{Command: command, Credentials: fixedCredential{value: []byte("synthetic-secret")}, Lookup: identityLookup, GOOS: "windows"}).Open(context.Background(), execution); err != nil {
 		t.Fatal(err)
 	}
-	if command.name != "mstsc.exe" || !reflect.DeepEqual(command.args, []string{"/v:192.0.2.40:3389"}) {
+	if command.name != "mstsc.exe" || len(command.args) != 0 {
 		t.Fatalf("command=%q args=%q", command.name, command.args)
 	}
 	execution.Route.Adapter = "lan"

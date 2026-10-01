@@ -30,6 +30,9 @@ internal sealed class PfRemoteCliClient
     public Task<DesktopActionResponse> OpenAsync(string target, string? routeAdapter = null, CancellationToken cancellationToken = default) =>
         RunAsync<DesktopActionResponse>(CreateOpenArguments(target, routeAdapter), cancellationToken);
 
+    public Task<DesktopActionResponse> OpenWithMicrophoneAsync(string target, string? routeAdapter = null, CancellationToken cancellationToken = default) =>
+        RunAsync<DesktopActionResponse>(CreateOpenArguments(target, routeAdapter, microphone: true), cancellationToken);
+
     public Task<DesktopActionResponse> SaveDesktopCredentialAndOpenAsync(
         string target,
         string credential,
@@ -97,8 +100,12 @@ internal sealed class PfRemoteCliClient
     internal static IReadOnlyList<string> CreateContextArguments(string canonicalTarget) =>
         ["context", canonicalTarget, "--json"];
 
-    internal static IReadOnlyList<string> CreateOpenArguments(string canonicalTarget, string? routeAdapter = null) =>
-        RouteArguments("open", canonicalTarget, routeAdapter, credential: false);
+    internal static IReadOnlyList<string> CreateOpenArguments(string canonicalTarget, string? routeAdapter = null, bool microphone = false)
+    {
+        var arguments = RouteArguments("open", canonicalTarget, routeAdapter, credential: false);
+        if (microphone) arguments.Insert(arguments.Count - 1, "--microphone");
+        return arguments;
+    }
 
     internal static IReadOnlyList<string> CreateCredentialOpenArguments(string canonicalTarget, string? routeAdapter = null) =>
         RouteArguments("open", canonicalTarget, routeAdapter, credential: true);

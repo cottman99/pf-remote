@@ -57,6 +57,21 @@ type DesktopProfile struct {
 	RenderingEnvironment string `json:"rendering_environment"`
 	Authentication       string `json:"authentication,omitempty"`
 	VisualEffectsPolicy  string `json:"visual_effects_policy,omitempty"`
+	SessionSelector      string `json:"session_selector,omitempty"`
+}
+
+// ValidSessionSelector accepts only a non-secret xrdp configuration section ID.
+// It cannot inject settings into a native client profile or select another route.
+func (p DesktopProfile) ValidSessionSelector() bool {
+	if p.SessionSelector != "" && p.Protocol != "rdp" || len(p.SessionSelector) > 64 {
+		return false
+	}
+	for _, c := range p.SessionSelector {
+		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-' || c == '_') {
+			return false
+		}
+	}
+	return true
 }
 
 type Capability struct {

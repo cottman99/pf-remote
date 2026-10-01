@@ -22,6 +22,7 @@ type Launch struct {
 	Name        string
 	Arguments   []string
 	Environment map[string]string
+	RDP         *RDPOptions
 }
 
 type OSCommand struct{}
@@ -32,7 +33,17 @@ func (OSCommand) Run(ctx context.Context, launch Launch) error {
 		return ctx.Err()
 	default:
 	}
-	command := exec.Command(launch.Name, launch.Arguments...)
+	arguments := append([]string(nil), launch.Arguments...)
+	cleanup := func() {}
+	if launch.RDP != nil {
+		path, remove, err := writeRDPProfile(*launch.RDP)
+		if err != nil {
+			return err
+		}
+		cleanup = remove
+		arguments = append([]string{path}, arguments...)
+	}
+	command := exec.Command(launch.Name, arguments...)
 	if len(launch.Environment) > 0 {
 		command.Env = os.Environ()
 		for name, value := range launch.Environment {
@@ -40,12 +51,13 @@ func (OSCommand) Run(ctx context.Context, launch Launch) error {
 		}
 	}
 	if err := command.Start(); err != nil {
+		cleanup()
 		return err
 	}
 	// A Desktop client is the user's session, not a request-scoped helper.
 	// Reap it asynchronously so the local API can confirm a successful launch
 	// without killing a healthy remote desktop when the request timeout ends.
-	go func() { _ = command.Wait() }()
+	go func() { _ = command.Wait(); cleanup() }()
 	return nil
 }
 
@@ -93,7 +105,7 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 		// encrypted loopback relay. Remote Credential Guard requires a direct
 		// Kerberos/domain path and closes these workgroup or relay sockets before
 		// sign-in, so the system client must use its normal credential flow.
-		if err := command.Run(ctx, Launch{Name: client, Arguments: []string{"/v:" + endpoint, "/public"}}); err != nil {
+		if err := command.Run(ctx, Launch{Name: client, Arguments: []string{"/public"}, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector, AudioCapture: session.AudioCaptureRequested(ctx)}}); err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_START_FAILED", Summary: "Windows Remote Desktop could not start.", Remediation: "Retry from the signed-in Windows desktop."}
 		}
 		return nil
@@ -105,7 +117,7 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 		if err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_UNAVAILABLE", Summary: "Windows Remote Desktop is unavailable on this computer.", Remediation: "Repair the Windows Remote Desktop client and try again."}
 		}
-		if err := command.Run(ctx, Launch{Name: client, Arguments: []string{"/v:" + endpoint}}); err != nil {
+		if err := command.Run(ctx, Launch{Name: client, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector, AudioCapture: session.AudioCaptureRequested(ctx)}}); err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_START_FAILED", Summary: "Windows Remote Desktop could not start.", Remediation: "Retry from the signed-in Windows desktop."}
 		}
 		return nil

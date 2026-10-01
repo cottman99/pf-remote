@@ -26,5 +26,18 @@ func LoadLegacyCenterFile(path string) (LegacyCenterCompatibility, error) {
 	if err != nil || len(input) == 0 || len(input) > MaxInputBytes {
 		return LegacyCenterCompatibility{}, errors.New("legacy Center catalog could not be read safely")
 	}
-	return LoadLegacyCenterCatalog(input)
+	base, err := LoadLegacyCenterCatalog(input)
+	if err != nil {
+		return LegacyCenterCompatibility{}, err
+	}
+	input, err = sharedDesktopCatalog(path, input)
+	if err != nil {
+		return LegacyCenterCompatibility{}, err
+	}
+	result, err := LoadLegacyCenterCatalog(input)
+	if err != nil {
+		return LegacyCenterCompatibility{}, err
+	}
+	result.BaseInventory = &base.Inventory
+	return result, nil
 }

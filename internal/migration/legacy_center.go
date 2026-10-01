@@ -33,6 +33,7 @@ type legacyCenterService struct {
 	WebURL     *string          `json:"webUrl"`
 	External   json.RawMessage  `json:"external"`
 	LAN        *legacyLAN       `json:"lan"`
+	RDPSession string           `json:"rdpSession,omitempty"`
 }
 
 type legacyAliyun struct {
@@ -60,12 +61,15 @@ type legacyLAN struct {
 type LegacyCenterCompatibility struct {
 	Inventory   Inventory                         `json:"inventory"`
 	Connections map[string]LegacyCenterConnection `json:"-"`
+	// A local sidecar adds capabilities without changing the original Fabric.
+	BaseInventory *Inventory `json:"-"`
 }
 
 type LegacyCenterConnection struct {
-	Protocol string              `json:"-"`
-	Username string              `json:"-"`
-	Routes   []LegacyCenterRoute `json:"-"`
+	Protocol        string              `json:"-"`
+	SessionSelector string              `json:"-"`
+	Username        string              `json:"-"`
+	Routes          []LegacyCenterRoute `json:"-"`
 }
 
 type LegacyCenterRoute struct {
@@ -131,6 +135,9 @@ func LoadLegacyCenterCatalog(input []byte) (LegacyCenterCompatibility, error) {
 		if err != nil {
 			return LegacyCenterCompatibility{}, err
 		}
+		if !(contracts.DesktopProfile{Protocol: strings.ToLower(service.Kind), SessionSelector: service.RDPSession}).ValidSessionSelector() {
+			return LegacyCenterCompatibility{}, errors.New("legacy Center catalog contains an invalid desktop session selector")
+		}
 		routes := legacyCenterRoutes(service)
 		paths := len(routes)
 		if paths == 0 {
@@ -140,7 +147,7 @@ func LoadLegacyCenterCatalog(input []byte) (LegacyCenterCompatibility, error) {
 		if service.Username != nil {
 			username = *service.Username
 		}
-		connections[service.ID] = LegacyCenterConnection{Protocol: service.Kind, Username: username, Routes: routes}
+		connections[service.ID] = LegacyCenterConnection{Protocol: service.Kind, Username: username, Routes: routes, SessionSelector: service.RDPSession}
 
 		index, exists := deviceIndex[service.DeviceID]
 		if !exists {

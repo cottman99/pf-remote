@@ -47,6 +47,17 @@ func projectLegacyCenterCandidate(source LegacyCenterCompatibility, subjectDevic
 		return LegacyCandidate{}, err
 	}
 	digest := strings.TrimPrefix(plan.SourceDigest, "sha256:")
+	if source.BaseInventory != nil {
+		baseJSON, err := json.Marshal(source.BaseInventory)
+		if err != nil {
+			return LegacyCandidate{}, errors.New("legacy base inventory is invalid")
+		}
+		basePlan, err := ParseAndPlan(baseJSON)
+		if err != nil {
+			return LegacyCandidate{}, err
+		}
+		digest = strings.TrimPrefix(basePlan.SourceDigest, "sha256:")
+	}
 	if len(digest) < 16 {
 		return LegacyCandidate{}, errors.New("legacy inventory digest is invalid")
 	}
@@ -83,6 +94,7 @@ func projectLegacyCenterCandidate(source LegacyCenterCompatibility, subjectDevic
 				_ = shell.bind(canonical, connection)
 			}
 			if profile, ready := legacyDesktopProfile(connection); ready {
+				profile.SessionSelector = connection.SessionSelector
 				capability.DesktopProfile = profile
 				capability.State = "available"
 				if profile.Protocol == "external" && !external.bind(canonical, connection) {

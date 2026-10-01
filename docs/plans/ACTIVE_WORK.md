@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 4b3eaae6994912ed0c7a86112ab45d36fe1bcfa4
+base_commit: f3f7f2a
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -45,6 +45,60 @@ Paid signing, new protocol servers, host network changes, Linux desktop UI and
 unrelated feature expansion. Do not weaken publisher verification to speed rollout.
 
 ## Blocking side task
+
+2026-09-30 owner reprioritized shared xrdp/TigerVNC workspaces and audio.
+Local signed preview 0.1.0-alpha.106-audio-preview.3 is installed and active;
+alpha.105 is restored from its authenticated package as the healthy rollback.
+Three shared RDP entries map to the original VNC workspaces. The original Fabric,
+Device and capability references survive; an optional private sidecar adds only
+new entries and remains invisible to alpha.105. Identity regression covers add
+and rollback. The original catalog is unchanged; no private runtime is published.
+
+Server playback nodes retain processing while idle. FreeRDP's Pulse playback
+backend also needs an explicit test buffer: its unbuffered/default path still
+showed a 43 ms gap on one workspace. With 200 ms client buffering, all three
+six-second synthetic round trips and a ten-second sample are continuous above
+our 10 ms gap threshold. These are local Linux RDP tests, not physical Windows
+acceptance. A per-user audio helper assigns ordinary application streams to the
+workspace identified by their process DISPLAY, using per-stream WirePlumber
+metadata; global defaults and explicit non-PF choices are preserved. Real default
+playback streams on all three workspaces link to their corresponding sinks.
+
+The native UI offers explicit microphone opening and detects missing capture
+hardware. Normal open keeps microphone capture off. Protected API/CLI requests
+carry transient consent through the same authorization and exact-target path;
+retry preserves it. Full checks, 58 UI tests, six Python tests, package verification
+and isolated responsive native-window checks pass. The native preview reads the
+actual catalog through protected IPC; original Shell access also succeeds.
+
+Required owner step: upstream RDP must forward the physical microphone and
+reconnect. Current Windows still has one render endpoint and zero capture
+endpoints. The owner can now choose a shared RDP desktop for playback, or its
+explicit microphone action after forwarding is enabled. VNC picture with audio
+requires keeping that workspace's RDP connection alive; automatic companion
+launch/lifecycle is not implemented. Do not claim hardware sound/microphone or
+WAN quality acceptance. On 2026-10-01 the owner explicitly authorized publishing
+alpha.106 and updating the second Windows controller for physical audio testing.
+This replaces the pre-publication hardware acceptance gate; hardware acceptance
+remains open and is not implied by release. Return to
+M10.3 after the owner completes this usable audio journey; see
+[Shared desktop audio](../status/SHARED_DESKTOP_AUDIO.md).
+
+2026-09-30 owner feedback reopens UI closeout under M10.3. R0: main is clean
+before changes. Audit exact-target actions, unavailable desktop visibility,
+history handoff and asynchronous recovery. Acceptance: unavailable desktops keep
+their identity and visible row; repeat handoff uses the original capability;
+stale catalog actions cannot use old availability. Preserve native protocol
+executors, private runtime and existing remote sessions. Run presentation tests,
+full checks and isolated native-window validation. Return to M10.3 acceptance.
+Shared VNC/RDP desktop continuity and audio are feasibility work in this turn;
+do not replace existing remote desktops on the basis of protocol research alone.
+The bounded UI patch now passes all 57 presentation tests and full checks. An
+isolated unpackaged native window is responsive; Computers rendering was reviewed.
+Unavailable-row identity, exact history handoff, chronological history and stale
+action/completion handling are repaired. Evidence and delivery limits are in
+docs/status/UI_CONTINUITY_REVIEW.md. This is a local development candidate, not
+a fleet release; audio/session migration remains unimplemented and unverified.
 
 Live owner use found that the local alpha.104 Windows payload exposed the three
 EDA server TigerVNC desktops but omitted `vncviewer.exe`. Device identity,
