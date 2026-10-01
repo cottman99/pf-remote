@@ -66,7 +66,8 @@ The owner subsequently authorized implementation of shared xrdp/VNC workspaces
 and bidirectional audio. Administrator setup completed after owner sudo setup;
 all six channel/audio services and six audio nodes are live. No existing
 workspace is replaced. Native shared-workspace/audio controls are installed in the local signed preview.
-Physical microphone acceptance and public/fleet release remain open; see
+Alpha.106 is published for owner-authorized testing on the second controller.
+Physical microphone/speaker and WAN quality acceptance remain open; see
 [Shared desktop audio](../status/SHARED_DESKTOP_AUDIO.md).
 
 The owner clarified that every node must poll GitHub and update itself; a controller

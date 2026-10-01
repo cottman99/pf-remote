@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: f3f7f2a
+base_commit: d30120c
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -80,7 +80,13 @@ launch/lifecycle is not implemented. Do not claim hardware sound/microphone or
 WAN quality acceptance. On 2026-10-01 the owner explicitly authorized publishing
 alpha.106 and updating the second Windows controller for physical audio testing.
 This replaces the pre-publication hardware acceptance gate; hardware acceptance
-remains open and is not implied by release. Return to
+remains open and is not implied by release. Publication and target update are now
+complete: alpha.106 is active with alpha.105 rollback, six private baseline files
+unchanged, 50 readable history records, three available shared workspaces and
+responsive native/background processes. Final identity, catalog, connection and
+update checks pass. An initial discovery retry required the controller's existing
+Windows HTTPS path for fixed-release download; all hashes and publisher/replay
+checks remained enforced. No host network setting changed. Return to
 M10.3 after the owner completes this usable audio journey; see
 [Shared desktop audio](../status/SHARED_DESKTOP_AUDIO.md).
 

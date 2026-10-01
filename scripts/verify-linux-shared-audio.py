@@ -105,4 +105,3 @@ with tempfile.TemporaryDirectory(prefix='pfremote-audio-test-') as tmp:
     report['passed']=bool(report.get('rdp_client_alive') and report.get('same_xserver_alive') and report.get('window_list_unchanged') and not report.get('client_error_codes') and all(report.get(k,{}).get('pitch_and_delivery_passed') and not report.get(k,{}).get('gaps') for k in ['playback','microphone']))
     print(json.dumps(report))
     sys.exit(0 if report['passed'] else 1)
-

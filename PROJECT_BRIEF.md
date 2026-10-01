@@ -30,7 +30,9 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current candidate: alpha.105. Multi-desktop computers now show Choose desktop,
+Current candidate: alpha.106 audio acceptance preview. Shared RDP choices retain
+the corresponding TigerVNC workspace, with playback and explicit microphone
+opening. Hardware acceptance remains pending. Multi-desktop computers show Choose desktop,
 listing every TigerVNC workspace explicitly alongside RDP rather than defaulting
 to an internal capability ID. Alpha.105 restores the reviewed TigerVNC Viewer to
 the Windows release and makes its binary and license mandatory release gates.

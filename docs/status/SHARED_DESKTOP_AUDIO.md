@@ -153,3 +153,31 @@ reconnect to this Windows computer, then select a shared desktop's Open with
 microphone action. Until then the UI explains the missing device; do not declare
 physical microphone acceptance passed. Replay state stays monotonic despite the
 available program rollback. No proxy, DNS, route, VPN or existing X server changed.
+
+## Published acceptance preview — 2026-10-01
+
+The owner authorized release before physical hardware acceptance so the second
+Windows controller can be used for testing. Alpha.106 is published with the
+existing Ed25519 publisher signature (sequence 108); the Windows binaries remain
+without paid Authenticode signing. Sanitized source is published independently
+from all private runtime configuration. Full checks, isolated native-window and
+package verification, and alpha.105-to-alpha.106 configuration retention pass.
+The optional shared-workspace sidecar is installed privately on the testing
+controller; its original catalog remains byte-for-byte unchanged. Hardware and
+WAN audio acceptance remain pending. The Linux node release is unchanged.
+
+Live rollout completed: the second controller runs alpha.106 with alpha.105 as
+rollback, and its signed update completion records sequence 108. All six private
+baseline JSON files are unchanged; 50 history records remain readable. Protected
+catalog has 14 targets including three available shared workspaces. The native
+Center and daemon run in the logged-in user session and respond; identity,
+catalog, connection-service synchronization and latest-release checks pass.
+
+The first background discovery returned retry, although independent HTTPS
+download reached the published descriptor. The controller downloaded the fixed
+release using its existing Windows network environment, matched all four
+artifact hashes against the reviewed package, and ran the signed apply-update
+installer. Publisher/replay verification remained enabled. The final independent
+update check reports current; the transient discovery failure is not established
+as resolved for every future network condition. The owner controller also
+independently activated alpha.106 from the preview feed during verification.
