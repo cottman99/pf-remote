@@ -45,7 +45,7 @@ try {
     $existing = (Get-ItemProperty -Path $policy -ErrorAction SilentlyContinue).TrustedCertThumbprints
     $thumbprints = @($existing -split ',' | Where-Object { $_ })
     $changed = $false
-    foreach ($hash in @($cert.Thumbprint, $sha256)) {
+    foreach ($hash in @($cert.Thumbprint, ('sha256:' + $sha256))) {
         if ($hash -notin $thumbprints) { $thumbprints += $hash; $changed = $true }
     }
     if ($changed) {
@@ -53,8 +53,12 @@ try {
         New-ItemProperty -Path $policy -Name 'TrustedCertThumbprints' -Value ($thumbprints -join ',') -PropertyType String -Force | Out-Null
     }
     $tool = Join-Path $env:WINDIR 'System32\rdpsign.exe'
-    & $tool /sha256 $cert.Thumbprint /q $rdpFile | Out-Null
-    if ($LASTEXITCODE -ne 0) { throw 'Native RDP signing failed.' }
+    if (Test-Path -LiteralPath $tool) {
+        & $tool /sha256 $cert.Thumbprint /q $rdpFile | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw 'Native RDP signing failed.' }
+    } else {
+        Sign-PfRemoteRdpProfile -RdpPath $rdpFile -Certificate $cert
+    }
     if (-not (Select-String -LiteralPath $rdpFile -Pattern '^signature:s:' -Quiet)) { throw 'RDP signature is missing.' }
 } finally {
     if ($locked) { $mutex.ReleaseMutex() }

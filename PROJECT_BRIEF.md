@@ -30,7 +30,7 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current candidate: alpha.107 default resource sharing. Shared RDP choices retain
+Current candidate: alpha.108 default resource sharing, including Windows Home. Shared RDP choices retain
 the corresponding TigerVNC workspace, with playback and explicit microphone
 forwarding by default. Hardware acceptance remains pending. Normal multi-workspace
 selection lists shared RDP workspaces for picture and sound together. All desktops

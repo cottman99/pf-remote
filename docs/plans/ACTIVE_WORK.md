@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 4fb8de2
+base_commit: 72ecc1a
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -36,6 +36,13 @@ No new audio protocol, silent exact-target substitution,
 host network change or manipulation of existing viewer sessions. R1: reuse the
 existing authorized shared-workspace profiles and native executor. Return to
 M10.3 owner acceptance after normal connections carry picture and sound together.
+
+The Windows Home controller came online during rollout and independently applied
+alpha.107. It lacks the native rdpsign utility. Alpha.108 adds signing through
+existing Windows/.NET APIs; differential signatures match the native tool, and
+target tampering and duplicate properties are rejected. Local publisher trust is
+prepared through the owner-authorized administrative path; later user connections
+reuse it. No root CA or global warning-disable policy is added.
 
 Alpha.102 is published. Both Windows installations and the Linux managed node
 independently upgraded from alpha.100 to alpha.102, with installer completion

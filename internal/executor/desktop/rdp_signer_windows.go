@@ -17,10 +17,13 @@ import (
 //go:embed rdp_signer.ps1
 var rdpSignerScript string
 
+//go:embed rdp_signer_managed.ps1
+var rdpManagedSignerScript string
+
 func signRDPProfile(ctx context.Context, path string) error {
 	bounded, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
-	script := "$rdpFile = '" + strings.ReplaceAll(path, "'", "''") + "'\n" + rdpSignerScript
+	script := "$rdpFile = '" + strings.ReplaceAll(path, "'", "''") + "'\n" + rdpManagedSignerScript + "\n" + rdpSignerScript
 	shell := filepath.Join(os.Getenv("WINDIR"), "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
 	cmd := exec.CommandContext(bounded, shell, "-NoProfile", "-NonInteractive", "-Command", script)
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CreationFlags: 0x08000000}

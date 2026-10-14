@@ -141,6 +141,7 @@ try {
 
     $winProject = Join-Path $repoRoot 'apps/windows/PFRemoteCenter/PFRemoteCenter.csproj'
     if (-not $SkipWindowsApp -and (Test-Path -LiteralPath $winProject)) {
+        & (Join-Path $PSScriptRoot 'test-rdp-signing.ps1')
         $platform = switch ($env:PROCESSOR_ARCHITECTURE) {
             'ARM64' { 'ARM64' }
             'x86' { 'x86' }

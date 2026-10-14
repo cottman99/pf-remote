@@ -34,7 +34,14 @@ The incomplete secondary-controller catalog is repaired through its private
 optional sidecar. Its original catalog is preserved. No private configuration is
 compiled into the public package. Existing desktop sessions are left alone.
 
-Delivery candidate: Windows alpha.107, publisher sequence 109. Linux node binaries
+Windows Home does not include rdpsign.exe. Alpha.108 adds a dependency-free
+fallback using Windows/.NET certificate signing APIs. The secure-settings scope,
+UTF-16 payload, SHA-256 signature and native envelope match rdpsign.exe; live
+differential testing produced the same RSA signature. Tests reject modified
+targets and duplicate settings. The non-exportable private key remains in the
+Windows store, including on Home. No Windows edition upgrade is needed.
+
+Delivery candidate: Windows alpha.108, publisher sequence 110. Linux node binaries
 are unchanged because the existing shared-workspace channel services provide the
 required transport. Actual hardware and clipboard round trips remain owner
 acceptance; no active desktop or clipboard is manipulated during verification.
