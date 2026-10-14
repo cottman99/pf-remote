@@ -41,7 +41,14 @@ differential testing produced the same RSA signature. Tests reject modified
 targets and duplicate settings. The non-exportable private key remains in the
 Windows store, including on Home. No Windows edition upgrade is needed.
 
-Delivery candidate: Windows alpha.108, publisher sequence 110. Linux node binaries
+Laptop rollout also found that Windows' default scheduled-task settings blocked
+interactive activation on battery, including rollback. Alpha.109 explicitly
+allows activation on battery and keeps it running when AC power is removed.
+Only PF Remote's task settings change; the host power plan remains unchanged.
+The live laptop was restored and updated through an interactive, battery-compatible
+maintenance task. Existing remote viewer sessions were preserved.
+
+Delivery candidate: Windows alpha.109, publisher sequence 111. Linux node binaries
 are unchanged because the existing shared-workspace channel services provide the
 required transport. Actual hardware and clipboard round trips remain owner
 acceptance; no active desktop or clipboard is manipulated during verification.

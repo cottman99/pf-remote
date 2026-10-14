@@ -4,16 +4,51 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/cottman99/pf-remote/pkg/contracts"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
 
 	"golang.org/x/sys/windows/registry"
 )
+
+func TestInteractiveActivationRegistersBatteryCompatibleSettings(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	// Keep the real settings constructor, but intercept registration and launch.
+	// This verifies the policy actually passed to Windows without creating tasks.
+	prefix := `$ProgressPreference = 'SilentlyContinue'
+Import-Module ScheduledTasks -ErrorAction Stop
+function New-ScheduledTaskAction { param($Execute,$Argument) 'example-action' }
+function New-ScheduledTaskPrincipal { param($UserId,$LogonType,$RunLevel) 'example-principal' }
+function Stop-ScheduledTask { [CmdletBinding()] param($TaskName) }
+function Register-ScheduledTask { param($TaskName,$Action,$Principal,$Settings,[switch]$Force) $script:captured = $Settings }
+function Start-ScheduledTask { param($TaskName) }
+`
+	suffix := `
+@{present=($null -ne $captured);disallow=$captured.DisallowStartIfOnBatteries;stop=$captured.StopIfGoingOnBatteries}|ConvertTo-Json -Compress`
+	cmd := exec.CommandContext(ctx, "powershell.exe", "-NoProfile", "-NonInteractive", "-Command", prefix+interactiveActivationScript+suffix)
+	output, err := cmd.Output()
+	if err != nil {
+		t.Fatalf("activation policy probe failed: %v", err)
+	}
+	var settings struct {
+		Present  bool `json:"present"`
+		Disallow bool `json:"disallow"`
+		Stop     bool `json:"stop"`
+	}
+	if err := json.Unmarshal(output, &settings); err != nil {
+		t.Fatal(err)
+	}
+	if !settings.Present || settings.Disallow || settings.Stop {
+		t.Fatalf("battery blocks activation: %+v", settings)
+	}
+}
 
 func TestLocalHealthRequiresIdentityButToleratesOfflineCatalog(t *testing.T) {
 	report := contracts.DoctorResponse{SchemaVersion: contracts.DoctorSchema, Checks: []contracts.Check{

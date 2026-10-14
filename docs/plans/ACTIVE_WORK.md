@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 72ecc1a
+base_commit: 1421d96
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -43,6 +43,12 @@ existing Windows/.NET APIs; differential signatures match the native tool, and
 target tampering and duplicate properties are rejected. Local publisher trust is
 prepared through the owner-authorized administrative path; later user connections
 reuse it. No root CA or global warning-disable policy is added.
+
+Live laptop activation was blocked by the scheduled task's default battery rules.
+The queued task was repaired, the previous client restored, and alpha.108 applied
+in the interactive session. Alpha.109 makes battery-compatible activation the
+default and tests the settings actually passed to task registration. No host power
+plan or unrelated task changes. Return point remains M10.3 owner acceptance.
 
 Alpha.102 is published. Both Windows installations and the Linux managed node
 independently upgraded from alpha.100 to alpha.102, with installer completion

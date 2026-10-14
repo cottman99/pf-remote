@@ -282,19 +282,21 @@ func needsInteractiveActivation(currentSession, activeSession uint32) bool {
 	return currentSession == 0 && activeSession != 0 && activeSession != 0xffffffff
 }
 
+const interactiveActivationScript = `$identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+$daemonAction = New-ScheduledTaskAction -Execute $env:PFREMOTE_SETUP_HELPER -Argument 'activate-interactive-daemon --no-launch'
+$centerAction = New-ScheduledTaskAction -Execute $env:PFREMOTE_CENTER -Argument '--background'
+$principal = New-ScheduledTaskPrincipal -UserId $identity -LogonType Interactive -RunLevel Limited
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+Stop-ScheduledTask -TaskName $env:PFREMOTE_SETUP_TASK -ErrorAction SilentlyContinue
+Register-ScheduledTask -TaskName $env:PFREMOTE_SETUP_TASK -Action @($daemonAction, $centerAction) -Principal $principal -Settings $settings -Force | Out-Null
+Start-ScheduledTask -TaskName $env:PFREMOTE_SETUP_TASK`
+
 func requestInteractiveActivation(appPath string) error {
 	helper, err := installerHelperPath()
 	if err != nil {
 		return err
 	}
-	const script = `$identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-$daemonAction = New-ScheduledTaskAction -Execute $env:PFREMOTE_SETUP_HELPER -Argument 'activate-interactive-daemon --no-launch'
-$centerAction = New-ScheduledTaskAction -Execute $env:PFREMOTE_CENTER -Argument '--background'
-$principal = New-ScheduledTaskPrincipal -UserId $identity -LogonType Interactive -RunLevel Limited
-Stop-ScheduledTask -TaskName $env:PFREMOTE_SETUP_TASK -ErrorAction SilentlyContinue
-Register-ScheduledTask -TaskName $env:PFREMOTE_SETUP_TASK -Action @($daemonAction, $centerAction) -Principal $principal -Force | Out-Null
-Start-ScheduledTask -TaskName $env:PFREMOTE_SETUP_TASK`
-	encoded := base64.StdEncoding.EncodeToString(utf16LE(script))
+	encoded := base64.StdEncoding.EncodeToString(utf16LE(interactiveActivationScript))
 	command := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded)
 	command.Env = append(os.Environ(),
 		"PFREMOTE_SETUP_HELPER="+helper,
