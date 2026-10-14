@@ -56,13 +56,22 @@ Device or route. Omission preserves ordinary RDP behavior. Private compatibility
 uses a separate `shared-desktops-v1.json` beside the original catalog, so older
 installations ignore the new workspace entries and retain their original paths.
 
-RDP playback explicitly stays on the controlling computer. Microphone forwarding
-is off for an ordinary open. The protected local API accepts additive
-`audio_capture: true`, exposed by `open --microphone` and the native explicit
-microphone action. Consent is request-scoped, is preserved for that action's
-retry, and is rejected for VNC/external targets. The native UI detects a missing
-capture device before starting; an upstream RDP session must redirect the physical
-client's microphone before it can be forwarded again. No audio is recorded by
+RDP playback and microphone forwarding are enabled by default, following the
+owner's 2026-10-14 default resource-sharing decision. The native profile requests
+clipboard, local drives, printers, serial ports, smart cards, WebAuthn, POS devices,
+location, supported USB/MTP devices and cameras, plus full-screen mode. Windows
+privacy, drivers, protocol support and remote-system policy remain authoritative.
+PF Remote does not add a repeated resource-sharing confirmation. If a Device
+publishes shared RDP workspaces, the ordinary Center desktop chooser lists those
+workspaces. Original VNC and ordinary RDP references remain under All desktops;
+their exact actions never silently change protocol or capability. A missing or
+unavailable shared workspace must not silently become a soundless VNC choice.
+The protected API's `audio_capture` and CLI `--microphone` remain accepted for
+older callers; ordinary RDP opening already forwards microphone audio. Explicit
+microphone requests remain rejected for VNC/external targets. A missing physical
+capture device does not block ordinary desktop opening. An upstream RDP session
+must redirect the physical client's microphone before it can be forwarded again.
+No audio is recorded by
 PF Remote. A credential-free temporary native RDP profile is removed on client
 exit or launch failure; native certificate verification remains enabled.
 

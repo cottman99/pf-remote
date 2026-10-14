@@ -23,7 +23,8 @@ internal sealed record DesktopProfileSummary(
     [property: JsonPropertyName("protocol")] string Protocol,
     [property: JsonPropertyName("rendering_environment")] string RenderingEnvironment,
     [property: JsonPropertyName("authentication")] string? Authentication,
-    [property: JsonPropertyName("visual_effects_policy")] string? VisualEffectsPolicy = null);
+    [property: JsonPropertyName("visual_effects_policy")] string? VisualEffectsPolicy = null,
+    [property: JsonPropertyName("session_selector")] string? SessionSelector = null);
 
 internal sealed record AuthorizationSummary(
     [property: JsonPropertyName("status")] string Status,

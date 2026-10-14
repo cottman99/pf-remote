@@ -2,6 +2,7 @@ package desktop
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,11 +21,16 @@ func TestRDPProfileExplicitAudioAndExactWorkspace(t *testing.T) {
 			t.Fatal(err)
 		}
 		text, err := command.rdp.content()
-		if err != nil || !strings.Contains(text, "domain:s:workspace-2\r\n") || !strings.Contains(text, "audiomode:i:0\r\n") || command.rdp.AudioCapture != capture {
+		if err != nil || !strings.Contains(text, "domain:s:workspace-2\r\n") || !strings.Contains(text, "audiomode:i:0\r\n") || !strings.Contains(text, "audiocapturemode:i:1\r\n") {
 			t.Fatalf("profile=%q err=%v", text, err)
 		}
 		if strings.Contains(text, "password") || strings.Contains(text, "authentication level:i:0") {
 			t.Fatal("unsafe RDP profile")
+		}
+		for _, setting := range []string{"redirectclipboard:i:1\r\n", "screen mode id:i:2\r\n", "redirectprinters:i:1\r\n", "redirectcomports:i:1\r\n", "redirectsmartcards:i:1\r\n", "redirectwebauthn:i:1\r\n", "redirectposdevices:i:1\r\n", "redirectlocation:i:1\r\n", "drivestoredirect:s:*\r\n", "devicestoredirect:s:*\r\n", "usbdevicestoredirect:s:*\r\n", "camerastoredirect:s:*\r\n"} {
+			if !strings.Contains(text, setting) {
+				t.Fatalf("missing default desktop setting %q", setting)
+			}
 		}
 	}
 }
@@ -40,8 +46,8 @@ func TestRDPRejectsSettingInjectionAndCleansProfile(t *testing.T) {
 		t.Fatal(err)
 	}
 	data, err := os.ReadFile(path)
-	if err != nil || !strings.Contains(string(data), "audiocapturemode:i:0") {
-		t.Fatal("microphone must default off")
+	if err != nil || !strings.Contains(string(data), "audiocapturemode:i:1") {
+		t.Fatal("microphone forwarding must default on")
 	}
 	cleanup()
 	if _, err := os.Stat(filepath.Dir(path)); !os.IsNotExist(err) {
@@ -59,12 +65,34 @@ func TestFailedClientStartRemovesRDPProfile(t *testing.T) {
 	t.Setenv("TMP", root)
 	t.Setenv("TEMP", root)
 	t.Setenv("TMPDIR", root)
-	err := (OSCommand{}).Run(context.Background(), Launch{Name: filepath.Join(root, "missing-client.exe"), RDP: &RDPOptions{Endpoint: "192.0.2.10:3389"}})
+	err := (OSCommand{SignRDP: func(context.Context, string) error { return nil }}).Run(context.Background(), Launch{Name: filepath.Join(root, "missing-client.exe"), RDP: &RDPOptions{Endpoint: "192.0.2.10:3389"}})
 	if err == nil {
 		t.Fatal("missing client started")
 	}
 	entries, err := os.ReadDir(root)
 	if err != nil || len(entries) != 0 {
 		t.Fatalf("temporary settings leaked: %v %v", entries, err)
+	}
+}
+
+func TestSigningFailureRemovesProfileBeforeClientLaunch(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("TEMP", root)
+	t.Setenv("TMP", root)
+	t.Setenv("TMPDIR", root)
+	called := false
+	err := (OSCommand{SignRDP: func(_ context.Context, path string) error {
+		called = true
+		if _, err := os.Stat(path); err != nil {
+			t.Fatal(err)
+		}
+		return errors.New("synthetic signing failure")
+	}}).Run(context.Background(), Launch{Name: "must-not-launch", RDP: &RDPOptions{Endpoint: "192.0.2.10:3389"}})
+	if err == nil || !called {
+		t.Fatal("signing failure must stop launch")
+	}
+	entries, err := os.ReadDir(root)
+	if err != nil || len(entries) != 0 {
+		t.Fatal("unsigned profile survived failure")
 	}
 }

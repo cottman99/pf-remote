@@ -25,9 +25,11 @@ type Launch struct {
 	RDP         *RDPOptions
 }
 
-type OSCommand struct{}
+type OSCommand struct {
+	SignRDP func(context.Context, string) error
+}
 
-func (OSCommand) Run(ctx context.Context, launch Launch) error {
+func (runner OSCommand) Run(ctx context.Context, launch Launch) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -41,6 +43,14 @@ func (OSCommand) Run(ctx context.Context, launch Launch) error {
 			return err
 		}
 		cleanup = remove
+		sign := runner.SignRDP
+		if sign == nil {
+			sign = signRDPProfile
+		}
+		if err := sign(ctx, path); err != nil {
+			cleanup()
+			return err
+		}
 		arguments = append([]string{path}, arguments...)
 	}
 	command := exec.Command(launch.Name, arguments...)
@@ -105,7 +115,7 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 		// encrypted loopback relay. Remote Credential Guard requires a direct
 		// Kerberos/domain path and closes these workgroup or relay sockets before
 		// sign-in, so the system client must use its normal credential flow.
-		if err := command.Run(ctx, Launch{Name: client, Arguments: []string{"/public"}, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector, AudioCapture: session.AudioCaptureRequested(ctx)}}); err != nil {
+		if err := command.Run(ctx, Launch{Name: client, Arguments: []string{"/public"}, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector}}); err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_START_FAILED", Summary: "Windows Remote Desktop could not start.", Remediation: "Retry from the signed-in Windows desktop."}
 		}
 		return nil
@@ -117,7 +127,7 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 		if err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_UNAVAILABLE", Summary: "Windows Remote Desktop is unavailable on this computer.", Remediation: "Repair the Windows Remote Desktop client and try again."}
 		}
-		if err := command.Run(ctx, Launch{Name: client, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector, AudioCapture: session.AudioCaptureRequested(ctx)}}); err != nil {
+		if err := command.Run(ctx, Launch{Name: client, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector}}); err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_START_FAILED", Summary: "Windows Remote Desktop could not start.", Remediation: "Retry from the signed-in Windows desktop."}
 		}
 		return nil

@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: d30120c
+base_commit: 4fb8de2
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,19 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-14 owner prioritizes default playback on Linux desktop connections.
+R0: main is dirty with retained alpha.106/UI/audio work; preserve those edits.
+Bounded side task: ordinary chooser uses the configured shared RDP workspaces,
+retaining exact VNC references in All desktops. Playback is always enabled;
+clipboard and full-screen settings become explicit. Complete the missing private
+sidecar on available controllers, then release and update the Windows clients.
+The owner also authorizes default supported hardware sharing, including microphone,
+without repeated resource questions. Native OS privacy and server policy remain.
+No new audio protocol, silent exact-target substitution,
+host network change or manipulation of existing viewer sessions. R1: reuse the
+existing authorized shared-workspace profiles and native executor. Return to
+M10.3 owner acceptance after normal connections carry picture and sound together.
 
 Alpha.102 is published. Both Windows installations and the Linux managed node
 independently upgraded from alpha.100 to alpha.102, with installer completion

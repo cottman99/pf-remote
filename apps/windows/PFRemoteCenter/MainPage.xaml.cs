@@ -989,12 +989,6 @@ public sealed partial class MainPage : Page
     private void PopulateRouteMenu(MenuFlyout flyout, DesktopOptionViewModel desktop)
     {
         AddRouteMenuItem(flyout, desktop, null, _resources.GetString("SmartConnectRouteLabel"), true);
-        if (_catalogTargets.FirstOrDefault(target => target.Canonical == desktop.Canonical)?.Capability.DesktopProfile?.Protocol == "rdp")
-        {
-            var audioItem = new MenuFlyoutItem { Text = _resources.GetString("OpenWithMicrophoneLabel"), Tag = new RouteSelection(desktop.Canonical!, null, true) };
-            audioItem.Click += RouteMenuItem_Click;
-            flyout.Items.Add(audioItem);
-        }
         flyout.Items.Add(new MenuFlyoutSeparator());
 
         foreach (RouteOptionSummary route in desktop.RouteOptions.OrderBy(option => option.Order))
@@ -1006,7 +1000,7 @@ public sealed partial class MainPage : Page
 
     private void PopulateDesktopMenu(MenuFlyout flyout, DeviceViewModel device)
     {
-        foreach (DesktopOptionViewModel option in device.DesktopOptions)
+        foreach (DesktopOptionViewModel option in DeviceCatalogPresenter.ConnectionChoices(device, _catalogTargets))
         {
             var item = new MenuFlyoutItem
             {

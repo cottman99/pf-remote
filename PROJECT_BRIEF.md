@@ -30,11 +30,11 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current candidate: alpha.106 audio acceptance preview. Shared RDP choices retain
+Current candidate: alpha.107 default resource sharing. Shared RDP choices retain
 the corresponding TigerVNC workspace, with playback and explicit microphone
-opening. Hardware acceptance remains pending. Multi-desktop computers show Choose desktop,
-listing every TigerVNC workspace explicitly alongside RDP rather than defaulting
-to an internal capability ID. Alpha.105 restores the reviewed TigerVNC Viewer to
+forwarding by default. Hardware acceptance remains pending. Normal multi-workspace
+selection lists shared RDP workspaces for picture and sound together. All desktops
+retains every original TigerVNC/RDP target. Alpha.105 restores the reviewed TigerVNC Viewer to
 the Windows release and makes its binary and license mandatory release gates.
 Settings includes Check this
 computer, Notify other computers, and named version/last-seen reports. Offline

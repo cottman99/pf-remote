@@ -28,8 +28,13 @@ and send its aligned, safe context to an Agent without explaining the network.
 
 Computers with multiple Desktops show **Choose desktop** rather than silently
 opening the first internal capability ID. Both the main button and its menu list
-all exact Desktops, with TigerVNC/RDP labels where those clients are used. TigerVNC
-workspaces appear first; selecting one never changes to an RDP sibling. The expanded
+shared RDP workspaces when configured, carrying picture and playback together.
+Playback is enabled by default; there is no separate soundless normal choice.
+Windows RDP also requests microphone, clipboard and supported device redirection
+by default, with no repeated PF Remote resource prompt. Native OS restrictions
+still apply. Full-screen mode is requested explicitly.
+Without shared workspaces, it lists the original exact Desktops. Selecting a VNC
+entry never changes to an RDP sibling. The expanded
 **All desktops** list retains individual Smart connect and route actions.
 
 Each individual desktop connect action is a split button attached to that specific computer and

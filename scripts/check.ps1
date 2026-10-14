@@ -166,7 +166,7 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'Windows Center single-instance process checks failed.' }
         dotnet build $goldenUiProject --configuration Release --nologo
         if ($LASTEXITCODE -ne 0) { throw 'Golden-journey UI helper build failed.' }
-        dotnet build $winProject --configuration Debug -p:Platform=$platform --nologo
+        dotnet build $winProject --configuration Debug -p:Platform=$platform -r ("win-" + $platform.ToLowerInvariant()) --nologo
         if ($LASTEXITCODE -ne 0) { throw 'Windows Center build failed.' }
     }
 

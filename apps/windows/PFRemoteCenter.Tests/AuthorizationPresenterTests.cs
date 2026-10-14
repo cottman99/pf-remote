@@ -704,7 +704,7 @@ public sealed class AuthorizationPresenterTests
     }
 
     [TestMethod]
-    public void MixedDesktopChooserKeepsAllVncTargetsAndNeverDefaultsToRdp()
+    public void UnpairedDesktopChooserKeepsOriginalVncTargets()
     {
         var device = new DeviceSummary("device-example", "example", "Example computer", "online");
         TargetSummary Target(string id, string name, string protocol) => new(
@@ -724,6 +724,34 @@ public sealed class AuthorizationPresenterTests
         foreach (var desktop in result.DesktopOptions)
             Assert.AreEqual(desktop.Canonical, DeviceCatalogPresenter.BoundDesktop(desktop)?.Canonical);
         Assert.AreEqual(rdp.Canonical, result.DesktopOptions[3].Canonical);
+        CollectionAssert.AreEqual(result.DesktopOptions.ToArray(),
+            DeviceCatalogPresenter.ConnectionChoices(result, [rdp, .. vncs]).ToArray());
+    }
+
+    [TestMethod]
+    public void SharedWorkspaceChooserDefaultsToAudioAndKeepsExactAdvancedTargets()
+    {
+        var device = new DeviceSummary("device-example", "example", "Example computer", "online");
+        TargetSummary Target(string id, string protocol, string? selector = null, string state = "available") => new(
+            $"pfremote://fabric-example/devices/device-example/capabilities/{id}",
+            $"example/{id}", device,
+            new CapabilitySummary(id, id, id, "desktop", state,
+                new DesktopProfileSummary(protocol, "virtual", "windows-sso", SessionSelector: selector)),
+            true, Authorization("active", Now.AddDays(1)));
+        var vnc = Target("vnc-two", "vnc");
+        var ordinary = Target("rdp-old", "rdp");
+        var shared = Target("shared-two", "rdp", "pfremote-shared-2");
+        var unavailable = Target("shared-three", "rdp", "pfremote-shared-3", "unavailable");
+        TargetSummary[] targets = [vnc, ordinary, shared, unavailable];
+        var result = DeviceCatalogPresenter.Create(targets, DeviceResource, _ => ("label", "automation")).Single();
+        var choices = DeviceCatalogPresenter.ConnectionChoices(result, targets);
+        CollectionAssert.AreEquivalent(new[] { shared.Canonical, unavailable.Canonical },
+            choices.Select(option => option.Canonical!).ToArray());
+        Assert.IsFalse(choices.Single(option => option.Canonical == unavailable.Canonical).CanOpen);
+        Assert.AreEqual(shared.Canonical, result.DesktopOptions.First(option => option.CanOpen).Canonical);
+        Assert.HasCount(4, result.ExpandedDesktops);
+        Assert.AreEqual(vnc.Canonical, DeviceCatalogPresenter.BoundDesktop(
+            result.ExpandedDesktops.Single(option => option.Canonical == vnc.Canonical))?.Canonical);
     }
 
 	[TestMethod]

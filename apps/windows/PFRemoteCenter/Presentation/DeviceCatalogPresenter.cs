@@ -7,6 +7,21 @@ namespace PFRemoteCenter.Presentation;
 
 internal static class DeviceCatalogPresenter
 {
+    internal static IReadOnlyList<DesktopOptionViewModel> ConnectionChoices(
+        DeviceViewModel device, IReadOnlyList<TargetSummary> targets)
+    {
+        var shared = targets.Where(target => target.Device.Id == device.Device.Id &&
+                IsSharedWorkspace(target))
+            .Select(target => target.Canonical).ToHashSet(StringComparer.Ordinal);
+        return shared.Count == 0 ? device.DesktopOptions :
+            device.DesktopOptions.Where(option => option.Canonical is not null &&
+                shared.Contains(option.Canonical)).ToArray();
+    }
+
+    private static bool IsSharedWorkspace(TargetSummary target) =>
+        target.Capability.DesktopProfile is { Protocol: "rdp", SessionSelector: not null } profile &&
+        !string.IsNullOrWhiteSpace(profile.SessionSelector);
+
     internal static DeviceViewModel AsStale(DeviceViewModel device, Func<string, string> resource) => device with
     {
         Device = device.Device with { State = "unknown" },
@@ -229,7 +244,8 @@ internal static class DeviceCatalogPresenter
 		}
 
 		TargetSummary[] ordered = desktops
-			.OrderBy(target => target.Capability.DesktopProfile?.Protocol == "vnc" ? 0 : 1)
+			.OrderBy(target => IsSharedWorkspace(target) ? 0 :
+                target.Capability.DesktopProfile?.Protocol == "vnc" ? 1 : 2)
 			.ThenBy(target => target.Capability.DisplayName, StringComparer.CurrentCultureIgnoreCase)
 			.ThenBy(target => target.Capability.Id, StringComparer.Ordinal)
 			.ToArray();

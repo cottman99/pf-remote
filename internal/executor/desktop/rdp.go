@@ -13,7 +13,6 @@ import (
 type RDPOptions struct {
 	Endpoint        string
 	SessionSelector string
-	AudioCapture    bool
 }
 
 func (r RDPOptions) content() (string, error) {
@@ -23,11 +22,7 @@ func (r RDPOptions) content() (string, error) {
 	if !validSessionSelector(r.SessionSelector) {
 		return "", errors.New("invalid RDP session selector")
 	}
-	capture := 0
-	if r.AudioCapture {
-		capture = 1
-	}
-	content := fmt.Sprintf("full address:s:%s\r\naudiomode:i:0\r\naudiocapturemode:i:%d\r\nauthentication level:i:2\r\nprompt for credentials:i:0\r\n", r.Endpoint, capture)
+	content := fmt.Sprintf("full address:s:%s\r\naudiomode:i:0\r\naudiocapturemode:i:1\r\nredirectclipboard:i:1\r\nscreen mode id:i:2\r\nredirectprinters:i:1\r\nredirectcomports:i:1\r\nredirectsmartcards:i:1\r\nredirectwebauthn:i:1\r\nredirectposdevices:i:1\r\nredirectlocation:i:1\r\ndrivestoredirect:s:*\r\ndevicestoredirect:s:*\r\nusbdevicestoredirect:s:*\r\ncamerastoredirect:s:*\r\nauthentication level:i:2\r\nprompt for credentials:i:0\r\n", r.Endpoint)
 	if r.SessionSelector != "" {
 		content += "domain:s:" + r.SessionSelector + "\r\n"
 	}

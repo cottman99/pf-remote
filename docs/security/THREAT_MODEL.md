@@ -11,6 +11,12 @@
 
 ## Trust boundaries
 
+Native RDP profiles use a per-user, non-exportable local code-signing key and an
+exact trusted-publisher fingerprint for owner-authorized resource sharing.
+This trust is separate from update-publisher signatures and remote server TLS.
+It does not add a root CA, disable remote certificate checks, or trust arbitrary
+unsigned profiles. Policy preparation preserves unrelated publisher entries.
+
 - The Owner administrates the Fabric.
 - Every Device has its own Ed25519 identity and can be revoked independently.
 - The Gateway is trusted for authorization metadata and availability, but not
