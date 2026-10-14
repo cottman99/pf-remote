@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 1421d96
+base_commit: 2f43078
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -49,6 +49,15 @@ The queued task was repaired, the previous client restored, and alpha.108 applie
 in the interactive session. Alpha.109 makes battery-compatible activation the
 default and tests the settings actually passed to task registration. No host power
 plan or unrelated task changes. Return point remains M10.3 owner acceptance.
+
+This side task is delivered as alpha.109 (publisher sequence 111): public sanitized
+source and fixed/feed packages are published; all three available Windows clients
+run the new Center and daemon. Three shared workspaces are present on each, private
+baseline files and readable history remain intact, and per-user publisher trust is
+prepared. Home signing and battery-powered activation pass live checks; full
+repository, package, upgrade and isolated-window checks pass. No active viewer was
+manipulated. Return to M10.3 user-level audio/hardware acceptance on a fresh normal
+connection. See docs/status/DEFAULT_RESOURCE_SHARING.md.
 
 Alpha.102 is published. Both Windows installations and the Linux managed node
 independently upgraded from alpha.100 to alpha.102, with installer completion

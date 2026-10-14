@@ -52,3 +52,22 @@ Delivery candidate: Windows alpha.109, publisher sequence 111. Linux node binari
 are unchanged because the existing shared-workspace channel services provide the
 required transport. Actual hardware and clipboard round trips remain owner
 acceptance; no active desktop or clipboard is manipulated during verification.
+
+## Delivery
+
+Alpha.109 is published and active on all three available Windows controllers.
+Each runs a responsive Center and daemon in its logged-in user session. Both
+secondary controllers retain all eight private baseline files, three shared RDP
+workspaces and 50 history records; the primary retains all seven baseline files.
+Identity, catalog and connection-service checks pass. Each controller has an exact
+per-user SHA-256 publisher trust entry and its own non-exportable signing key.
+The Home controller's managed signing path passes live verification. Laptop
+activation now succeeds from remote maintenance while discharging on battery.
+The installed task allows battery startup and removal of AC power.
+
+Full checks, 59 presentation tests, signature parity, cryptographic tampering and
+duplicate rejection, actual activation-policy registration tests, isolated native
+window health, signed-package verification and upgrade/profile retention pass.
+Private evidence stays outside Git. Existing viewers were preserved. Hardware
+listening, microphone/camera operation and clipboard round trips are still physical
+acceptance; new defaults apply when the owner reconnects through PF Remote.

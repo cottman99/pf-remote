@@ -66,7 +66,10 @@ The owner subsequently authorized implementation of shared xrdp/VNC workspaces
 and bidirectional audio. Administrator setup completed after owner sudo setup;
 all six channel/audio services and six audio nodes are live. No existing
 workspace is replaced. Native shared-workspace/audio controls are installed in the local signed preview.
-Alpha.106 is published for owner-authorized testing on the second controller.
+Alpha.109 is published and active on all available Windows controllers. Normal
+Linux workspace selection carries picture and sound together; supported Windows
+resources are enabled by default with locally signed profiles. Home signing and
+battery startup are verified. See [Default sharing](../status/DEFAULT_RESOURCE_SHARING.md).
 Physical microphone/speaker and WAN quality acceptance remain open; see
 [Shared desktop audio](../status/SHARED_DESKTOP_AUDIO.md).
 
