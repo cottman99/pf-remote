@@ -44,7 +44,9 @@ The owner's connection-preset priority is tracked in
 point after this bounded usability repair and authorized release rollout.
 The owner's display-mode follow-up is tracked in
 [Display presets](../status/DISPLAY_PRESETS.md), with four locally remembered
-modes and recovery when selected screens change. M10.3 remains the return point.
+modes and recovery when selected screens change. Alpha.112 is published and
+installed on both reachable Windows controllers with configuration and viewers
+preserved; the offline controller retains a notice. M10.3 remains the return point.
 The follow-up exact-workspace repair is tracked in
 [Independent Linux workspace selection](../status/WORKSPACE_SELECTION_FIX.md).
 Alpha.111 is published and installed on both reachable Windows controllers;

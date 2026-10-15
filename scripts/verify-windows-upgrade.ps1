@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$PreviousReleaseRoot,
-    [Parameter(Mandatory = $true)][string]$ReleaseRoot
+    [Parameter(Mandatory = $true)][string]$ReleaseRoot,
+    [switch]$VerifyDisplayPresets
 )
 
 $ErrorActionPreference = 'Stop'
@@ -63,14 +64,22 @@ function Read-IsolatedProfile([string]$Version, [string]$PresetAction = '') {
             if (-not $rdpTarget) { throw 'Isolated RDP preset target is missing.' }
             $cli = Join-Path $versionRoot 'pfremote.exe'
             if ($PresetAction -eq 'save') {
-                $update = @{username='example-account';password=('example-'+'secret');full_screen=$false;default_desktop=$true} | ConvertTo-Json -Compress
+                $settings = @{username='example-account';password=('example-'+'secret');full_screen=$false;default_desktop=$true}
+                if($VerifyDisplayPresets) {
+                    $currentPreset=& $cli inspect $rdpTarget --desktop-preset --json | ConvertFrom-Json
+                    if(!$currentPreset.displays.monitors.Count){throw 'Native monitor discovery unavailable in release.'}
+                    $settings.full_screen=$true
+                    $settings.display=@{mode='selected';monitor_ids=@($currentPreset.displays.monitors[0].id);layout_id=$currentPreset.displays.id}
+                }
+                $update=$settings | ConvertTo-Json -Depth 5 -Compress
                 $saved = $update | & $cli open $rdpTarget --save-preset-stdin --json
                 if ($LASTEXITCODE -ne 0) { throw 'Packaged preset save failed.' }
             }
             $preset = & $cli inspect $rdpTarget --desktop-preset --json | ConvertFrom-Json
-            if ($LASTEXITCODE -ne 0 -or -not $preset.password_saved -or $preset.username -ne 'example-account' -or $preset.full_screen -or -not $preset.default_desktop) {
+            if ($LASTEXITCODE -ne 0 -or -not $preset.password_saved -or $preset.username -ne 'example-account' -or $preset.full_screen -ne [bool]$VerifyDisplayPresets -or -not $preset.default_desktop) {
                 throw 'Packaged preset did not survive upgrade or rollback.'
             }
+            if($VerifyDisplayPresets -and $PresetAction -ne 'readlegacy' -and ($preset.display.mode -ne 'selected' -or !$preset.display.monitor_ids.Count -or !$preset.display.layout_id)){throw 'Selected screen preset did not survive re-upgrade.'}
         }
         $identityHash = (Get-FileHash -LiteralPath (Join-Path $env:APPDATA 'PF Remote\identity\device-identity-v1.json')).Hash
         return [pscustomobject]@{ identity = $identityHash; targets = ($targets -join "`n") }
@@ -98,7 +107,7 @@ try {
     Invoke-IsolatedSetup $nextSetup 'rollback'
     $state = Get-Content -LiteralPath (Join-Path $installation 'current.json') -Raw | ConvertFrom-Json
     if ($state.current -ne $oldVersion) { throw 'Rollback did not restore the previous package.' }
-    $rollbackProfile = Read-IsolatedProfile $oldVersion
+    $rollbackProfile = Read-IsolatedProfile $oldVersion $(if($VerifyDisplayPresets){'readlegacy'}else{''})
     if ($beforeProfile.identity -ne $rollbackProfile.identity -or $beforeProfile.targets -cne $rollbackProfile.targets) { throw 'Rollback did not load the original identity and targets.' }
     Invoke-IsolatedSetup $nextSetup 'install'
     $restoredProfile = Read-IsolatedProfile $newVersion 'read'
@@ -106,7 +115,7 @@ try {
     foreach ($name in $hashes.Keys) {
         if ((Get-FileHash -LiteralPath (Join-Path $runtime $name)).Hash -ne $hashes[$name]) { throw 'Synthetic user data changed.' }
     }
-    [pscustomobject]@{ status = 'passed'; previous = $oldVersion; candidate = $newVersion; retained_files = $hashes.Count; profile_reload = 'identity-targets-and-encrypted-presets-preserved'; automatic_activation_failure = 'unit-tested' } | ConvertTo-Json
+    [pscustomobject]@{ status = 'passed'; previous = $oldVersion; candidate = $newVersion; retained_files = $hashes.Count; profile_reload = 'identity-targets-and-encrypted-presets-preserved'; selected_screen_roundtrip = [bool]$VerifyDisplayPresets; automatic_activation_failure = 'unit-tested' } | ConvertTo-Json
 }
 finally {
     [Environment]::SetEnvironmentVariable('PFREMOTE_SETUP_TESTING', $savedTesting, 'Process')

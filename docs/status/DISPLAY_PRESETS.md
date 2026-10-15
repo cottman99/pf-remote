@@ -1,6 +1,6 @@
 # Display presets
 
-Candidate: Windows alpha.112 (publisher sequence 114), 2026-10-15.
+Released: Windows alpha.112 (publisher sequence 114), 2026-10-15.
 
 Connection presets now offers windowed, single-screen full screen, all-screen
 full screen and selected-screen full screen. A screen map and checkboxes select
@@ -29,6 +29,25 @@ their existing defaults. Direct VNC entries retain their existing viewer behavio
   advanced settings. A changed legacy boolean selects window/single. Native
   profile tests verify every display property and retain resource/authentication
   settings. No private values enter the source or generated public package.
+- Packaged upgrade, rollback to alpha.111 and re-upgrade retain the selected
+  monitor preset and encrypted account. The older client reads its compatible
+  full-screen setting; the new client recovers the complete selection afterward.
+
+## Delivery
+
+Sanitized source and seven fixed-release assets are published. All remote asset
+digests match the reviewed package; preview payloads are checked before signed
+metadata is published last. Source and UTF-8/UTF-16 package privacy scans pass;
+reviewed SDK enum names and a fixed binary table are not deployment strings.
+
+Both reachable Windows controllers independently update from alpha.111 to
+alpha.112. Their six and seven protected identity/account/connection files are
+unchanged, with 14 targets and readable history preserved on each. The existing
+one and three native viewers remain running with their original start times;
+both installed Centers are responsive. Monitor discovery succeeds on one- and
+two-screen controllers. The third controller is management-unreachable with a
+last-observed alpha.109 report; a durable notice is retained. The Linux node
+keeps its current platform release because this change is in the Windows client.
 
 ## Compatibility and limits
 
@@ -37,7 +56,8 @@ route, Gateway or remote-desktop migration is needed. Credentials stay encrypted
 locally. An older binary uses the retained full-screen flag; upgrading again
 restores advanced settings unless the older binary rewrote the preset.
 
-The live local test has one physical monitor. Multi-monitor adjacency, numbering
+The isolated local UI test has one physical monitor. Native discovery also
+recognizes the second controller's two monitors. Multi-monitor adjacency, numbering
 and profile projection have synthetic regression coverage; simultaneous rendering
 on multiple physical monitors is not claimed from that test. Remote server and
 protocol support determine the final multi-monitor canvas. No active remote

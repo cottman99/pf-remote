@@ -30,7 +30,11 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current Windows release: alpha.111 fixes independent Linux workspace selection,
+Current Windows release: alpha.112 adds windowed, single-screen, all-screen and
+selected-screen presets, remembered per controlling computer and exact target.
+Both reachable Windows controllers are updated with configuration, history and
+existing viewers preserved. See docs/status/DISPLAY_PRESETS.md.
+It retains alpha.111's independent Linux workspace selection,
 retaining connection presets, protected saved accounts and quiet repeat resource
 sharing; see docs/status/CONNECTION_PRESETS.md and
 docs/status/WORKSPACE_SELECTION_FIX.md. Native testing found that the shared

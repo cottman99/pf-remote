@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: d03b7381b821b9f58cc43f320ef3800eb07ba7bc
+base_commit: c922269
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -38,9 +38,13 @@ R2/R3: protected storage, explicit native profile projection, stale-layout
 recovery and all 64 presentation tests pass, along with full repository checks.
 A real isolated native UI saves and reloads all four modes and remains running.
 Local hardware discovery is verified; this controller has one physical monitor,
-so multi-monitor rendering remains server/hardware dependent. The alpha.112
-package passes integrity and license checks; release/upgrade verification and
-authorized delivery are in progress. See docs/status/DISPLAY_PRESETS.md.
+so multi-monitor rendering remains server/hardware dependent. The second live
+controller's two monitors are also discovered correctly. R4: alpha.112 (sequence
+114), sanitized source and verified preview assets are published. Both reachable
+Windows controllers independently update and preserve protected files, targets,
+history and original viewers. Selected-screen presets survive packaged rollback
+and re-upgrade. The management-offline controller retains its update notice.
+This side task is closed; return to M10.3. See docs/status/DISPLAY_PRESETS.md.
 
 2026-10-15 owner requests live microphone-switch follow-through and GitHub
 synchronization. R0: main retains cumulative work; the sanitized publication
