@@ -77,6 +77,29 @@ exit or launch failure; native certificate verification remains enabled.
 
 ## Open sequence
 
+### Local connection presets
+
+The additive protected `desktop-preset` action reads or updates the selected RDP
+target's local settings without opening a session. `inspect --desktop-preset`
+reads safe settings; `open --save-preset-stdin` accepts a JSON update on stdin
+and saves only. The response schema is `pfremote.desktop-preset/v1`, with
+`username`, `password_saved`, `full_screen`, `default_desktop`, and optional
+`requires_setup`. An identity change returns an empty account with
+`requires_setup: true`; it cannot reuse the old secret. An update may
+include `password` or `clear_password`. A blank password preserves an existing
+password only for the same account, canonical target, Device key and workspace.
+Passwords never appear in responses. Native Credential Manager holds credentials
+under the selected server name, following Windows lookup semantics; RDP files
+remain password-free. Existing v1 VNC passwords
+remain readable and unchanged. One default desktop is stored per Device locally;
+the catalog's additive `local_default_desktop` hint drives one-click UI selection.
+Exact CLI/MCP target opens never substitute the preferred sibling.
+
+Repeated resource prompts are avoided by signing generated profiles with a
+locally trusted, non-CA code-signing leaf and pinning its publisher. First-time
+administrator preparation is available through Connection presets and accounts;
+ordinary reconnects do not elevate or disable global security dialogs.
+
 Immediately before `open`, the daemon:
 
 1. reloads current authorization for its protected subject Device;

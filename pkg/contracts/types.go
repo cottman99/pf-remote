@@ -102,14 +102,15 @@ type Authorization struct {
 }
 
 type Target struct {
-	Canonical       string        `json:"canonical"`
-	Alias           string        `json:"alias"`
-	Device          Device        `json:"device"`
-	Capability      Capability    `json:"capability"`
-	Granted         bool          `json:"granted"`
-	Authorization   Authorization `json:"authorization"`
-	LocalSetupState string        `json:"local_setup_state,omitempty"`
-	RouteOptions    []RouteOption `json:"route_options,omitempty"`
+	Canonical           string        `json:"canonical"`
+	Alias               string        `json:"alias"`
+	Device              Device        `json:"device"`
+	Capability          Capability    `json:"capability"`
+	Granted             bool          `json:"granted"`
+	Authorization       Authorization `json:"authorization"`
+	LocalSetupState     string        `json:"local_setup_state,omitempty"`
+	LocalDefaultDesktop bool          `json:"local_default_desktop,omitempty"`
+	RouteOptions        []RouteOption `json:"route_options,omitempty"`
 }
 
 // RouteOption is safe, address-free connection-path metadata for one exact

@@ -83,7 +83,7 @@ func TestExecutorUsesExistingRDPClientWithoutCredentials(t *testing.T) {
 	if err := (Executor{Command: command, Credentials: fixedCredential{value: []byte("synthetic-secret")}, Lookup: identityLookup, GOOS: "windows"}).Open(context.Background(), execution); err != nil {
 		t.Fatal(err)
 	}
-	if command.name != "mstsc.exe" || !reflect.DeepEqual(command.args, []string{"/public"}) {
+	if command.name != "mstsc.exe" || len(command.args) != 0 {
 		t.Fatalf("command=%q args=%q", command.name, command.args)
 	}
 }

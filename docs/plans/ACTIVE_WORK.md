@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 2f43078
+base_commit: d550bad
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,24 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-15 owner prioritizes personal connection presets and silent repeat access.
+R0: main retains existing dirty alpha.109/audio work. M10.3 remains the return
+point. Acceptance: native settings saves an exact default workspace, account,
+protected password and window preference; subsequent opens reuse them across
+routes; trusted generated RDP files do not ask for resource consent repeatedly.
+R1: credentials remain current-user encrypted and bound to immutable target and
+identity; no global warning suppression, network changes or current viewer restart.
+An exact non-CA code-signing leaf may be trusted locally only after validating its
+purpose and private-key binding. Test native trust on an isolated desktop before
+release. Publish sanitized packages and update available controllers in background.
+
+R2/R3: alpha.110 implements protected per-desktop account settings, exact default
+desktop selection and native credential projection. The certificate-chain failure
+is reproduced and fixed on an isolated desktop. Full repository checks and 61
+presentation tests pass; the native settings dialog is responsive and rendered.
+Package/rollback verification and authorized online rollout are the current step.
+See docs/status/CONNECTION_PRESETS.md. No active viewer is restarted.
 
 2026-10-14 owner prioritizes default playback on Linux desktop connections.
 R0: main is dirty with retained alpha.106/UI/audio work; preserve those edits.

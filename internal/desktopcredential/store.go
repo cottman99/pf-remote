@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 const schemaVersion = "pfremote.desktop-credential/v1"
@@ -25,6 +26,7 @@ type protector interface {
 }
 
 type Store struct {
+	presetMu  sync.Mutex
 	root      string
 	protector protector
 }

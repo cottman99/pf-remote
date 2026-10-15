@@ -336,4 +336,21 @@
   <data name="OpenWithMicrophoneLabel" xml:space="preserve"><value>打开并启用麦克风</value></data>
   <data name="MicrophoneUnavailableTitle" xml:space="preserve"><value>本机没有可用麦克风</value></data>
   <data name="MicrophoneUnavailableMessage" xml:space="preserve"><value>如果你通过远程桌面使用这台电脑，请在连接这台电脑的远程桌面中打开“从此计算机录制”，然后重新连接。仍可正常打开桌面并播放声音。</value></data>
+  <data name="ConnectionPresetTitle" xml:space="preserve"><value>连接预设与账号</value></data>
+  <data name="PresetDesktopLabel" xml:space="preserve"><value>电脑与桌面</value></data>
+  <data name="PresetUsernameLabel" xml:space="preserve"><value>登录账号</value></data>
+  <data name="PresetClearPassword" xml:space="preserve"><value>清除已保存的密码</value></data>
+  <data name="PresetFullScreen" xml:space="preserve"><value>连接后全屏显示</value></data>
+  <data name="PresetDefaultDesktop" xml:space="preserve"><value>设为这台电脑的一键连接桌面</value></data>
+  <data name="PresetSharingHelp" xml:space="preserve"><value>声音、麦克风、剪贴板和支持的硬件默认共享。账号与密码仅在本机加密保存，更新后继续保留。更改从下次连接生效。</value></data>
+  <data name="PresetSave" xml:space="preserve"><value>保存预设</value></data>
+  <data name="PresetPasswordSaved" xml:space="preserve"><value>已保存密码。留空保留原密码，输入新密码可替换；更改账号时请重新输入密码。</value></data>
+  <data name="PresetPasswordMissing" xml:space="preserve"><value>尚未保存密码。填写一次后，连接时自动使用；也可留空使用 Windows 已保存的登录信息。</value></data>
+  <data name="PresetLoadFailed" xml:space="preserve"><value>未能读取预设，请重新选择桌面或稍后重试。</value></data>
+  <data name="PresetIdentityChanged" xml:space="preserve"><value>这台电脑或桌面的身份已更新。请重新填写账号，旧密码不会自动使用。</value></data>
+  <data name="PresetSaveFailed" xml:space="preserve"><value>未能保存。请检查登录账号；清除密码时请将密码框留空，然后重试。</value></data>
+  <data name="PresetNoDesktop" xml:space="preserve"><value>连接服务就绪后，可在这里为远程桌面保存预设。</value></data>
+  <data name="PresetRepairTrust" xml:space="preserve"><value>修复本机连接信任（首次需管理员确认）</value></data>
+  <data name="PresetTrustReady" xml:space="preserve"><value>本机连接信任已就绪，下次连接自动使用。</value></data>
+  <data name="PresetTrustFailed" xml:space="preserve"><value>未完成信任设置，请使用本机当前账号的管理员权限重试。</value></data>
 </root>

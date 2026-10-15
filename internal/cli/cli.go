@@ -71,6 +71,13 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 	case "list":
 		value, err = client.List(ctx)
 	case "inspect":
+		if requested, args := takeFlag(rest, "--desktop-preset"); requested {
+			if len(args) != 1 {
+				return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "cli", "Choose one desktop.", "Open connection settings.")
+			}
+			value, err = runPreset(ctx, client, args[0], nil)
+			break
+		}
 		if len(rest) != 1 {
 			return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "cli", "inspect requires one target or alias.", "Run pfremote inspect <target-or-alias> --json.")
 		}
@@ -111,6 +118,20 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 		}
 		value, err = client.Exec(ctx, rest[0], rest[1:])
 	case "open":
+		if requested, args := takeFlag(rest, "--save-preset-stdin"); requested {
+			if len(args) != 1 {
+				return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "cli", "Choose one desktop.", "Open connection settings.")
+			}
+			b, readErr := io.ReadAll(io.LimitReader(stdin, 16385))
+			defer clear(b)
+			var update contracts.DesktopPresetUpdate
+			if readErr != nil || len(b) > 16384 || json.Unmarshal(b, &update) != nil {
+				return writeError(stderr, jsonOutput, "INVALID_PRESET_INPUT", "setup", "The connection settings could not be read.", "Retry from connection settings.")
+			}
+			value, err = runPreset(ctx, client, args[0], &update)
+			update.Password = ""
+			break
+		}
 		credentialStdin, openArgs := takeFlag(rest, "--credential-stdin")
 		audioCapture, openArgs := takeFlag(openArgs, "--microphone")
 		if credentialStdin && audioCapture {

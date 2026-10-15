@@ -2,6 +2,7 @@ package desktop
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -9,8 +10,43 @@ import (
 	"testing"
 
 	session "github.com/cottman99/pf-remote/internal/desktop"
+	"github.com/cottman99/pf-remote/internal/desktopcredential"
 	"github.com/cottman99/pf-remote/internal/route"
 )
+
+type presetCredentials struct {
+	preset                     desktopcredential.RDPPreset
+	err                        error
+	target, identity, selector string
+}
+
+func (s *presetCredentials) Load(string) ([]byte, error) { return nil, desktopcredential.ErrNotFound }
+func (s *presetCredentials) LoadRDP(target, identity, selector string) (desktopcredential.RDPPreset, error) {
+	s.target, s.identity, s.selector = target, identity, selector
+	return s.preset, s.err
+}
+func TestPresetProjectionPinsIdentityAndNeverWritesSecretToProfile(t *testing.T) {
+	store := &presetCredentials{preset: desktopcredential.RDPPreset{Username: "example-account", Password: strings.Join([]string{"synthetic", "secret"}, "-"), FullScreen: false}}
+	execution := session.Execution{Session: session.Session{CanonicalTarget: "pfremote://fabric-example/devices/device-example/capabilities/desktop", TargetIdentity: "example-key", SessionSelector: "shared-2"}}
+	options, err := (Executor{Credentials: store}).rdpOptions(execution, "192.0.2.10:3389")
+	if err != nil || store.target != execution.Session.CanonicalTarget || store.identity != "example-key" || store.selector != "shared-2" {
+		t.Fatal("preset lookup lost identity binding")
+	}
+	profile, err := options.content()
+	public, _ := json.Marshal(options)
+	if err != nil || !strings.Contains(profile, "username:s:example-account\r\n") || !strings.Contains(profile, "screen mode id:i:1\r\n") || strings.Contains(profile, store.preset.Password) || strings.Contains(string(public), store.preset.Password) {
+		t.Fatal("invalid or leaking profile projection")
+	}
+	store.err = errors.New("identity changed")
+	if _, err := (Executor{Credentials: store}).rdpOptions(execution, "192.0.2.10:3389"); err == nil {
+		t.Fatal("changed identity reused a saved password")
+	}
+	store.err = desktopcredential.ErrNotFound
+	options, err = (Executor{Credentials: store}).rdpOptions(execution, "192.0.2.10:3389")
+	if err != nil || options.Password != "" || options.Windowed {
+		t.Fatal("default connection changed")
+	}
+}
 
 func TestRDPProfileExplicitAudioAndExactWorkspace(t *testing.T) {
 	for _, capture := range []bool{false, true} {
@@ -87,6 +123,9 @@ func TestSigningFailureRemovesProfileBeforeClientLaunch(t *testing.T) {
 			t.Fatal(err)
 		}
 		return errors.New("synthetic signing failure")
+	}, PrepareRDP: func(RDPOptions) error {
+		t.Fatal("untrusted profile published a credential")
+		return nil
 	}}).Run(context.Background(), Launch{Name: "must-not-launch", RDP: &RDPOptions{Endpoint: "192.0.2.10:3389"}})
 	if err == nil || !called {
 		t.Fatal("signing failure must stop launch")

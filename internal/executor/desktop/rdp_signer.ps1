@@ -31,6 +31,15 @@ try {
             Move-Item -LiteralPath $temp -Destination $bindingPath -Force
         } finally { if (Test-Path -LiteralPath $temp) { Remove-Item -LiteralPath $temp } }
     }
+    # Windows validates the publisher chain before applying the exact RDP
+    # publisher allow-list. TrustedPublisher alone cannot anchor a self-signed
+    # leaf. Trust only this local, non-CA, code-signing-only certificate.
+    $eku = @($cert.Extensions | Where-Object { $_.Oid.Value -eq '2.5.29.37' } | ForEach-Object { $_.EnhancedKeyUsages } | ForEach-Object { $_.Value })
+    $constraints = @($cert.Extensions | Where-Object { $_.Oid.Value -eq '2.5.29.19' })
+    if ($eku.Count -ne 1 -or $eku[0] -ne '1.3.6.1.5.5.7.3.3' -or
+        ($constraints.Count -gt 0 -and $constraints[0].CertificateAuthority)) {
+        throw 'Local RDP certificate has an unexpected purpose.'
+    }
     foreach ($name in @('TrustedPublisher')) {
         $store = [Security.Cryptography.X509Certificates.X509Store]::new($name, 'CurrentUser')
         try {
@@ -39,6 +48,20 @@ try {
             $store.Add($public)
         } finally { $store.Close() }
     }
+    $chain = [Security.Cryptography.X509Certificates.X509Chain]::new()
+    $chain.ChainPolicy.RevocationMode = 'NoCheck'
+    [void]$chain.ChainPolicy.ApplicationPolicy.Add([Security.Cryptography.Oid]::new('1.3.6.1.5.5.7.3.3'))
+    try {
+        if (-not $chain.Build($cert)) {
+            $principal = [Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent())
+            if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'Local RDP publisher requires one-time administrator setup.' }
+            # Machine-store installation is noninteractive. CurrentUser Root
+            # would show a Windows consent window on the active desktop.
+            $roots = [Security.Cryptography.X509Certificates.X509Store]::new('Root', 'LocalMachine')
+            try { $roots.Open('ReadWrite'); $roots.Add([Security.Cryptography.X509Certificates.X509Certificate2]::new($cert.RawData)) } finally { $roots.Close() }
+            if (-not $chain.Build($cert)) { throw 'Local RDP publisher trust failed validation.' }
+        }
+    } finally { $chain.Dispose() }
     $sha = [Security.Cryptography.SHA256]::Create()
     try { $sha256 = ([BitConverter]::ToString($sha.ComputeHash($cert.RawData))).Replace('-', '') } finally { $sha.Dispose() }
     $policy = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'

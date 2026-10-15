@@ -18,6 +18,13 @@ internal sealed class PfRemoteCliClient
     public Task<DoctorResponse> DoctorAsync(CancellationToken cancellationToken = default) =>
         RunAsync<DoctorResponse>(["doctor", "--json"], cancellationToken);
 
+    public Task<DesktopPresetResponse> ReadPresetAsync(string target) =>
+        RunAsync<DesktopPresetResponse>(["inspect", target, "--desktop-preset", "--json"], default);
+
+    public Task<DesktopPresetResponse> SavePresetAsync(string target, DesktopPresetUpdate update) =>
+        RunAsync<DesktopPresetResponse>(["open", target, "--save-preset-stdin", "--json"], default,
+            JsonSerializer.Serialize(update, JsonOptions));
+
     public Task<FleetUpdateResponse> UpdatesAsync(string option = "--updates", CancellationToken cancellationToken = default) =>
         RunAsync<FleetUpdateResponse>(["doctor", option, "--json"], cancellationToken);
 

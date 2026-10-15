@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	session "github.com/cottman99/pf-remote/internal/desktop"
+	"github.com/cottman99/pf-remote/internal/desktopcredential"
 )
 
 type Command interface {
@@ -26,7 +27,8 @@ type Launch struct {
 }
 
 type OSCommand struct {
-	SignRDP func(context.Context, string) error
+	SignRDP    func(context.Context, string) error
+	PrepareRDP func(RDPOptions) error
 }
 
 func (runner OSCommand) Run(ctx context.Context, launch Launch) error {
@@ -48,6 +50,14 @@ func (runner OSCommand) Run(ctx context.Context, launch Launch) error {
 			sign = signRDPProfile
 		}
 		if err := sign(ctx, path); err != nil {
+			cleanup()
+			return err
+		}
+		prepare := runner.PrepareRDP
+		if prepare == nil {
+			prepare = prepareRDPCredentials
+		}
+		if err := prepare(*launch.RDP); err != nil {
 			cleanup()
 			return err
 		}
@@ -115,7 +125,13 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 		// encrypted loopback relay. Remote Credential Guard requires a direct
 		// Kerberos/domain path and closes these workgroup or relay sockets before
 		// sign-in, so the system client must use its normal credential flow.
-		if err := command.Run(ctx, Launch{Name: client, Arguments: []string{"/public"}, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector}}); err != nil {
+		// This is the owner's personal controller. Public mode prevents Windows
+		// from retaining credentials the owner explicitly chooses to save.
+		options, err := e.rdpOptions(execution, endpoint)
+		if err != nil {
+			return err
+		}
+		if err := command.Run(ctx, Launch{Name: client, RDP: &options}); err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_START_FAILED", Summary: "Windows Remote Desktop could not start.", Remediation: "Retry from the signed-in Windows desktop."}
 		}
 		return nil
@@ -127,7 +143,11 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 		if err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_UNAVAILABLE", Summary: "Windows Remote Desktop is unavailable on this computer.", Remediation: "Repair the Windows Remote Desktop client and try again."}
 		}
-		if err := command.Run(ctx, Launch{Name: client, RDP: &RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector}}); err != nil {
+		options, err := e.rdpOptions(execution, endpoint)
+		if err != nil {
+			return err
+		}
+		if err := command.Run(ctx, Launch{Name: client, RDP: &options}); err != nil {
 			return &session.ExecutorFault{Code: "DESKTOP_CLIENT_START_FAILED", Summary: "Windows Remote Desktop could not start.", Remediation: "Retry from the signed-in Windows desktop."}
 		}
 		return nil
@@ -175,6 +195,30 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 	default:
 		return &session.ExecutorFault{Code: "DESKTOP_PROFILE_UNSUPPORTED", Summary: "This desktop connection profile is incomplete.", Remediation: "Repair this computer connection and try again."}
 	}
+}
+
+func (e Executor) rdpOptions(execution session.Execution, endpoint string) (RDPOptions, error) {
+	o := RDPOptions{Endpoint: endpoint, SessionSelector: execution.Session.SessionSelector}
+	if store, ok := e.Credentials.(interface {
+		LoadRDP(string, string, string) (desktopcredential.RDPPreset, error)
+	}); ok {
+		p, err := store.LoadRDP(execution.Session.CanonicalTarget, execution.Session.TargetIdentity, execution.Session.SessionSelector)
+		if errors.Is(err, desktopcredential.ErrNotFound) {
+			return o, nil
+		}
+		if err != nil {
+			return o, &session.ExecutorFault{Code: "DESKTOP_PRESET_INVALID", Summary: "Saved connection settings no longer match this desktop.", Remediation: "Open connection settings and save this account again."}
+		}
+		o.Username = p.Username
+		o.Password = p.Password
+		o.Windowed = !p.FullScreen
+		o.CredentialOwner = execution.Session.CanonicalTarget
+	}
+	return o, nil
+}
+
+func prepareRDPCredentials(o RDPOptions) error {
+	return desktopcredential.PrepareRDP(o.Endpoint, o.Username, o.Password, o.CredentialOwner)
 }
 
 func tigerVNCEndpoint(address string, port uint16) string {

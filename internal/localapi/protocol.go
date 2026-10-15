@@ -15,15 +15,16 @@ import (
 const SchemaVersion = "pfremote.local-api/v1"
 
 type Request struct {
-	SchemaVersion string   `json:"schema_version"`
-	Action        string   `json:"action"`
-	Target        string   `json:"target,omitempty"`
-	Task          string   `json:"task,omitempty"`
-	Constraints   []string `json:"constraints,omitempty"`
-	Command       []string `json:"command,omitempty"`
-	Credential    string   `json:"credential,omitempty"`
-	RouteAdapter  string   `json:"route_adapter,omitempty"`
-	AudioCapture  bool     `json:"audio_capture,omitempty"`
+	SchemaVersion string                         `json:"schema_version"`
+	Action        string                         `json:"action"`
+	Target        string                         `json:"target,omitempty"`
+	Task          string                         `json:"task,omitempty"`
+	Constraints   []string                       `json:"constraints,omitempty"`
+	Command       []string                       `json:"command,omitempty"`
+	Credential    string                         `json:"credential,omitempty"`
+	RouteAdapter  string                         `json:"route_adapter,omitempty"`
+	AudioCapture  bool                           `json:"audio_capture,omitempty"`
+	DesktopPreset *contracts.DesktopPresetUpdate `json:"desktop_preset,omitempty"`
 }
 
 type Response struct {
@@ -65,7 +66,7 @@ func (h Handler) HandleContext(ctx context.Context, request Request) Response {
 		}
 		return Response{SchemaVersion: SchemaVersion, Result: result}
 	}
-	if h.Gate != nil && (request.Action == "connect" || request.Action == "exec" || request.Action == "open" || request.Action == "save-desktop-credential-and-open") {
+	if h.Gate != nil && (request.Action == "connect" || request.Action == "exec" || request.Action == "open" || request.Action == "save-desktop-credential-and-open" || request.Action == "desktop-preset" && request.DesktopPreset != nil) {
 		leave, ok := h.Gate.Enter()
 		if !ok {
 			return failed("UPDATE_IN_PROGRESS", "maintenance", "PF Remote is updating. Try again shortly.", "Wait for the update to finish.")
@@ -81,6 +82,12 @@ func (h Handler) HandleContext(ctx context.Context, request Request) Response {
 		}
 	}
 	switch request.Action {
+	case "desktop-preset":
+		result, err := service.DesktopPreset(request.Target, request.DesktopPreset)
+		if err != nil {
+			return actionFailure(err)
+		}
+		return Response{SchemaVersion: SchemaVersion, Result: result}
 	case "list":
 		return Response{SchemaVersion: SchemaVersion, Result: service.List()}
 	case "inspect":

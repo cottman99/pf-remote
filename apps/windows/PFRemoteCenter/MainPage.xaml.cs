@@ -115,6 +115,10 @@ public sealed partial class MainPage : Page
 			RootContentGrid.Children.Remove(section);
 			SettingsContentHost.Children.Add(section);
 		}
+		var presets = new Button { Content = _resources.GetString("ConnectionPresetTitle"), HorizontalAlignment = HorizontalAlignment.Left };
+		AutomationProperties.SetAutomationId(presets, "connection-presets");
+		presets.Click += async (_, _) => await ShowConnectionPresetAsync(null);
+		SettingsContentHost.Children.Insert(2, presets);
 	}
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -168,6 +172,10 @@ public sealed partial class MainPage : Page
 			RootNavigation.SelectedItem = SessionsNavigationItem;
 			ApplyDestination("sessions");
 		}
+        else if (string.Equals(visualAuditState, "connection-presets", StringComparison.OrdinalIgnoreCase))
+        {
+            _ = ShowConnectionPresetAsync(null);
+        }
         else if (string.Equals(visualAuditState, "connection-error", StringComparison.OrdinalIgnoreCase))
         {
 			string? retryTarget = Devices.SelectMany(device => device.DesktopOptions)
@@ -268,7 +276,8 @@ public sealed partial class MainPage : Page
 		{
 			ShowSettingsStatus(_resources.GetString("RecoveryCreatedStatus"), InfoBarSeverity.Success);
 		}
-		if (!string.Equals(visualAuditState, "add-computer", StringComparison.OrdinalIgnoreCase))
+		if (!string.Equals(visualAuditState, "add-computer", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(visualAuditState, "connection-presets", StringComparison.OrdinalIgnoreCase))
 		{
 			await VisualAuditCapture.CaptureWhenRequestedAsync(this);
 		}
@@ -996,6 +1005,7 @@ public sealed partial class MainPage : Page
             AddRouteMenuItem(flyout, desktop, route.Adapter, RouteLabel(route.Adapter),
                 string.Equals(route.Status, "available", StringComparison.OrdinalIgnoreCase));
         }
+        AddPresetMenuItem(flyout, desktop.Canonical);
     }
 
     private void PopulateDesktopMenu(MenuFlyout flyout, DeviceViewModel device)
@@ -1011,6 +1021,7 @@ public sealed partial class MainPage : Page
             item.Click += RouteMenuItem_Click;
             flyout.Items.Add(item);
         }
+        AddPresetMenuItem(flyout, _catalogTargets.FirstOrDefault(t => t.Device.Id == device.Device.Id && t.Capability.DesktopProfile?.Protocol == "rdp")?.Canonical);
     }
 
 	private void DeviceRowGrid_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -1262,6 +1273,12 @@ public sealed partial class MainPage : Page
 
     private async void UseComputerButton_Click(SplitButton sender, SplitButtonClickEventArgs e)
     {
+        if (sender.DataContext is DeviceViewModel selected &&
+            DeviceCatalogPresenter.DefaultDesktop(selected.Device.Id, _catalogTargets) is string preferred)
+        {
+            await OpenDesktopAsync(preferred, null, sender);
+            return;
+        }
         if (sender.DataContext is DeviceViewModel { HasAlternateDesktops: true })
         {
             sender.Flyout?.ShowAt(sender);

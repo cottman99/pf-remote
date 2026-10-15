@@ -14,8 +14,22 @@
 Native RDP profiles use a per-user, non-exportable local code-signing key and an
 exact trusted-publisher fingerprint for owner-authorized resource sharing.
 This trust is separate from update-publisher signatures and remote server TLS.
-It does not add a root CA, disable remote certificate checks, or trust arbitrary
-unsigned profiles. Policy preparation preserves unrelated publisher entries.
+It does not add a certificate-authority key or disable remote certificate checks.
+Windows requires a trusted chain as well as a publisher fingerprint: one-time
+administrator preparation trusts the exact self-signed, non-CA, code-signing-only
+leaf in the machine certificate store. Its private key remains non-exportable
+and current-user scoped. This leaf cannot issue certificates or authenticate TLS
+servers. Unrelated and unsigned profiles remain untrusted; policy preparation
+preserves unrelated publisher entries. Ordinary connections never trigger elevation.
+
+Personal presets are protected with current-user DPAPI and bind credentials to
+the canonical target, Device public identity and workspace selector inside the
+encrypted payload. The local API returns account names and password-presence
+only; passwords enter through protected stdin/IPC, never arguments or logs.
+After authorization and route selection, the native executor writes the selected
+account to Windows Credential Manager for that exact endpoint. Owned entries
+carry a target digest; replacing/clearing an account removes only those entries.
+The public package and Gateway do not contain or synchronize these secrets.
 
 - The Owner administrates the Fabric.
 - Every Device has its own Ed25519 identity and can be revoked independently.

@@ -26,6 +26,31 @@ public sealed class AuthorizationPresenterTests
     private static readonly string[] MigrationEnableArguments = ["enable-legacy-center"];
 
     [TestMethod]
+    public void DefaultDesktopStaysOnTheSelectedComputerAndIgnoresUnavailableTargets()
+    {
+        var device = new DeviceSummary("device-a", "example-a", "Example A", "online");
+        var desktop = new TargetSummary(
+            "pfremote://fabric-example/devices/device-a/capabilities/desktop-3", "example-a/desktop-3", device,
+            new CapabilitySummary("desktop-3", "desktop-3", "Shared desktop 3", "desktop", "available", new DesktopProfileSummary("rdp", "virtual", "windows-sso")),
+            true, Authorization("active", Now.AddDays(1)), LocalDefaultDesktop: true);
+        Assert.AreEqual(desktop.Canonical, DeviceCatalogPresenter.DefaultDesktop(device.Id, [desktop]));
+        Assert.IsNull(DeviceCatalogPresenter.DefaultDesktop("device-b", [desktop]));
+        Assert.IsNull(DeviceCatalogPresenter.DefaultDesktop(device.Id, [desktop with { IsGranted = false }]));
+        Assert.IsNull(DeviceCatalogPresenter.DefaultDesktop(device.Id, [desktop with { Capability = desktop.Capability with { State = "unavailable" } }]));
+    }
+
+    [TestMethod]
+    public void PresetResponseDisplaysSavedStateWithoutASecretField()
+    {
+        var preset = JsonSerializer.Deserialize<DesktopPresetResponse>("""{"username":"example","password_saved":true,"full_screen":false,"default_desktop":true,"requires_setup":false}""", WebJson);
+        Assert.IsNotNull(preset);
+        Assert.IsTrue(preset.PasswordSaved);
+        Assert.IsFalse(preset.FullScreen);
+        Assert.IsTrue(preset.DefaultDesktop);
+        Assert.IsNull(typeof(DesktopPresetResponse).GetProperty("Password"));
+    }
+
+    [TestMethod]
     public void DebugContextHandoffExportsWithoutUsingTheUserClipboard()
     {
         string root = Path.Combine(AppContext.BaseDirectory, $"pfremote-context-audit-{Guid.NewGuid():N}");

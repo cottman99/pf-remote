@@ -336,4 +336,21 @@
   <data name="OpenWithMicrophoneLabel" xml:space="preserve"><value>Open with microphone</value></data>
   <data name="MicrophoneUnavailableTitle" xml:space="preserve"><value>No microphone is available</value></data>
   <data name="MicrophoneUnavailableMessage" xml:space="preserve"><value>If you access this computer through Remote Desktop, enable Record from this computer in that upstream connection, then reconnect. You can still open the desktop and play sound.</value></data>
+  <data name="ConnectionPresetTitle" xml:space="preserve"><value>Connection presets and accounts</value></data>
+  <data name="PresetDesktopLabel" xml:space="preserve"><value>Computer and desktop</value></data>
+  <data name="PresetUsernameLabel" xml:space="preserve"><value>Sign-in account</value></data>
+  <data name="PresetClearPassword" xml:space="preserve"><value>Clear saved password</value></data>
+  <data name="PresetFullScreen" xml:space="preserve"><value>Open in full screen</value></data>
+  <data name="PresetDefaultDesktop" xml:space="preserve"><value>Use this desktop for one-click connections</value></data>
+  <data name="PresetSharingHelp" xml:space="preserve"><value>Sound, microphone, clipboard and supported hardware are shared by default. Accounts and passwords stay encrypted on this computer and survive updates. Changes apply to the next connection.</value></data>
+  <data name="PresetSave" xml:space="preserve"><value>Save preset</value></data>
+  <data name="PresetPasswordSaved" xml:space="preserve"><value>Password saved. Leave blank to keep it or enter a replacement. Enter the password again when changing accounts.</value></data>
+  <data name="PresetPasswordMissing" xml:space="preserve"><value>No password saved. Enter it once to use it automatically, or leave blank to use Windows sign-in information.</value></data>
+  <data name="PresetLoadFailed" xml:space="preserve"><value>Could not load this preset. Select the desktop again or retry later.</value></data>
+  <data name="PresetSaveFailed" xml:space="preserve"><value>Could not save. Check the account; leave the password field empty when clearing a saved password, then retry.</value></data>
+  <data name="PresetNoDesktop" xml:space="preserve"><value>Once the connection service is ready, save remote desktop presets here.</value></data>
+  <data name="PresetRepairTrust" xml:space="preserve"><value>Repair local connection trust (administrator setup)</value></data>
+  <data name="PresetTrustReady" xml:space="preserve"><value>Local connection trust is ready for the next connection.</value></data>
+  <data name="PresetTrustFailed" xml:space="preserve"><value>Trust setup did not finish. Retry with administrator rights for this Windows account.</value></data>
+  <data name="PresetIdentityChanged" xml:space="preserve"><value>This computer or desktop identity has changed. Enter its account again; the old password will not be reused.</value></data>
 </root>

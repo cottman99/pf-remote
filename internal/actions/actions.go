@@ -17,6 +17,7 @@ type Service struct {
 	Shell              ShellRunner
 	Desktop            DesktopRunner
 	DesktopCredentials DesktopCredentialWriter
+	DesktopPresets     DesktopPresetStore
 	AdditionalChecks   []contracts.Check
 	Activity           *activity.Store
 	RouteOptions       func(string) []contracts.RouteOption
@@ -78,6 +79,11 @@ func (s Service) withLocalSetupState(target contracts.Target) contracts.Target {
 
 func (s Service) withDesktopSetupState(target contracts.Target) contracts.Target {
 	profile := target.Capability.DesktopProfile
+	if profile != nil && profile.Protocol == "rdp" && s.DesktopPresets != nil {
+		if p, err := s.DesktopPresets.ReadPreset(target.Canonical, target.Device.IdentityPublicKey, profile.SessionSelector); err == nil {
+			target.LocalDefaultDesktop = p.DefaultDesktop
+		}
+	}
 	if profile == nil || profile.Protocol != "vnc" || profile.Authentication != "legacy-vnc-password" {
 		return target
 	}

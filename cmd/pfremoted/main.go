@@ -473,6 +473,7 @@ func main() {
 		service := actions.Service{DeviceID: deviceIdentity.DeviceID()}
 		service.Activity = activityStore
 		service.DesktopCredentials = desktopCredentials
+		service.DesktopPresets = desktopCredentials
 		service.AdditionalChecks = []contracts.Check{getCapabilitySyncCheck(), updates.Status()}
 		service.Catalog = catalog.New(current.FabricID, current.Devices, current.Capabilities, current.Grants, service.DeviceID, current.CapturedAt, func() time.Time {
 			effective, err := stateStore.ObserveAuthorizationTime(context.Background(), time.Now())

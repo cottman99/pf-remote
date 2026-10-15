@@ -39,7 +39,20 @@ internal sealed record TargetSummary(
     [property: JsonPropertyName("granted")] bool IsGranted,
     [property: JsonPropertyName("authorization")] AuthorizationSummary Authorization,
     [property: JsonPropertyName("local_setup_state")] string? LocalSetupState = null,
-    [property: JsonPropertyName("route_options")] IReadOnlyList<RouteOptionSummary>? RouteOptions = null);
+    [property: JsonPropertyName("route_options")] IReadOnlyList<RouteOptionSummary>? RouteOptions = null,
+    [property: JsonPropertyName("local_default_desktop")] bool LocalDefaultDesktop = false);
+
+internal sealed record DesktopPresetResponse(
+    string Username,
+    [property: JsonPropertyName("password_saved")] bool PasswordSaved,
+    [property: JsonPropertyName("full_screen")] bool FullScreen,
+    [property: JsonPropertyName("default_desktop")] bool DefaultDesktop,
+    [property: JsonPropertyName("requires_setup")] bool RequiresSetup = false);
+internal sealed record DesktopPresetUpdate(
+    string Username, string Password,
+    [property: JsonPropertyName("clear_password")] bool ClearPassword,
+    [property: JsonPropertyName("full_screen")] bool FullScreen,
+    [property: JsonPropertyName("default_desktop")] bool DefaultDesktop);
 
 internal sealed record RouteOptionSummary(
     [property: JsonPropertyName("adapter")] string Adapter,

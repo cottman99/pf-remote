@@ -39,6 +39,10 @@ bootstrap older nodes once before they can participate in managed updates.
 Evidence M10.1: [Trusted update foundation](../status/TRUSTED_UPDATE_REPORT.md).
 Evidence M10.2: [Live fleet update delivery](../status/FLEET_UPDATE_REPORT.md).
 
+The owner's connection-preset priority is tracked in
+[Connection presets](../status/CONNECTION_PRESETS.md). M10.3 remains the return
+point after this bounded usability repair and authorized release rollout.
+
 Alpha.102 is publicly available for Windows and managed Linux nodes. Two Windows
 installations and one Linux node independently updated from alpha.100 to alpha.102.
 Linux also consumed a notice retained while its management service was offline.

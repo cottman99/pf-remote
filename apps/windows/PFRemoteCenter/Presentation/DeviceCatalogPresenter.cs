@@ -7,6 +7,9 @@ namespace PFRemoteCenter.Presentation;
 
 internal static class DeviceCatalogPresenter
 {
+    internal static string? DefaultDesktop(string deviceId, IReadOnlyList<TargetSummary> targets) =>
+        targets.FirstOrDefault(t => t.Device.Id == deviceId && t.Capability.Kind == "desktop" &&
+            t.LocalDefaultDesktop && t.IsGranted && t.Authorization.Status == "active" && IsAvailable(t))?.Canonical;
     internal static IReadOnlyList<DesktopOptionViewModel> ConnectionChoices(
         DeviceViewModel device, IReadOnlyList<TargetSummary> targets)
     {
@@ -192,6 +195,9 @@ internal static class DeviceCatalogPresenter
 			.Where(route => string.Equals(route.Status, "available", StringComparison.OrdinalIgnoreCase))
 			.OrderBy(route => route.Order)
 			.FirstOrDefault();
+		if (targets.FirstOrDefault(t => t.LocalDefaultDesktop && t.IsGranted &&
+            t.Authorization.Status == "active" && t.Capability.Kind == "desktop" && IsAvailable(t)) is { } preferredDesktop)
+			primaryAction = string.Format(CultureInfo.CurrentCulture, resource("SmartConnectNamedButtonLabel"), preferredDesktop.Capability.DisplayName);
 		string connectionSummary = availableDesktops.Length == 0
 			? capabilities
 			: preferredRoute is null

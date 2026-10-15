@@ -138,6 +138,7 @@ try {
 
     & (Join-Path $PSScriptRoot 'verify-legacy-compatibility.ps1') | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Legacy compatibility target alignment check failed.' }
+    & (Join-Path $PSScriptRoot 'verify-desktop-presets.ps1')
 
     $winProject = Join-Path $repoRoot 'apps/windows/PFRemoteCenter/PFRemoteCenter.csproj'
     if (-not $SkipWindowsApp -and (Test-Path -LiteralPath $winProject)) {

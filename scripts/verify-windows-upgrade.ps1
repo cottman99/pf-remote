@@ -41,7 +41,7 @@ function Invoke-IsolatedSetup([string]$Executable, [string]$Action) {
     if ($process.ExitCode -ne 0) { throw "Isolated setup failed: $Action" }
 }
 
-function Read-IsolatedProfile([string]$Version) {
+function Read-IsolatedProfile([string]$Version, [string]$PresetAction = '') {
     $versionRoot = Join-Path $installation ("versions\{0}" -f $Version)
     $daemon = Start-Process -FilePath (Join-Path $versionRoot 'pfremoted.exe') -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput (Join-Path $testRoot 'daemon.out') -RedirectStandardError (Join-Path $testRoot 'daemon.err')
@@ -58,6 +58,20 @@ function Read-IsolatedProfile([string]$Version) {
         $catalog = $catalogText | ConvertFrom-Json
         $targets = @($catalog.targets | ForEach-Object { $_.canonical } | Sort-Object)
         if ($targets.Count -eq 0) { throw 'Isolated profile has no retained targets.' }
+        if ($PresetAction) {
+            $rdpTarget = @($catalog.targets | Where-Object { $_.capability.desktop_profile.protocol -eq 'rdp' })[0].canonical
+            if (-not $rdpTarget) { throw 'Isolated RDP preset target is missing.' }
+            $cli = Join-Path $versionRoot 'pfremote.exe'
+            if ($PresetAction -eq 'save') {
+                $update = @{username='example-account';password=('example-'+'secret');full_screen=$false;default_desktop=$true} | ConvertTo-Json -Compress
+                $saved = $update | & $cli open $rdpTarget --save-preset-stdin --json
+                if ($LASTEXITCODE -ne 0) { throw 'Packaged preset save failed.' }
+            }
+            $preset = & $cli inspect $rdpTarget --desktop-preset --json | ConvertFrom-Json
+            if ($LASTEXITCODE -ne 0 -or -not $preset.password_saved -or $preset.username -ne 'example-account' -or $preset.full_screen -or -not $preset.default_desktop) {
+                throw 'Packaged preset did not survive upgrade or rollback.'
+            }
+        }
         $identityHash = (Get-FileHash -LiteralPath (Join-Path $env:APPDATA 'PF Remote\identity\device-identity-v1.json')).Hash
         return [pscustomobject]@{ identity = $identityHash; targets = ($targets -join "`n") }
     }
@@ -76,7 +90,7 @@ try {
     Invoke-IsolatedSetup $previousSetup 'install'
     $beforeProfile = Read-IsolatedProfile $oldVersion
     Invoke-IsolatedSetup $nextSetup 'install'
-    $afterProfile = Read-IsolatedProfile $newVersion
+    $afterProfile = Read-IsolatedProfile $newVersion 'save'
     if ($beforeProfile.identity -ne $afterProfile.identity -or $beforeProfile.targets -cne $afterProfile.targets) { throw 'Upgrade did not load the original identity and targets.' }
     $state = Get-Content -LiteralPath (Join-Path $installation 'current.json') -Raw | ConvertFrom-Json
     if ($state.current -ne $newVersion -or $state.previous -ne $oldVersion) { throw 'Upgrade selected unexpected versions.' }
@@ -86,10 +100,13 @@ try {
     if ($state.current -ne $oldVersion) { throw 'Rollback did not restore the previous package.' }
     $rollbackProfile = Read-IsolatedProfile $oldVersion
     if ($beforeProfile.identity -ne $rollbackProfile.identity -or $beforeProfile.targets -cne $rollbackProfile.targets) { throw 'Rollback did not load the original identity and targets.' }
+    Invoke-IsolatedSetup $nextSetup 'install'
+    $restoredProfile = Read-IsolatedProfile $newVersion 'read'
+    if ($beforeProfile.identity -ne $restoredProfile.identity -or $beforeProfile.targets -cne $restoredProfile.targets) { throw 'Re-upgrade did not retain the profile.' }
     foreach ($name in $hashes.Keys) {
         if ((Get-FileHash -LiteralPath (Join-Path $runtime $name)).Hash -ne $hashes[$name]) { throw 'Synthetic user data changed.' }
     }
-    [pscustomobject]@{ status = 'passed'; previous = $oldVersion; candidate = $newVersion; retained_files = $hashes.Count; profile_reload = 'identity-and-targets-preserved'; automatic_activation_failure = 'unit-tested' } | ConvertTo-Json
+    [pscustomobject]@{ status = 'passed'; previous = $oldVersion; candidate = $newVersion; retained_files = $hashes.Count; profile_reload = 'identity-targets-and-encrypted-presets-preserved'; automatic_activation_failure = 'unit-tested' } | ConvertTo-Json
 }
 finally {
     [Environment]::SetEnvironmentVariable('PFREMOTE_SETUP_TESTING', $savedTesting, 'Process')

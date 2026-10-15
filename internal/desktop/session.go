@@ -44,6 +44,7 @@ type Session struct {
 	Authentication       string
 	VisualEffectsPolicy  string
 	SessionSelector      string
+	TargetIdentity       string
 }
 
 type Execution struct {
@@ -127,6 +128,7 @@ func (c Coordinator) Run(ctx context.Context, request Request) (Result, error) {
 	session := Session{
 		ID: sessionID, SubjectDeviceID: c.SubjectDeviceID, CanonicalTarget: target.Canonical,
 		TargetDeviceID: target.Device.ID, CapabilityID: target.Capability.ID,
+		TargetIdentity:      target.Device.IdentityPublicKey,
 		AuthorizationExpiry: target.Authorization.ValidUntil.UTC(), RouteID: candidate.ID, RouteAdapter: candidate.Adapter,
 		Protocol: profile.Protocol, RenderingEnvironment: profile.RenderingEnvironment,
 		Authentication: profile.Authentication, VisualEffectsPolicy: effectiveVisualEffectsPolicy(*profile), SessionSelector: profile.SessionSelector,
@@ -219,6 +221,7 @@ func (w pollingAuthorizationWatcher) Wait(ctx context.Context, pinned Session) e
 				target.Capability.DesktopProfile.RenderingEnvironment != pinned.RenderingEnvironment ||
 				target.Capability.DesktopProfile.Authentication != pinned.Authentication ||
 				target.Capability.DesktopProfile.SessionSelector != pinned.SessionSelector ||
+				target.Device.IdentityPublicKey != pinned.TargetIdentity ||
 				effectiveVisualEffectsPolicy(*target.Capability.DesktopProfile) != pinned.VisualEffectsPolicy ||
 				target.Authorization.ValidUntil.Before(pinned.AuthorizationExpiry) {
 				return errAuthorizationChanged

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -12,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/cottman99/pf-remote/internal/autoupdate"
+	desktopexecutor "github.com/cottman99/pf-remote/internal/executor/desktop"
 	"github.com/cottman99/pf-remote/internal/windowsinstaller"
 )
 
@@ -80,6 +82,13 @@ func run(arguments []string) int {
 		return nil
 	}
 	switch command {
+	case "prepare-desktop-trust":
+		if err := desktopexecutor.PrepareLocalRDPTrust(context.Background()); err != nil {
+			fmt.Fprintln(os.Stderr, "Desktop publisher setup needs administrator rights for this Windows account.")
+			return 1
+		}
+		fmt.Println(`{"status":"ready"}`)
+		return 0
 	case "install", "apply-update":
 		executable, executableErr := os.Executable()
 		if executableErr != nil {

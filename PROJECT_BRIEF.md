@@ -30,7 +30,9 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current candidate: alpha.109 default resource sharing, including Windows Home and battery-powered startup. Shared RDP choices retain
+Current candidate: alpha.110 adds named connection presets, protected saved accounts
+and quiet repeat resource sharing; see docs/status/CONNECTION_PRESETS.md.
+Windows Home signing and battery-powered startup remain supported. Shared RDP choices retain
 the corresponding TigerVNC workspace, with playback and explicit microphone
 forwarding by default. Hardware acceptance remains pending. Normal multi-workspace
 selection lists shared RDP workspaces for picture and sound together. All desktops

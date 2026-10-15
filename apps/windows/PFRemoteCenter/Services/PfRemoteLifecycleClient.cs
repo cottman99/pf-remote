@@ -25,6 +25,17 @@ internal sealed class PfRemoteLifecycleClient
 
     internal bool IsAvailable => File.Exists(_helperPath);
 
+    internal async Task PrepareDesktopTrustAsync()
+    {
+        if (!IsAvailable) throw new FileNotFoundException("Installation maintenance is unavailable.");
+        // Elevation is requested only by the explicit one-time setup button.
+        var info = new ProcessStartInfo(_helperPath) { UseShellExecute = true, Verb = "runas", WindowStyle = ProcessWindowStyle.Hidden };
+        info.ArgumentList.Add("prepare-desktop-trust");
+        using var process = Process.Start(info) ?? throw new InvalidOperationException("Desktop setup could not start.");
+        await process.WaitForExitAsync();
+        if (process.ExitCode != 0) throw new InvalidOperationException("Desktop setup failed.");
+    }
+
     internal Task<InstalledVersionResponse> StatusAsync(CancellationToken cancellationToken = default) =>
         RunAsync("status", cancellationToken);
 
