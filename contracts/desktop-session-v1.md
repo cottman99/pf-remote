@@ -83,6 +83,18 @@ Ambiguous ownership is not guessed; explicit non-PF audio selections are retaine
 Audio-engine recovery must preserve the original X servers and clipboard channel
 processes. Discovery/routing checks and synthetic transport tests remain distinct
 from physical microphone/speaker acceptance.
+Managed microphone selection must outrank managed speaker-monitor fallback, without
+overwriting an explicit user default. Verification checks the application's default
+input before stream routing; a later correct link cannot hide a monitor default.
+By default, capture follows the controlling computer's current native input-device
+selection. PF Remote does not pin a physical microphone model or save a controller
+device identifier in a remote workspace. The selected workspace receives the
+microphone supplied by its current RDP client; automatic routing must not substitute
+another workspace's input or speaker loopback. An explicit application choice of
+a non-PF device remains authoritative. Any future device picker must distinguish
+an explicit selection from the default follow-controller behavior. A live hardware
+switch requires native-client support and separate verification; successful speech
+on one device does not establish hot-plug behavior.
 
 ## Open sequence
 

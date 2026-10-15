@@ -66,7 +66,10 @@ def unit(display, uid, home, audio=False):
     dependencies = "After=pipewire.service"
     if audio:
         dependencies += f"\nRequires=pipewire.service\nPartOf=pipewire.service\nAfter=pfremote-shared-desktop-{display}.service\nBindsTo=pfremote-shared-desktop-{display}.service"
-        command = f'/usr/bin/pw-cli -m -d load-module libpipewire-module-xrdp "sink.stream.props={{ node.always-process=true node.pause-on-idle=false node.name=pfremote-speaker-{display} node.description=\\"Desktop {display} speakers\\" priority.session=0 }}" "source.stream.props={{ node.name=pfremote-mic-{display} node.description=\\"Desktop {display} microphone\\" priority.session=0 }}"'
+        # A zero-priority source ties with a sink monitor. Browsers can then
+        # select playback loopback as their default microphone before routing.
+        # Prefer a real capture source; explicit user defaults still take priority.
+        command = f'/usr/bin/pw-cli -m -d load-module libpipewire-module-xrdp "sink.stream.props={{ node.always-process=true node.pause-on-idle=false node.name=pfremote-speaker-{display} node.description=\\"Desktop {display} speakers\\" priority.session=0 }}" "source.stream.props={{ node.name=pfremote-mic-{display} node.description=\\"Desktop {display} microphone\\" priority.session=100 }}"'
     return f"""[Unit]
 Description=Shared desktop {display} RDP channels and audio
 {dependencies}

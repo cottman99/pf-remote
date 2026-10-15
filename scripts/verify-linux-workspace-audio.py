@@ -44,11 +44,19 @@ def check(display):
     class SampleSpec(c.Structure):
         _fields_ = [('format', c.c_int), ('rate', c.c_uint32), ('channels', c.c_uint8)]
 
+    class ServerInfo(c.Structure):
+        # Only the ABI prefix through default_source_name is needed.
+        _fields_ = [('user_name', c.c_char_p), ('host_name', c.c_char_p),
+                    ('server_version', c.c_char_p), ('server_name', c.c_char_p),
+                    ('sample_spec', SampleSpec), ('default_sink_name', c.c_char_p),
+                    ('default_source_name', c.c_char_p)]
+
     loop = pulse.pa_mainloop_new()
     context = pulse.pa_context_new(pulse.pa_mainloop_get_api(loop), b'PF Remote paused audio check')
     streams = []
     report = {'schema_version': 'pfremote.workspace-audio-check/v1', 'display': display,
               'pulse_connected': False, 'playback_route': False, 'microphone_route': False,
+              'default_source_is_microphone': False,
               'samples_read_or_played': 0, 'stage': 'connect'}
 
     def iterate_until(condition, seconds):
@@ -67,6 +75,28 @@ def check(display):
         report['pulse_connected'] = iterate_until(lambda: pulse.pa_context_get_state(context) == 4, 3)
         if not report['pulse_connected']:
             return report
+        report['stage'] = 'default-input'
+        received = []
+        callback_type = c.CFUNCTYPE(None, c.c_void_p, c.POINTER(ServerInfo), c.c_void_p)
+
+        @callback_type
+        def server_info(_context, info, _data):
+            source = info.contents.default_source_name if info else None
+            received.append(source)
+            report['default_source_is_microphone'] = bool(source and not source.endswith(b'.monitor'))
+
+        pulse.pa_context_get_server_info.argtypes = [c.c_void_p, callback_type, c.c_void_p]
+        pulse.pa_context_get_server_info.restype = c.c_void_p
+        pulse.pa_operation_unref.argtypes = [c.c_void_p]
+        pulse.pa_operation_unref.restype = None
+        operation = pulse.pa_context_get_server_info(context, server_info, None)
+        if not operation:
+            return report
+        try:
+            if not iterate_until(lambda: bool(received), 3) or not report['default_source_is_microphone']:
+                return report
+        finally:
+            pulse.pa_operation_unref(operation)
         spec = SampleSpec(3, 44100, 2)  # PA_SAMPLE_S16LE
         for direction in ['playback', 'microphone']:
             report['stage'] = direction + '-stream'
@@ -124,6 +154,7 @@ if __name__ == '__main__':
         # /proc/PID/environ reflects exec-time variables, as for real desktop apps.
         os.execve(sys.executable, [sys.executable, __file__, *sys.argv[1:]], env)
     result = check(args.display)
-    result['passed'] = all(result[k] for k in ['pulse_connected', 'playback_route', 'microphone_route'])
+    result['passed'] = all(result[k] for k in ['pulse_connected', 'default_source_is_microphone',
+                                             'playback_route', 'microphone_route'])
     print(json.dumps(result))
     raise SystemExit(0 if result['passed'] else 1)

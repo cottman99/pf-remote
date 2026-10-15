@@ -37,6 +37,14 @@ class RoutingTests(unittest.TestCase):
                       'metadata': [{'subject': 11, 'key': 'target.object', 'value': 'personal-headset'}]})
         self.assertEqual(router.decisions(graph, 1234, {3}, lambda *_: 3), [])
 
+    def test_automatic_capture_follows_current_workspace_not_global_fallback(self):
+        for fallback in ['pfremote-mic-2', 'pfremote-speaker-2.monitor']:
+            graph = self.graph('Stream/Input/Audio', fallback)
+            self.assertEqual(router.decisions(graph, 1234, {2, 3}, lambda *_: 3),
+                             [(11, 100, 'pfremote-mic-3')])
+        graph = self.graph('Stream/Input/Audio', 'explicit-personal-microphone')
+        self.assertEqual(router.decisions(graph, 1234, {3}, lambda *_: 3), [])
+
     def test_sanitized_browser_child_uses_window_owner_workspace(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

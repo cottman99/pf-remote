@@ -39,6 +39,8 @@ class SharedDesktopTests(unittest.TestCase):
         self.assertIn("PartOf=pipewire.service", audio)
         self.assertNotIn("Requires=pipewire.service", shared.router_unit('/home/example', [2, 3]))
         self.assertIn("node.name=pfremote-mic-2", audio)
+        self.assertIn('microphone\\" priority.session=100', audio)
+        self.assertIn('speakers\\" priority.session=0', audio)
         self.assertIn("node.always-process=true node.pause-on-idle=false node.name=pfremote-speaker-2", audio)
         self.assertNotIn("node.always-process=true node.pause-on-idle=false node.name=pfremote-mic", audio)
         self.assertIn("xrdp_chansrv_audio_out_socket_2", audio)

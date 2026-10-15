@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 8d33827
+base_commit: b811082
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,34 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-15 follow-up: the owner reports missing microphone detection on the
+actual controller-to-workspace-3 connection. R0: main retains cumulative work;
+M10.3 remains the return point. The current native profile requests both audio
+directions. The existing browser/application audio subprocesses have no live
+Pulse connection, whereas a fresh isolated Chromium instance discovers all
+workspace devices and opens a real capture track. Acceptance: recover the
+existing applications' audio discovery without closing windows or reconnecting
+the desktop; preserve explicit device choices. R1: any one-time recovery targets
+only verified same-owner Chromium audio utility subprocesses, never application
+roots/renderers, X servers, viewers or the audio engine. No audio content is
+retained. Add application-level evidence to the earlier transport-only checks.
+R2: the owner confirms discovery is restored, but speech remains unusable. Native
+Pulse introspection identifies a speaker monitor as the default input. Managed
+capture-node priority now exceeds managed monitor priority; explicit defaults are
+preserved. A regression probe fails before the change and passes afterward on
+all three workspaces. Idle adapters are reloaded with private backups; application
+windows and desktop/channel processes remain unchanged. The actual controller's
+microphone is unmuted and RDP acknowledges opening it. The owner's next actual
+application attempt recognizes a short sentence normally. Capture defaults follow
+the current controller's native input selection, without pinning physical hardware.
+R3/R4: twelve Linux tests, default-input regression, application routing and repository
+checks pass (Windows app build is unchanged). Server changes are persistent with
+private backups. This bounded microphone failure is closed; return to M10.3.
+Physical playback and live hardware switching are not implied by speech acceptance.
+Sanitized source is saved in the isolated public checkout. GitHub synchronization
+is pending: local Git and REST publishing transports fail during TLS exchange.
+The applied server repair and owner-accepted dictation are unaffected.
 
 2026-10-15 owner confirms workspace selection is now correct, but audio is absent.
 R0: main retains cumulative release work; M10.3 remains the return point.

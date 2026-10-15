@@ -86,6 +86,11 @@ audio discovery, Chromium workspace routing and stale audio-engine recovery are
 repaired on the server. All three workspaces pass real paused application routing
 and bidirectional synthetic RDP audio. Physical owner hardware acceptance remains
 open. See [Workspace audio recovery](../status/WORKSPACE_AUDIO_RUNTIME_FIX.md).
+The owner's next test exposes stale application audio initialization and a
+speaker monitor selected as the default microphone. Device discovery is recovered;
+managed capture-node selection and its regression check are repaired. The owner's
+actual controller-to-workspace-3 dictation now passes. Default capture follows
+the controller's selected input; other hardware paths remain separately unverified.
 
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates
