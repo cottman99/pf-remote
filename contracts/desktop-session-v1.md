@@ -75,6 +75,15 @@ No audio is recorded by
 PF Remote. A protected temporary native RDP profile is removed on client
 exit or launch failure; native certificate verification remains enabled.
 
+The optional shared-workspace setup connects existing owner-only desktop runtime
+directories to that owner's protected audio sockets. It never replaces a session
+bus or an existing endpoint. Application streams follow their workspace using
+same-owner process display/ancestry and, where needed, X11 PID properties only.
+Ambiguous ownership is not guessed; explicit non-PF audio selections are retained.
+Audio-engine recovery must preserve the original X servers and clipboard channel
+processes. Discovery/routing checks and synthetic transport tests remain distinct
+from physical microphone/speaker acceptance.
+
 ## Open sequence
 
 ### Local connection presets

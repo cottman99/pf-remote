@@ -81,6 +81,12 @@ battery startup are verified. See [Default sharing](../status/DEFAULT_RESOURCE_S
 Physical microphone/speaker and WAN quality acceptance remain open; see
 [Shared desktop audio](../status/SHARED_DESKTOP_AUDIO.md).
 
+2026-10-15: the owner confirms independent workspace selection. Linux application
+audio discovery, Chromium workspace routing and stale audio-engine recovery are
+repaired on the server. All three workspaces pass real paused application routing
+and bidirectional synthetic RDP audio. Physical owner hardware acceptance remains
+open. See [Workspace audio recovery](../status/WORKSPACE_AUDIO_RUNTIME_FIX.md).
+
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates
 status. Background checks use jitter/backoff; verified downloads and safe local

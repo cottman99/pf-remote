@@ -1,5 +1,11 @@
 # Shared Linux desktop and audio candidate
 
+This page records the earlier development sequence. For the 2026-10-15 server
+repair and current evidence, see [Workspace audio recovery](WORKSPACE_AUDIO_RUNTIME_FIX.md).
+The released default microphone behavior is described in
+[Default sharing](DEFAULT_RESOURCE_SHARING.md); historical opt-in descriptions
+below do not describe the current client.
+
 The owner explicitly prioritizes alternating RDP/TigerVNC access to the same
 existing desktop and bidirectional sound. This is a development candidate,
 not a released or end-to-end verified feature.

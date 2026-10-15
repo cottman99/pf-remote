@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 73c12a9850957c7e148932479cd188d2b0566477
+base_commit: 8d33827
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,28 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-15 owner confirms workspace selection is now correct, but audio is absent.
+R0: main retains cumulative release work; M10.3 remains the return point.
+Live application-environment checks reproduce Pulse connection refusal on all
+three isolated VNC runtimes, while the owner-level audio server accepts the same
+probe. Chromium also removes DISPLAY from its audio process environment.
+Acceptance: ordinary applications in each existing workspace reach the protected
+audio server and use that workspace's playback/capture nodes. Preserve current
+windows, server/viewer processes and explicit non-PF audio choices. R1: bridge
+only same-owner protected runtime sockets, never overwrite existing endpoints;
+resolve sanitized application processes using same-owner ancestry/window PID
+metadata without reading window contents. No audio samples or credentials in
+diagnostics; physical speaker/microphone acceptance remains a separate live gate.
+R2/R3: eleven Linux tests and real paused application streams pass on all three
+workspaces. Independent virtual-sink diagnosis identifies a stale running audio
+engine; recovery preserves X servers, windows and channel processes. All three
+fresh six-second RDP playback/microphone synthetic round trips then pass. The
+test now isolates all virtual audio processes and defers to active viewers.
+R4: the Linux helper and service definitions are applied with private backups;
+Windows client binaries need no change. Repository checks and the isolated native
+window pass. See docs/status/WORKSPACE_AUDIO_RUNTIME_FIX.md. Return to M10.3 with
+only physical speaker/microphone acceptance awaiting the owner's interaction.
 
 2026-10-15 owner reports that all three shared-workspace choices reopen the
 ordinary RDP desktop. R0: main retains the existing dirty release work; return

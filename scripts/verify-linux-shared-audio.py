@@ -4,6 +4,13 @@ from pathlib import Path
 children=[]
 display=int(sys.argv[1]) if len(sys.argv)>1 else 2
 test_seconds=int(sys.argv[2]) if len(sys.argv)>2 else 3
+if not 1 <= display <= 99 or not 3 <= test_seconds <= 30:
+    raise SystemExit('display 1..99 and duration 3..30 are required')
+# A real viewer owns the channel server. Never take over its audio for a test.
+busy=subprocess.check_output(['ss','-H','-tn','state','established',f'( sport = :{5900+display} )'],text=True).strip()
+if busy:
+    print(json.dumps({'schema_version':'pfremote.shared-audio-check/v1','display':display,'state':'deferred-active-viewer','passed':False}))
+    raise SystemExit(2)
 def start(args, **kw):
     p=subprocess.Popen(args,**kw);children.append(p);return p
 def stop(p):
@@ -66,7 +73,7 @@ with tempfile.TemporaryDirectory(prefix='pfremote-audio-test-') as tmp:
         time.sleep(1)
         # Dedicated virtual devices: neither the real microphone nor speakers are used.
         for name in ['pfremote-test-output','pfremote-test-input']:
-            start(['pw-cli','-m','create-node','adapter',f'{{ factory.name=support.null-audio-sink node.name={name} media.class=Audio/Sink audio.position=[FL FR] priority.session=0 object.linger=false }}'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+            start(['pw-cli','-m','create-node','adapter',f'{{ factory.name=support.null-audio-sink node.name={name} media.class=Audio/Sink audio.position=[FL FR] priority.session=0 object.linger=false }}'],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
         time.sleep(1)
         with (root/'client.log').open('wb') as log:
             client=start(['xfreerdp','/v:127.0.0.1','/u:na','/d:pfremote-shared-'+str(display),'/from-stdin:force','/sec:tls','/cert:fingerprint:sha256:'+fingerprint,'/size:'+geometry,'/sound:sys:pulse,dev:pfremote-test-output,latency:200','/microphone:sys:pulse,dev:pfremote-test-input.monitor','-clipboard','/log-level:ERROR'],env=env,stdin=subprocess.PIPE,stdout=log,stderr=subprocess.STDOUT)
@@ -81,9 +88,12 @@ with tempfile.TemporaryDirectory(prefix='pfremote-audio-test-') as tmp:
                 with targetfile.open('wb') as out:
                     args=['pw-cat','--record','--target',rectarget,*raw]
                     if monitor:args+=['-P','stream.capture.sink=true']
-                    recorder=start(args+['-'],stdout=out,stderr=subprocess.DEVNULL)
+                    # Test devices belong to the isolated client display too.
+                    # Inheriting an SSH shell's DISPLAY could reroute a monitor
+                    # to a real workspace and falsely pass a local-only tone.
+                    recorder=start(args+['-'],env=env,stdout=out,stderr=subprocess.DEVNULL)
                     time.sleep(.4)
-                    play=start(['pw-cat','--playback','--target',playtarget,*raw,'-'],stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+                    play=start(['pw-cat','--playback','--target',playtarget,*raw,'-'],env=env,stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
                     try:play.communicate(tone(),timeout=test_seconds+5)
                     except subprocess.TimeoutExpired:stop(play)
                     time.sleep(.4);stop(recorder)

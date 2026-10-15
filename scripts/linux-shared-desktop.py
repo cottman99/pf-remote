@@ -62,9 +62,10 @@ def unit(display, uid, home, audio=False):
     if not re.fullmatch(r"/[A-Za-z0-9_./-]+", home):
         raise ValueError("unsupported home path")
     command = "/usr/sbin/xrdp-chansrv"
-    dependencies = "After=pipewire.service\nRequires=pipewire.service"
+    # Clipboard/device channels must survive an audio-engine update or recovery.
+    dependencies = "After=pipewire.service"
     if audio:
-        dependencies += f"\nAfter=pfremote-shared-desktop-{display}.service\nBindsTo=pfremote-shared-desktop-{display}.service"
+        dependencies += f"\nRequires=pipewire.service\nPartOf=pipewire.service\nAfter=pfremote-shared-desktop-{display}.service\nBindsTo=pfremote-shared-desktop-{display}.service"
         command = f'/usr/bin/pw-cli -m -d load-module libpipewire-module-xrdp "sink.stream.props={{ node.always-process=true node.pause-on-idle=false node.name=pfremote-speaker-{display} node.description=\\"Desktop {display} speakers\\" priority.session=0 }}" "source.stream.props={{ node.name=pfremote-mic-{display} node.description=\\"Desktop {display} microphone\\" priority.session=0 }}"'
     return f"""[Unit]
 Description=Shared desktop {display} RDP channels and audio
@@ -93,7 +94,7 @@ def router_unit(home, displays):
     return f"""[Unit]
 Description=Route shared-workspace application audio
 After=pipewire.service wireplumber.service
-Requires=pipewire.service
+Wants=pipewire.service wireplumber.service
 
 [Service]
 ExecStart=/usr/bin/python3 {home}/.local/share/pfremote/shared-desktop-setup/linux-workspace-audio-router.py --displays {' '.join(map(str, displays))}
@@ -135,6 +136,10 @@ def main():
         for name in names:
             userctl("disable", "--now", name)
             (units / name).unlink()
+        router_path = Path(home) / ".local/share/pfremote/shared-desktop-setup/linux-workspace-audio-router.py"
+        if router_path.is_file() and not router_path.is_symlink():
+            subprocess.run(["runuser", "-u", args.user, "--", "python3", str(router_path),
+                            "--remove-runtime-links", "--displays", *map(str, args.displays)], check=True)
         config.write_text(restored)
         userctl("daemon-reload")
         subprocess.run(["systemctl", "restart", "xrdp"], check=True)
