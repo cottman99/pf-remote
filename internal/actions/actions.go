@@ -18,6 +18,7 @@ type Service struct {
 	Desktop            DesktopRunner
 	DesktopCredentials DesktopCredentialWriter
 	DesktopPresets     DesktopPresetStore
+	DesktopDisplays    func() (contracts.DesktopMonitorLayout, error)
 	AdditionalChecks   []contracts.Check
 	Activity           *activity.Store
 	RouteOptions       func(string) []contracts.RouteOption

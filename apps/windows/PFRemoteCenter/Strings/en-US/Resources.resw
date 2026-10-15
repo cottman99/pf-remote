@@ -357,4 +357,20 @@
   <data name="PresetTrustReady" xml:space="preserve"><value>Local connection trust is ready for the next connection.</value></data>
   <data name="PresetTrustFailed" xml:space="preserve"><value>Trust setup did not finish. Retry with administrator rights for this Windows account.</value></data>
   <data name="PresetIdentityChanged" xml:space="preserve"><value>This computer or desktop identity has changed. Enter its account again; the old password will not be reused.</value></data>
+  <data name="PresetDisplayMode" xml:space="preserve"><value>Display mode</value></data>
+  <data name="PresetDisplayWindow" xml:space="preserve"><value>Windowed</value></data>
+  <data name="PresetDisplaySingle" xml:space="preserve"><value>Single screen, full screen</value></data>
+  <data name="PresetDisplayAll" xml:space="preserve"><value>All screens, full screen</value></data>
+  <data name="PresetDisplaySelected" xml:space="preserve"><value>Selected screens, full screen</value></data>
+  <data name="PresetDisplayHelp" xml:space="preserve"><value>Saved for this computer and remote desktop. Applies on the next connection. Multiple displays depend on remote desktop support.</value></data>
+  <data name="PresetRefreshScreens" xml:space="preserve"><value>Refresh screens</value></data>
+  <data name="PresetSelectedScreensHelp" xml:space="preserve"><value>Select adjacent screens. The first checked screen is the remote primary display.</value></data>
+  <data name="PresetScreenLabel" xml:space="preserve"><value>Screen {0} · {1} × {2}</value></data>
+  <data name="PresetScreenNumber" xml:space="preserve"><value>Screen {0}</value></data>
+  <data name="PresetPrimaryScreen" xml:space="preserve"><value> (local primary)</value></data>
+  <data name="PresetDisplaysUnavailable" xml:space="preserve"><value>Local screens are unavailable. Refresh, or choose single screen.</value></data>
+  <data name="PresetChooseScreens" xml:space="preserve"><value>Choose the screens for this remote desktop.</value></data>
+  <data name="PresetAdjacentScreens" xml:space="preserve"><value>Choose adjacent screens without skipping a screen between them.</value></data>
+  <data name="PresetDisplaysChanged" xml:space="preserve"><value>The connected screens or layout changed. Refresh and select again, or choose single screen.</value></data>
+  <data name="PresetRemotePrimaryScreen" xml:space="preserve"><value>Remote primary: screen {0}.</value></data>
 </root>

@@ -32,7 +32,12 @@ shared RDP workspaces when configured, carrying picture and playback together.
 Playback is enabled by default; there is no separate soundless normal choice.
 Windows RDP also requests microphone, clipboard and supported device redirection
 by default, with no repeated PF Remote resource prompt. Native OS restrictions
-still apply. Full-screen mode is requested explicitly.
+still apply. Connection presets offer windowed, single-screen full-screen,
+all-screen full-screen and selected-screen full-screen modes. A local screen
+layout helps the owner select adjacent screens and a remote primary display.
+Choices are remembered separately for this controller and exact remote desktop,
+and take effect on the next connection. Changed layouts reopen settings instead
+of taking over unintended screens. Remote protocol/server support still applies.
 Without shared workspaces, it lists the original exact Desktops. Selecting a VNC
 entry never changes to an RDP sibling. The expanded
 **All desktops** list retains individual Smart connect and route actions.

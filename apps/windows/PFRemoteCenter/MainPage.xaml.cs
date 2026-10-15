@@ -1357,7 +1357,7 @@ public sealed partial class MainPage : Page
                 _resources.GetString(desktop.RequiresFirstUseConfirmation ? "DesktopOpenedFirstUse" : "DesktopOpened"),
 				desktop.ComputerName);
         }
-        catch (PfRemoteCliException exception) when (exception.Code is "DESKTOP_PRESET_REQUIRED" or "DESKTOP_PRESET_INVALID")
+        catch (PfRemoteCliException exception) when (exception.Code is "DESKTOP_PRESET_REQUIRED" or "DESKTOP_PRESET_INVALID" or "DESKTOP_DISPLAY_CHANGED")
         {
             if (await ShowConnectionPresetAsync(canonical, saveAndConnect: true))
             {

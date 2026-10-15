@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/cottman99/pf-remote/internal/desktopcredential"
+	"github.com/cottman99/pf-remote/internal/desktopdisplay"
+	"github.com/cottman99/pf-remote/pkg/contracts"
 )
 
 // RDPOptions projects the selected local preset into a native client launch.
@@ -19,6 +22,7 @@ type RDPOptions struct {
 	Username        string
 	Password        string `json:"-"`
 	Windowed        bool
+	Display         *contracts.DesktopDisplaySettings
 }
 
 func (r RDPOptions) content() (string, error) {
@@ -42,8 +46,27 @@ func (r RDPOptions) content() (string, error) {
 	if username != "" {
 		content += "username:s:" + username + "\r\n"
 	}
-	if r.Windowed {
+	display, err := desktopdisplay.Normalize(r.Display, !r.Windowed)
+	if err != nil {
+		return "", err
+	}
+	if display.Mode == desktopdisplay.Window {
 		content = strings.Replace(content, "screen mode id:i:2", "screen mode id:i:1", 1)
+	}
+	content += "span monitors:i:0\r\n"
+	if display.Mode == desktopdisplay.All || display.Mode == desktopdisplay.Selected {
+		content += "use multimon:i:1\r\n"
+	} else {
+		content += "use multimon:i:0\r\n"
+	}
+	if display.Mode == desktopdisplay.Selected {
+		ids := make([]string, len(display.MonitorIDs))
+		for i, id := range display.MonitorIDs {
+			ids[i] = strconv.Itoa(id)
+		}
+		content += "selectedmonitors:s:" + strings.Join(ids, ",") + "\r\n"
+	} else {
+		content += "selectedmonitors:s:\r\n"
 	}
 	return content, nil
 }

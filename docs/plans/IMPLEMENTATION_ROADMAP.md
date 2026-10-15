@@ -42,6 +42,9 @@ Evidence M10.2: [Live fleet update delivery](../status/FLEET_UPDATE_REPORT.md).
 The owner's connection-preset priority is tracked in
 [Connection presets](../status/CONNECTION_PRESETS.md). M10.3 remains the return
 point after this bounded usability repair and authorized release rollout.
+The owner's display-mode follow-up is tracked in
+[Display presets](../status/DISPLAY_PRESETS.md), with four locally remembered
+modes and recovery when selected screens change. M10.3 remains the return point.
 The follow-up exact-workspace repair is tracked in
 [Independent Linux workspace selection](../status/WORKSPACE_SELECTION_FIX.md).
 Alpha.111 is published and installed on both reachable Windows controllers;

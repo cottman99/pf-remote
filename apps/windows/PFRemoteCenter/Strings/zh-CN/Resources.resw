@@ -357,4 +357,20 @@
   <data name="PresetRepairTrust" xml:space="preserve"><value>修复本机连接信任（首次需管理员确认）</value></data>
   <data name="PresetTrustReady" xml:space="preserve"><value>本机连接信任已就绪，下次连接自动使用。</value></data>
   <data name="PresetTrustFailed" xml:space="preserve"><value>未完成信任设置，请使用本机当前账号的管理员权限重试。</value></data>
+  <data name="PresetDisplayMode" xml:space="preserve"><value>显示模式</value></data>
+  <data name="PresetDisplayWindow" xml:space="preserve"><value>窗口模式</value></data>
+  <data name="PresetDisplaySingle" xml:space="preserve"><value>单屏全屏</value></data>
+  <data name="PresetDisplayAll" xml:space="preserve"><value>全部屏幕全屏</value></data>
+  <data name="PresetDisplaySelected" xml:space="preserve"><value>指定屏幕全屏</value></data>
+  <data name="PresetDisplayHelp" xml:space="preserve"><value>按本机和当前远程桌面分别保存，下次连接生效。多屏效果取决于远端桌面的支持。</value></data>
+  <data name="PresetRefreshScreens" xml:space="preserve"><value>刷新屏幕列表</value></data>
+  <data name="PresetSelectedScreensHelp" xml:space="preserve"><value>选择相邻的屏幕，首个勾选的屏幕用作远程主屏。</value></data>
+  <data name="PresetScreenLabel" xml:space="preserve"><value>屏幕 {0} · {1} × {2}</value></data>
+  <data name="PresetScreenNumber" xml:space="preserve"><value>屏幕 {0}</value></data>
+  <data name="PresetPrimaryScreen" xml:space="preserve"><value>（本机主屏）</value></data>
+  <data name="PresetDisplaysUnavailable" xml:space="preserve"><value>暂时无法读取本机屏幕。请刷新，或先选择单屏全屏。</value></data>
+  <data name="PresetChooseScreens" xml:space="preserve"><value>请勾选要用于远程桌面的屏幕。</value></data>
+  <data name="PresetAdjacentScreens" xml:space="preserve"><value>请选择相邻的屏幕，不能跳过中间屏幕。</value></data>
+  <data name="PresetDisplaysChanged" xml:space="preserve"><value>屏幕连接或布局已变化。请刷新并重新选择，或改用单屏全屏。</value></data>
+  <data name="PresetRemotePrimaryScreen" xml:space="preserve"><value>远程主屏：屏幕 {0}。</value></data>
 </root>

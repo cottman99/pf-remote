@@ -123,6 +123,33 @@ remain readable and unchanged. One default desktop is stored per Device locally;
 the catalog's additive `local_default_desktop` hint drives one-click UI selection.
 Exact CLI/MCP target opens never substitute the preferred sibling.
 
+The additive v1 `display` object has `mode`: `window`, `single`, `all` or
+`selected`. Selected mode also carries ordered `monitor_ids` (first is the
+remote primary display) and a local `layout_id`. Preset reads may include
+`displays: {id, monitors: [{id,left,top,right,bottom}]}`; right/bottom are exclusive.
+This geometry is protected local information and never appears in catalog,
+Agent context or Gateway exports. The system RDP client's read-only `/l` list
+supplies native monitor IDs on a disposable isolated desktop; enumeration cannot
+show a dialog on the owner's desktop. Unavailable discovery leaves the other
+three modes usable. No elevation, host setting or remote connection is involved.
+
+Selected IDs must exist, use the current layout fingerprint and form a contiguous
+edge-connected set. Save and launch revalidate them; a changed layout returns
+`DESKTOP_DISPLAY_CHANGED`, and Center opens exact-target settings recovery.
+There is no silent expansion to all monitors. The native profile explicitly sets
+screen mode, multimon, selected monitors and disables legacy spanning. Remote
+server/protocol support still determines actual multi-monitor rendering. Presets
+take effect on the next connection and never resize/reconnect a running viewer.
+
+Older files without `display` map `full_screen:false` to `window` and `true` to
+`single`; new responses retain that boolean. A request omitting `display`
+preserves the advanced choice when its legacy boolean is unchanged. Changing
+the boolean explicitly selects window/single. All other update rules still bind
+the account to its exact target. Rolling back to an older binary keeps the
+protected file readable through `full_screen`; advanced modes resume on upgrade
+unless the older binary rewrites the preset. Display choices are local to each
+controlling computer and never copied to another computer's hardware layout.
+
 A selected xrdp workspace requires its own protected login before opening.
 Otherwise the executor returns `DESKTOP_PRESET_REQUIRED`, and Center offers
 save-and-connect for that exact target. Both domain and qualified username carry

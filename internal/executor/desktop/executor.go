@@ -13,6 +13,8 @@ import (
 
 	session "github.com/cottman99/pf-remote/internal/desktop"
 	"github.com/cottman99/pf-remote/internal/desktopcredential"
+	"github.com/cottman99/pf-remote/internal/desktopdisplay"
+	"github.com/cottman99/pf-remote/pkg/contracts"
 )
 
 type Command interface {
@@ -86,6 +88,7 @@ type Executor struct {
 	Credentials CredentialProvider
 	Lookup      func(string) (string, error)
 	GOOS        string
+	Displays    func() (contracts.DesktopMonitorLayout, error)
 }
 
 func (e Executor) Open(ctx context.Context, execution session.Execution) error {
@@ -201,6 +204,17 @@ func (e Executor) rdpOptions(execution session.Execution, endpoint string) (RDPO
 			o.Username = p.Username
 			o.Password = p.Password
 			o.Windowed = !p.FullScreen
+			o.Display = p.Display
+		}
+	}
+	if o.Display != nil && o.Display.Mode == desktopdisplay.Selected {
+		discover := e.Displays
+		if discover == nil {
+			discover = desktopdisplay.Discover
+		}
+		layout, err := discover()
+		if err != nil || desktopdisplay.ValidateSelection(*o.Display, layout) != nil {
+			return o, &session.ExecutorFault{Code: "DESKTOP_DISPLAY_CHANGED", Summary: "The saved screens are unavailable or their layout changed.", Remediation: "Open connection settings and select screens again, or choose single screen."}
 		}
 	}
 	// Without automatic login xrdp ignores a named section and presents its

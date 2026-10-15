@@ -3,6 +3,7 @@ package desktopcredential
 import (
 	"encoding/json"
 	"errors"
+	"github.com/cottman99/pf-remote/internal/desktopdisplay"
 	"github.com/cottman99/pf-remote/pkg/contracts"
 	"github.com/cottman99/pf-remote/pkg/targetref"
 	"strings"
@@ -10,12 +11,13 @@ import (
 )
 
 type RDPPreset struct {
-	Target     string `json:"target"`
-	Identity   string `json:"identity"`
-	Selector   string `json:"selector"`
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	FullScreen bool   `json:"full_screen"`
+	Target     string                            `json:"target"`
+	Identity   string                            `json:"identity"`
+	Selector   string                            `json:"selector"`
+	Username   string                            `json:"username"`
+	Password   string                            `json:"password"`
+	FullScreen bool                              `json:"full_screen"`
+	Display    *contracts.DesktopDisplaySettings `json:"display,omitempty"`
 }
 type presetDocument struct {
 	Schema   string               `json:"schema"`
@@ -64,12 +66,18 @@ func (s *Store) LoadRDP(target, identity, selector string) (RDPPreset, error) {
 	if p.Target != target || p.Identity != identity || p.Selector != selector {
 		return RDPPreset{}, errors.New("preset identity changed")
 	}
+	display, err := desktopdisplay.Normalize(p.Display, p.FullScreen)
+	if err != nil {
+		return RDPPreset{}, err
+	}
+	p.Display = &display
+	p.FullScreen = display.Mode != desktopdisplay.Window
 	return p, nil
 }
 func (s *Store) ReadPreset(target, identity, selector string) (contracts.DesktopPreset, error) {
 	s.presetMu.Lock()
 	defer s.presetMu.Unlock()
-	v := contracts.DesktopPreset{SchemaVersion: "pfremote.desktop-preset/v1", FullScreen: true}
+	v := contracts.DesktopPreset{SchemaVersion: "pfremote.desktop-preset/v1", FullScreen: true, Display: &contracts.DesktopDisplaySettings{Mode: desktopdisplay.Single}}
 	d, err := s.readPresets(target)
 	if err != nil {
 		return v, err
@@ -86,7 +94,12 @@ func (s *Store) ReadPreset(target, identity, selector string) (contracts.Desktop
 	}
 	v.Username = p.Username
 	v.PasswordSaved = p.Password != ""
-	v.FullScreen = p.FullScreen
+	display, err := desktopdisplay.Normalize(p.Display, p.FullScreen)
+	if err != nil {
+		return v, err
+	}
+	v.Display = &display
+	v.FullScreen = display.Mode != desktopdisplay.Window
 	v.DefaultDesktop = d.Default == target
 	return v, nil
 }
@@ -103,6 +116,18 @@ func (s *Store) SavePreset(target, identity, selector string, u contracts.Deskto
 	}
 	old := d.Profiles[target]
 	p := RDPPreset{Target: target, Identity: identity, Selector: selector, Username: strings.TrimSpace(u.Username), FullScreen: u.FullScreen, Password: u.Password}
+	displayUpdate := u.Display
+	// An older settings client may update an account without understanding the
+	// display extension. Preserve it unless its legacy full-screen flag changes.
+	if displayUpdate == nil && old.Target == target && old.Identity == identity && old.Selector == selector && old.FullScreen == u.FullScreen {
+		displayUpdate = old.Display
+	}
+	display, err := desktopdisplay.Normalize(displayUpdate, u.FullScreen)
+	if err != nil {
+		return v, err
+	}
+	p.Display = &display
+	p.FullScreen = display.Mode != desktopdisplay.Window
 	if u.Password == "" && !u.ClearPassword && old.Target == target && old.Identity == identity && old.Selector == selector && old.Username == p.Username {
 		p.Password = old.Password
 	}
@@ -125,5 +150,5 @@ func (s *Store) SavePreset(target, identity, selector string, u contracts.Deskto
 	if err = s.Save("rdp-presets/"+d.Device, string(b)); err != nil {
 		return v, err
 	}
-	return contracts.DesktopPreset{SchemaVersion: "pfremote.desktop-preset/v1", Username: p.Username, PasswordSaved: p.Password != "", FullScreen: p.FullScreen, DefaultDesktop: d.Default == target}, nil
+	return contracts.DesktopPreset{SchemaVersion: "pfremote.desktop-preset/v1", Username: p.Username, PasswordSaved: p.Password != "", FullScreen: p.FullScreen, Display: p.Display, DefaultDesktop: d.Default == target}, nil
 }

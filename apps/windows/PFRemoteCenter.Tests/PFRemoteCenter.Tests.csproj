@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\PFRemoteCenter\Presentation\DisplayPresetPresenter.cs" Link="Presentation\DisplayPresetPresenter.cs" />
     <Compile Include="..\PFRemoteCenter\Presentation\UpdateStatusPresenter.cs" Link="Presentation\UpdateStatusPresenter.cs" />
     <Compile Include="..\PFRemoteCenter\Services\InteractionQueue.cs" Link="Services\InteractionQueue.cs" />
     <Compile Include="..\PFRemoteCenter\Presentation\CatalogInteractionState.cs" Link="Presentation\CatalogInteractionState.cs" />

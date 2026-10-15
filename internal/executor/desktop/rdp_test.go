@@ -11,13 +11,64 @@ import (
 
 	session "github.com/cottman99/pf-remote/internal/desktop"
 	"github.com/cottman99/pf-remote/internal/desktopcredential"
+	"github.com/cottman99/pf-remote/internal/desktopdisplay"
 	"github.com/cottman99/pf-remote/internal/route"
+	"github.com/cottman99/pf-remote/pkg/contracts"
 )
 
 type presetCredentials struct {
 	preset                     desktopcredential.RDPPreset
 	err                        error
 	target, identity, selector string
+}
+
+func TestDisplayModesAreExplicitAndRetainResources(t *testing.T) {
+	for _, mode := range []string{desktopdisplay.Window, desktopdisplay.Single, desktopdisplay.All, desktopdisplay.Selected} {
+		d := contracts.DesktopDisplaySettings{Mode: mode}
+		wantScreen, wantMulti := "2", "0"
+		if mode == desktopdisplay.Window {
+			wantScreen = "1"
+		}
+		if mode == desktopdisplay.All || mode == desktopdisplay.Selected {
+			wantMulti = "1"
+		}
+		wantIDs := ""
+		if mode == desktopdisplay.Selected {
+			d.MonitorIDs = []int{2, 0}
+			d.LayoutID = strings.Repeat("a", 64)
+			wantIDs = "2,0"
+		}
+		text, err := (RDPOptions{Endpoint: "192.0.2.10:3389", Display: &d}).content()
+		for _, setting := range []string{"screen mode id:i:" + wantScreen, "use multimon:i:" + wantMulti, "selectedmonitors:s:" + wantIDs, "span monitors:i:0", "audiomode:i:0", "audiocapturemode:i:1", "redirectclipboard:i:1", "authentication level:i:2"} {
+			if err != nil || !strings.Contains(text, setting+"\r\n") {
+				t.Fatalf("%s lost %s", mode, setting)
+			}
+		}
+	}
+}
+
+func TestChangedScreensStopBeforeNativeClientAndKeepExactTarget(t *testing.T) {
+	id := strings.Repeat("a", 64)
+	store := &presetCredentials{preset: desktopcredential.RDPPreset{FullScreen: true, Display: &contracts.DesktopDisplaySettings{Mode: desktopdisplay.Selected, MonitorIDs: []int{2, 0}, LayoutID: id}}}
+	layout := contracts.DesktopMonitorLayout{ID: id, Monitors: []contracts.DesktopMonitor{{ID: 0, Right: 1920, Bottom: 1080}, {ID: 2, Left: 1920, Right: 3840, Bottom: 1080}}}
+	command := &captureCommand{}
+	e := Executor{Credentials: store, Command: command, GOOS: "windows", Lookup: identityLookup, Displays: func() (contracts.DesktopMonitorLayout, error) { return layout, nil }}
+	x := session.Execution{Session: session.Session{Protocol: "rdp", Authentication: "windows-sso", CanonicalTarget: "pfremote://fabric-example/devices/device-example/capabilities/desktop", TargetIdentity: "example-key"}, Route: route.Candidate{Address: "192.0.2.10", Port: 3389}}
+	if err := e.Open(context.Background(), x); err != nil || command.rdp == nil || command.rdp.Display.MonitorIDs[0] != 2 {
+		t.Fatal("valid screens rejected", err)
+	}
+	for _, changed := range []contracts.DesktopMonitorLayout{{}, {ID: strings.Repeat("b", 64), Monitors: layout.Monitors}, {ID: id, Monitors: layout.Monitors[:1]}} {
+		command.rdp = nil
+		layout = changed
+		err := e.Open(context.Background(), x)
+		var fault *session.ExecutorFault
+		if !errors.As(err, &fault) || fault.Code != "DESKTOP_DISPLAY_CHANGED" || command.rdp != nil {
+			t.Fatal("stale selection opened native client", err)
+		}
+		if store.target != x.Session.CanonicalTarget || store.identity != x.Session.TargetIdentity {
+			t.Fatal("display choice changed identity")
+		}
+	}
 }
 
 func (s *presetCredentials) Load(string) ([]byte, error) { return nil, desktopcredential.ErrNotFound }

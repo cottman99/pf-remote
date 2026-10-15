@@ -21,6 +21,9 @@ func TestPresetSaveIsLocalAuthorizedAndDoesNotOpen(t *testing.T) {
 	s := actions.New()
 	store := &testPresets{}
 	s.DesktopPresets = store
+	s.DesktopDisplays = func() (contracts.DesktopMonitorLayout, error) {
+		return contracts.DesktopMonitorLayout{ID: strings.Repeat("a", 64), Monitors: []contracts.DesktopMonitor{{ID: 0, Right: 1920, Bottom: 1080}}}, nil
+	}
 	h := Handler{Service: s}
 	u := &contracts.DesktopPresetUpdate{Username: "example", Password: strings.Join([]string{"never", "echo", "this"}, "-")}
 	r := h.Handle(Request{SchemaVersion: SchemaVersion, Action: "desktop-preset", Target: "compute-node/desktop", DesktopPreset: u})
@@ -36,6 +39,12 @@ func TestPresetSaveIsLocalAuthorizedAndDoesNotOpen(t *testing.T) {
 	if r.Error == nil || store.writes != 1 {
 		t.Fatal("unknown identity accepted")
 	}
+	u.Display = &contracts.DesktopDisplaySettings{Mode: "selected", MonitorIDs: []int{0}, LayoutID: strings.Repeat("b", 64)}
+	r = h.Handle(Request{SchemaVersion: SchemaVersion, Action: "desktop-preset", Target: "compute-node/desktop", DesktopPreset: u})
+	if r.Error == nil || r.Error.Code != "DESKTOP_DISPLAY_CHANGED" || store.writes != 1 {
+		t.Fatal("stale layout was persisted")
+	}
+	u.Display = nil
 	h.Gate = &ActionGate{}
 	h.Gate.BeginUpdate()
 	r = h.Handle(Request{SchemaVersion: SchemaVersion, Action: "desktop-preset", Target: "compute-node/desktop", DesktopPreset: u})

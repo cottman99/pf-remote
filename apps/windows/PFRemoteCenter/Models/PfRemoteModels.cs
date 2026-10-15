@@ -47,12 +47,21 @@ internal sealed record DesktopPresetResponse(
     [property: JsonPropertyName("password_saved")] bool PasswordSaved,
     [property: JsonPropertyName("full_screen")] bool FullScreen,
     [property: JsonPropertyName("default_desktop")] bool DefaultDesktop,
-    [property: JsonPropertyName("requires_setup")] bool RequiresSetup = false);
+    [property: JsonPropertyName("requires_setup")] bool RequiresSetup = false,
+    DesktopDisplaySettings? Display = null,
+    DesktopMonitorLayout? Displays = null);
 internal sealed record DesktopPresetUpdate(
     string Username, string Password,
     [property: JsonPropertyName("clear_password")] bool ClearPassword,
     [property: JsonPropertyName("full_screen")] bool FullScreen,
-    [property: JsonPropertyName("default_desktop")] bool DefaultDesktop);
+    [property: JsonPropertyName("default_desktop")] bool DefaultDesktop,
+    DesktopDisplaySettings? Display = null);
+
+internal sealed record DesktopDisplaySettings(string Mode,
+    [property: JsonPropertyName("monitor_ids")] IReadOnlyList<int>? MonitorIds = null,
+    [property: JsonPropertyName("layout_id")] string? LayoutId = null);
+internal sealed record DesktopMonitor(int Id, int Left, int Top, int Right, int Bottom);
+internal sealed record DesktopMonitorLayout(string Id, IReadOnlyList<DesktopMonitor> Monitors);
 
 internal sealed record RouteOptionSummary(
     [property: JsonPropertyName("adapter")] string Adapter,

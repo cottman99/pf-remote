@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: fd18f3c
+base_commit: d03b7381b821b9f58cc43f320ef3800eb07ba7bc
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,24 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-15 owner prioritizes explicit display presets. R0: main contains the
+retained cumulative release work; sanitized public main is d03b738. This bounded
+side task returns to M10.3. Acceptance: native settings remembers windowed,
+single-screen, all-screen and selected-screen RDP modes per local controller and
+exact target; old presets and saved accounts survive; changed monitor layouts
+offer settings recovery instead of opening on unintended screens. Exclusions:
+no active viewer reconnect, foreground automation, network changes or VNC
+protocol replacement. R1: display choices remain protected local state, with
+additive v1 fields and explicit legacy behavior. Native monitor discovery runs
+only on a disposable isolated desktop, never the owner's interactive desktop.
+R2/R3: protected storage, explicit native profile projection, stale-layout
+recovery and all 64 presentation tests pass, along with full repository checks.
+A real isolated native UI saves and reloads all four modes and remains running.
+Local hardware discovery is verified; this controller has one physical monitor,
+so multi-monitor rendering remains server/hardware dependent. The alpha.112
+package passes integrity and license checks; release/upgrade verification and
+authorized delivery are in progress. See docs/status/DISPLAY_PRESETS.md.
 
 2026-10-15 owner requests live microphone-switch follow-through and GitHub
 synchronization. R0: main retains cumulative work; the sanitized publication
