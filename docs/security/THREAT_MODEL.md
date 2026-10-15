@@ -26,9 +26,14 @@ Personal presets are protected with current-user DPAPI and bind credentials to
 the canonical target, Device public identity and workspace selector inside the
 encrypted payload. The local API returns account names and password-presence
 only; passwords enter through protected stdin/IPC, never arguments or logs.
-After authorization and route selection, the native executor writes the selected
-account to Windows Credential Manager for that exact endpoint. Owned entries
-carry a target digest; replacing/clearing an account removes only those entries.
+After authorization and route selection, the native executor seals the selected
+password with current-user DPAPI in a temporary RDP profile. The file inherits
+the user's protected temporary-directory ACL and is removed on failure or client
+exit. Its plaintext password never enters arguments, files, or logs. A per-launch
+envelope prevents Windows' shared per-server cache from changing the selected
+workspace or account during concurrent opens. The pinned workspace also qualifies
+the native username. Legacy owned Credential Manager entries carry a target
+digest; replacing/clearing an account removes only those entries.
 The public package and Gateway do not contain or synchronize these secrets.
 
 - The Owner administrates the Fabric.

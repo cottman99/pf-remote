@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: d550bad
+base_commit: 7e0a2fc1f98bdd930e16330d1ef41cc17f8bb942
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,22 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-15 owner reports that all three shared-workspace choices reopen the
+ordinary RDP desktop. R0: main retains the existing dirty release work; return
+point remains M10.3. Acceptance: each selected workspace reaches its original
+independent TigerVNC display; saved accounts cannot replace its selector; missing
+workspace credentials open local setup rather than the server's default desktop.
+R1: keep target/identity binding, current-user secret protection and native server
+authentication. Do not restart X servers or existing viewers. Native isolated
+probes reproduce the problem: an unqualified cached account overrides the RDP
+domain, whereas a selector-qualified account reaches the VNC backend. A login
+without saved credentials also permits xrdp's default-module login screen.
+R2: native conflicting-cache testing also reproduced cross-workspace selection.
+Each launch now uses a current-user DPAPI envelope rather than the shared native
+cache; the same native test reaches the requested backend. The three independent
+backends are confirmed without authenticating into a real desktop. Verify the
+final build, then publish and update available controllers.
 
 2026-10-15 owner prioritizes personal connection presets and silent repeat access.
 R0: main retains existing dirty alpha.109/audio work. M10.3 remains the return

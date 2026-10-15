@@ -1357,6 +1357,21 @@ public sealed partial class MainPage : Page
                 _resources.GetString(desktop.RequiresFirstUseConfirmation ? "DesktopOpenedFirstUse" : "DesktopOpened"),
 				desktop.ComputerName);
         }
+        catch (PfRemoteCliException exception) when (exception.Code is "DESKTOP_PRESET_REQUIRED" or "DESKTOP_PRESET_INVALID")
+        {
+            if (await ShowConnectionPresetAsync(canonical, saveAndConnect: true))
+            {
+                try
+                {
+                    DesktopActionResponse response = await RunWithDaemonRecoveryAsync(() => _client.OpenAsync(canonical, routeAdapter));
+                    RecordRecentSession(desktop, response);
+                    OperationStatus = string.Format(CultureInfo.CurrentCulture, _resources.GetString("DesktopCredentialSavedAndOpened"), desktop.ComputerName);
+                }
+                catch (PfRemoteCliException failure) { ShowDesktopFailure(failure.Code, routeAdapter, canonical, microphone); }
+                catch (Exception) { ShowDesktopFailure(null, routeAdapter, canonical, microphone); }
+            }
+            else { OperationStatus = _resources.GetString("DesktopSetupCanceled"); }
+        }
         catch (PfRemoteCliException exception) when (exception.Code == "DESKTOP_CREDENTIAL_REQUIRED")
         {
 			string? credential = await PromptForDesktopPasswordAsync(desktop.ComputerName);

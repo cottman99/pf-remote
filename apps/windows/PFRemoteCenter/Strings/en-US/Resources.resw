@@ -344,6 +344,10 @@
   <data name="PresetDefaultDesktop" xml:space="preserve"><value>Use this desktop for one-click connections</value></data>
   <data name="PresetSharingHelp" xml:space="preserve"><value>Sound, microphone, clipboard and supported hardware are shared by default. Accounts and passwords stay encrypted on this computer and survive updates. Changes apply to the next connection.</value></data>
   <data name="PresetSave" xml:space="preserve"><value>Save preset</value></data>
+  <data name="PresetSaveAndConnect" xml:space="preserve"><value>Save and connect to this desktop</value></data>
+  <data name="PresetWorkspaceHelp" xml:space="preserve"><value>Each number is an independent desktop, continuing the original TigerVNC desktop with the same number. Save its TigerVNC access password once to connect automatically.</value></data>
+  <data name="PresetWorkspacePassword" xml:space="preserve"><value>Desktop access password (original TigerVNC password)</value></data>
+  <data name="PresetWorkspacePasswordMissing" xml:space="preserve"><value>Save this desktop's access password first to avoid another desktop's login screen. This is not the Linux account password.</value></data>
   <data name="PresetPasswordSaved" xml:space="preserve"><value>Password saved. Leave blank to keep it or enter a replacement. Enter the password again when changing accounts.</value></data>
   <data name="PresetPasswordMissing" xml:space="preserve"><value>No password saved. Enter it once to use it automatically, or leave blank to use Windows sign-in information.</value></data>
   <data name="PresetLoadFailed" xml:space="preserve"><value>Could not load this preset. Select the desktop again or retry later.</value></data>

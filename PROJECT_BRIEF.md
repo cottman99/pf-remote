@@ -32,6 +32,9 @@ remain because current deployments depend on them; they are not expansion work.
 
 Current Windows release: alpha.110 adds named connection presets, protected saved accounts
 and quiet repeat resource sharing; see docs/status/CONNECTION_PRESETS.md.
+The alpha.111 candidate fixes independent Linux workspace selection; see
+docs/status/WORKSPACE_SELECTION_FIX.md. Native testing found that the shared
+Windows credential cache could override the selected workspace.
 Windows Home signing and battery-powered startup remain supported. Shared RDP choices retain
 the corresponding TigerVNC workspace, with playback and explicit microphone
 forwarding by default. Hardware acceptance remains pending. Normal multi-workspace

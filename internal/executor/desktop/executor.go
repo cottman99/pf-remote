@@ -27,8 +27,7 @@ type Launch struct {
 }
 
 type OSCommand struct {
-	SignRDP    func(context.Context, string) error
-	PrepareRDP func(RDPOptions) error
+	SignRDP func(context.Context, string) error
 }
 
 func (runner OSCommand) Run(ctx context.Context, launch Launch) error {
@@ -50,14 +49,6 @@ func (runner OSCommand) Run(ctx context.Context, launch Launch) error {
 			sign = signRDPProfile
 		}
 		if err := sign(ctx, path); err != nil {
-			cleanup()
-			return err
-		}
-		prepare := runner.PrepareRDP
-		if prepare == nil {
-			prepare = prepareRDPCredentials
-		}
-		if err := prepare(*launch.RDP); err != nil {
 			cleanup()
 			return err
 		}
@@ -203,22 +194,23 @@ func (e Executor) rdpOptions(execution session.Execution, endpoint string) (RDPO
 		LoadRDP(string, string, string) (desktopcredential.RDPPreset, error)
 	}); ok {
 		p, err := store.LoadRDP(execution.Session.CanonicalTarget, execution.Session.TargetIdentity, execution.Session.SessionSelector)
-		if errors.Is(err, desktopcredential.ErrNotFound) {
-			return o, nil
-		}
-		if err != nil {
+		if err != nil && !errors.Is(err, desktopcredential.ErrNotFound) {
 			return o, &session.ExecutorFault{Code: "DESKTOP_PRESET_INVALID", Summary: "Saved connection settings no longer match this desktop.", Remediation: "Open connection settings and save this account again."}
 		}
-		o.Username = p.Username
-		o.Password = p.Password
-		o.Windowed = !p.FullScreen
-		o.CredentialOwner = execution.Session.CanonicalTarget
+		if err == nil {
+			o.Username = p.Username
+			o.Password = p.Password
+			o.Windowed = !p.FullScreen
+		}
+	}
+	// Without automatic login xrdp ignores a named section and presents its
+	// default desktop. Require the exact workspace's saved credential instead.
+	if o.SessionSelector != "" {
+		if _, err := o.nativeUsername(); err != nil || o.Password == "" {
+			return o, &session.ExecutorFault{Code: "DESKTOP_PRESET_REQUIRED", Summary: "Save this workspace's login before connecting.", Remediation: "Open connection settings and save the workspace access password once."}
+		}
 	}
 	return o, nil
-}
-
-func prepareRDPCredentials(o RDPOptions) error {
-	return desktopcredential.PrepareRDP(o.Endpoint, o.Username, o.Password, o.CredentialOwner)
 }
 
 func tigerVNCEndpoint(address string, port uint16) string {

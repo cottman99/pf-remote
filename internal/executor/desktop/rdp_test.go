@@ -34,7 +34,7 @@ func TestPresetProjectionPinsIdentityAndNeverWritesSecretToProfile(t *testing.T)
 	}
 	profile, err := options.content()
 	public, _ := json.Marshal(options)
-	if err != nil || !strings.Contains(profile, "username:s:example-account\r\n") || !strings.Contains(profile, "screen mode id:i:1\r\n") || strings.Contains(profile, store.preset.Password) || strings.Contains(string(public), store.preset.Password) {
+	if err != nil || !strings.Contains(profile, "username:s:shared-2\\example-account\r\n") || !strings.Contains(profile, "screen mode id:i:1\r\n") || strings.Contains(profile, store.preset.Password) || strings.Contains(string(public), store.preset.Password) {
 		t.Fatal("invalid or leaking profile projection")
 	}
 	store.err = errors.New("identity changed")
@@ -42,6 +42,12 @@ func TestPresetProjectionPinsIdentityAndNeverWritesSecretToProfile(t *testing.T)
 		t.Fatal("changed identity reused a saved password")
 	}
 	store.err = desktopcredential.ErrNotFound
+	options, err = (Executor{Credentials: store}).rdpOptions(execution, "192.0.2.10:3389")
+	var fault *session.ExecutorFault
+	if !errors.As(err, &fault) || fault.Code != "DESKTOP_PRESET_REQUIRED" {
+		t.Fatal("missing workspace login must not reach the default xrdp desktop")
+	}
+	execution.Session.SessionSelector = ""
 	options, err = (Executor{Credentials: store}).rdpOptions(execution, "192.0.2.10:3389")
 	if err != nil || options.Password != "" || options.Windowed {
 		t.Fatal("default connection changed")
@@ -53,7 +59,8 @@ func TestRDPProfileExplicitAudioAndExactWorkspace(t *testing.T) {
 		command := &captureCommand{}
 		ctx := session.WithAudioCapture(context.Background(), capture)
 		execution := session.Execution{Session: session.Session{Protocol: "rdp", Authentication: "windows-sso", SessionSelector: "workspace-2"}, Route: route.Candidate{Address: "192.0.2.10", Port: 3389}}
-		if err := (Executor{Command: command, Lookup: identityLookup, GOOS: "windows"}).Open(ctx, execution); err != nil {
+		store := &presetCredentials{preset: desktopcredential.RDPPreset{Username: "example-user", Password: strings.Join([]string{"synthetic", "secret"}, "-"), FullScreen: true}}
+		if err := (Executor{Command: command, Credentials: store, Lookup: identityLookup, GOOS: "windows"}).Open(ctx, execution); err != nil {
 			t.Fatal(err)
 		}
 		text, err := command.rdp.content()
@@ -68,6 +75,40 @@ func TestRDPProfileExplicitAudioAndExactWorkspace(t *testing.T) {
 				t.Fatalf("missing default desktop setting %q", setting)
 			}
 		}
+	}
+}
+
+func TestWorkspaceAccountPinsNativeCredentialDomain(t *testing.T) {
+	for _, selector := range []string{"workspace-2", "workspace-3", "workspace-4"} {
+		o := RDPOptions{Endpoint: "192.0.2.10:3389", SessionSelector: selector, Username: "example-user"}
+		account, err := o.nativeUsername()
+		if err != nil || account != selector+"\\example-user" {
+			t.Fatal("native credential lost selected workspace")
+		}
+		profile, err := o.content()
+		if err != nil || !strings.Contains(profile, "username:s:"+account+"\r\n") {
+			t.Fatal("profile and native credential use different accounts")
+		}
+	}
+	for _, username := range []string{"", "other\\example-user", "example-user@other"} {
+		store := &presetCredentials{preset: desktopcredential.RDPPreset{Username: username, Password: strings.Join([]string{"synthetic", "secret"}, "-")}}
+		execution := session.Execution{Session: session.Session{SessionSelector: "workspace-2"}}
+		if _, err := (Executor{Credentials: store}).rdpOptions(execution, "192.0.2.10:3389"); err == nil {
+			t.Fatal("ambiguous account can override the selected workspace")
+		}
+	}
+	for _, provider := range []CredentialProvider{nil, &presetCredentials{preset: desktopcredential.RDPPreset{Username: "example-user"}}} {
+		command := &captureCommand{}
+		execution := session.Execution{Session: session.Session{Protocol: "rdp", Authentication: "windows-sso", SessionSelector: "workspace-2"}, Route: route.Candidate{Address: "192.0.2.10", Port: 3389}}
+		err := (Executor{Credentials: provider, Command: command, Lookup: identityLookup, GOOS: "windows"}).Open(context.Background(), execution)
+		var fault *session.ExecutorFault
+		if !errors.As(err, &fault) || fault.Code != "DESKTOP_PRESET_REQUIRED" || command.rdp != nil {
+			t.Fatal("missing credential must stop before starting the native client")
+		}
+	}
+	ordinary := RDPOptions{Username: "example-domain\\example-user"}
+	if account, err := ordinary.nativeUsername(); err != nil || account != ordinary.Username {
+		t.Fatal("ordinary Windows domain account changed")
 	}
 }
 
@@ -123,9 +164,6 @@ func TestSigningFailureRemovesProfileBeforeClientLaunch(t *testing.T) {
 			t.Fatal(err)
 		}
 		return errors.New("synthetic signing failure")
-	}, PrepareRDP: func(RDPOptions) error {
-		t.Fatal("untrusted profile published a credential")
-		return nil
 	}}).Run(context.Background(), Launch{Name: "must-not-launch", RDP: &RDPOptions{Endpoint: "192.0.2.10:3389"}})
 	if err == nil || !called {
 		t.Fatal("signing failure must stop launch")

@@ -72,7 +72,7 @@ microphone requests remain rejected for VNC/external targets. A missing physical
 capture device does not block ordinary desktop opening. An upstream RDP session
 must redirect the physical client's microphone before it can be forwarded again.
 No audio is recorded by
-PF Remote. A credential-free temporary native RDP profile is removed on client
+PF Remote. A protected temporary native RDP profile is removed on client
 exit or launch failure; native certificate verification remains enabled.
 
 ## Open sequence
@@ -88,12 +88,21 @@ and saves only. The response schema is `pfremote.desktop-preset/v1`, with
 `requires_setup: true`; it cannot reuse the old secret. An update may
 include `password` or `clear_password`. A blank password preserves an existing
 password only for the same account, canonical target, Device key and workspace.
-Passwords never appear in responses. Native Credential Manager holds credentials
-under the selected server name, following Windows lookup semantics; RDP files
-remain password-free. Existing v1 VNC passwords
+Passwords never appear in responses. Saved credentials are projected into the
+temporary native profile as current-user DPAPI `password 51` envelopes; no plaintext
+password is written. Each launch has its own envelope, so concurrent connections
+cannot overwrite one another through the shared per-server Credential Manager
+cache. Existing v1 VNC passwords
 remain readable and unchanged. One default desktop is stored per Device locally;
 the catalog's additive `local_default_desktop` hint drives one-click UI selection.
 Exact CLI/MCP target opens never substitute the preferred sibling.
+
+A selected xrdp workspace requires its own protected login before opening.
+Otherwise the executor returns `DESKTOP_PRESET_REQUIRED`, and Center offers
+save-and-connect for that exact target. Both domain and qualified username carry
+the pinned section. An absent account, password, or ambiguous account domain
+cannot fall through to xrdp's default login screen. Managed TigerVNC workspaces
+use their original desktop access password, distinct from the Linux OS password.
 
 Repeated resource prompts are avoided by signing generated profiles with a
 locally trusted, non-CA code-signing leaf and pinning its publisher. First-time
@@ -134,7 +143,7 @@ decision. Credentials remain with the operating-system client or its protected
 credential store and never enter a Gateway, relay, target reference, or
 structured diagnostic.
 
-RDP with `windows-sso` launches the Windows client in public mode with its normal
+RDP with `windows-sso` launches the Windows client with its normal protected
 credential flow. Remote Credential Guard requires a direct domain/Kerberos path
 and is unsuitable for these existing workgroup/relay targets. RDP with
 `tailscale-device` is limited to that exact encrypted

@@ -6,16 +6,18 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/cottman99/pf-remote/internal/desktopcredential"
 )
 
 // RDPOptions projects the selected local preset into a native client launch.
-// Passwords go only to the Windows vault, never to the RDP file or JSON.
+// Plaintext passwords never enter files or JSON. Native launch files may contain
+// a current-user DPAPI envelope, avoiding the shared per-server Windows cache.
 type RDPOptions struct {
 	Endpoint        string
 	SessionSelector string
 	Username        string
 	Password        string `json:"-"`
-	CredentialOwner string
 	Windowed        bool
 }
 
@@ -33,13 +35,30 @@ func (r RDPOptions) content() (string, error) {
 	if r.SessionSelector != "" {
 		content += "domain:s:" + r.SessionSelector + "\r\n"
 	}
-	if r.Username != "" {
-		content += "username:s:" + r.Username + "\r\n"
+	username, err := r.nativeUsername()
+	if err != nil {
+		return "", err
+	}
+	if username != "" {
+		content += "username:s:" + username + "\r\n"
 	}
 	if r.Windowed {
 		content = strings.Replace(content, "screen mode id:i:2", "screen mode id:i:1", 1)
 	}
 	return content, nil
+}
+
+// MSTSC's Credential Manager account takes precedence over domain:s. Qualify
+// the profile's account as well. A per-launch DPAPI envelope takes precedence
+// over the shared native cache and preserves the authorized xrdp section.
+func (r RDPOptions) nativeUsername() (string, error) {
+	if r.SessionSelector == "" {
+		return r.Username, nil
+	}
+	if !validSessionSelector(r.SessionSelector) || strings.TrimSpace(r.Username) == "" || strings.ContainsAny(r.Username, "\\@\r\n\x00") {
+		return "", errors.New("workspace requires an unqualified account")
+	}
+	return r.SessionSelector + "\\" + r.Username, nil
 }
 
 func validSessionSelector(value string) bool {
@@ -58,6 +77,13 @@ func writeRDPProfile(options RDPOptions) (string, func(), error) {
 	content, err := options.content()
 	if err != nil {
 		return "", func() {}, err
+	}
+	if options.Password != "" {
+		sealed, err := desktopcredential.SealRDPPassword(options.Password)
+		if err != nil {
+			return "", func() {}, err
+		}
+		content += "password 51:b:" + sealed + "\r\n"
 	}
 	// Windows temp inherits the signed-in user's protected directory ACL.
 	directory, err := os.MkdirTemp("", "pfremote-rdp-")

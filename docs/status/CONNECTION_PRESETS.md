@@ -17,9 +17,11 @@ computer identity requires new credentials. Clear password also removes the
 corresponding PF Remote-owned native credential cache. Exact Agent/CLI targets
 continue to select the requested desktop independently of UI preferences.
 
-Windows Credential Manager uses server names for RDP lookup, without the TCP
-port. PF Remote projects the selected identity-bound preset into that native
-cache immediately before launch. Windows retains its own credential and server
+Alpha.110 projected the selected preset into Windows Credential Manager's
+per-server cache. The alpha.111 repair replaces this with a current-user DPAPI
+envelope in each temporary native profile, preserving independent workspace
+selection across concurrent connections. See WORKSPACE_SELECTION_FIX.md.
+Windows retains its own credential and server
 authentication rules. Accounts with an OS policy that requires interactive login
 can still require a sign-in challenge.
 
