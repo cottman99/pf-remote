@@ -92,9 +92,14 @@ device identifier in a remote workspace. The selected workspace receives the
 microphone supplied by its current RDP client; automatic routing must not substitute
 another workspace's input or speaker loopback. An explicit application choice of
 a non-PF device remains authoritative. Any future device picker must distinguish
-an explicit selection from the default follow-controller behavior. A live hardware
-switch requires native-client support and separate verification; successful speech
-on one device does not establish hot-plug behavior.
+an explicit selection from the default follow-controller behavior.
+The verified Windows native path follows the system default input (`eConsole`),
+including changes during an existing connection. A change to only the separate
+default communications device does not replace that input. Native device-change
+notifications and generated audio have been verified through one uninterrupted
+RDP connection; this is distinct from physically unplugging USB/Bluetooth hardware
+or certifying every driver. See the native follow-through evidence in
+`docs/status/WORKSPACE_AUDIO_RUNTIME_FIX.md`.
 
 ## Open sequence
 

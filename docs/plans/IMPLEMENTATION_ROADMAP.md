@@ -91,6 +91,12 @@ speaker monitor selected as the default microphone. Device discovery is recovere
 managed capture-node selection and its regression check are repaired. The owner's
 actual controller-to-workspace-3 dictation now passes. Default capture follows
 the controller's selected input; other hardware paths remain separately unverified.
+The follow-through now verifies default-input changes in one isolated Windows
+native RDP connection with generated audio, including switch-back and negative
+controls. The input follows the normal system default; a communications-only
+change does not override it. The repair is synchronized to GitHub main as
+0c43198. No Windows binary or schema migration is needed. Physical USB/Bluetooth
+hot-plug remains separate from this native notification/transport verification.
 
 The owner clarified that every node must poll GitHub and update itself; a controller
 must not be required to push or execute updates on other nodes. Center aggregates

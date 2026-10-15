@@ -4,7 +4,8 @@
 applications cannot use sound. The server repair is applied. The owner has now
 confirmed intelligible dictation on the actual controller-to-workspace-3 connection.
 Physical speaker playback and other controller/workspace combinations are not
-established by this acceptance.
+established by this acceptance. A subsequent isolated native Windows test also
+verifies following default-input changes during one RDP connection.
 
 Follow-up on the owner's actual workspace-3 connection: existing ChatGPT/Chrome
 audio utilities had retained the earlier failed audio initialization. A bounded
@@ -64,6 +65,45 @@ are backed up privately. Rollback removes only exact owned audio links.
 
 Actual dictation on workspace 3 passes owner acceptance after both repairs. The
 same discovery and routing checks pass on all three workspaces. Physical speaker
-playback, other controller/workspace pairs and changing hardware during an active
-connection are separate checks; no broad hardware acceptance is claimed. M10.3
-remains the mainline return point.
+playback, other controller/workspace pairs and physical USB/Bluetooth removal are
+separate checks. M10.3 remains the mainline return point.
+
+## Native input switching follow-through
+
+The Windows native client follows the controlling computer's system default input.
+Changing that input does not require closing the remote desktop. A separate
+communications-default change does not replace the normal default input in the
+verified native path. An application with its own explicit device selection keeps
+that selection under the routing contract.
+
+| Case during one connection | Result |
+| --- | --- |
+| Initial default input | Linux receives the generated 997 Hz tone. |
+| Change the test selection without a native notification | Capture stays on the earlier input; the test cannot pass just by changing its tone generator. |
+| Change the normal default input | Native capture reopens and Linux receives 1301 Hz. |
+| Change only the separate communications default | The current 1301 Hz input remains selected. |
+| Change the normal input again, then switch back | Linux receives 1709 Hz, then 997 Hz; the desktop connection remains open. |
+
+The test uses Windows Remote Desktop Connection 10.0.26100.8875, xrdp 0.10.6.1
+and PipeWire 1.4.11. A newly created Windows process runs on an isolated desktop
+and connects to a disposable loopback-only Linux desktop through authenticated
+SSH. Process-local instrumentation supplies synthetic endpoint-change notifications
+to the native Windows audio mapper. It does not change any host default device or
+attach to an existing owner process. Each newly initialized capture stream gets
+its own generated tone; the instrumentation never forces a stream restart. The
+Linux receiver independently measures the actual PCM delivered through RDP in
+100 ms windows and retains only measurements, not samples.
+
+All six cases pass. The three changes are observed in about 0.47–0.55 seconds in
+this run; these are test observations, including the measurement path, not a
+latency guarantee. Native automatic reconnection is disabled and the same client
+stays connected. Original X servers and active channel connections remain intact;
+all disposable test processes, listeners and credentials are removed. This verifies
+native notification handling and real transport, not physical device unplug/replug
+or every microphone driver. See the
+[sanitized measurements](evidence/native-microphone-follow-20261015.json).
+
+The server repair is persistent and published to GitHub main in `0c43198`.
+This verification requires no new Windows binary, client reinstall, or owner
+desktop reconnect. Full repository checks with `-SkipWindowsApp` pass; this
+follow-through changes documentation and verification evidence only.

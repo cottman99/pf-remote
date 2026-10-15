@@ -1,0 +1,98 @@
+{
+  "schema_version": "pfremote.native-microphone-follow-check/v1",
+  "date": "2026-10-15",
+  "state": "passed",
+  "scope": "Native Windows RDP handling of process-local synthetic default-input notifications and generated PCM over an isolated RDP connection. Physical device removal and insertion are not tested.",
+  "client": {
+    "name": "Windows Remote Desktop Connection",
+    "file_version": "10.0.26100.8875",
+    "architecture": "x64"
+  },
+  "server": {
+    "name": "xrdp",
+    "version": "0.10.6.1",
+    "pipewire_version": "1.4.11"
+  },
+  "signal": {
+    "sample_rate": 44100,
+    "channels": 2,
+    "format": "s16le",
+    "window_seconds": 0.1,
+    "audio_samples_retained": false
+  },
+  "cases": [
+    {
+      "case": "initial_default",
+      "expected_hz": 997,
+      "measurement_windows": 64,
+      "matching_windows": 64,
+      "median_hz": 997.0,
+      "passed": true
+    },
+    {
+      "case": "without_notification_keeps_input",
+      "expected_hz": 997,
+      "measurement_windows": 51,
+      "matching_windows": 50,
+      "median_hz": 997.0,
+      "passed": true
+    },
+    {
+      "case": "default_input_changed",
+      "expected_hz": 1301,
+      "measurement_windows": 86,
+      "matching_windows": 86,
+      "median_hz": 1300.9,
+      "passed": true
+    },
+    {
+      "case": "communications_only_does_not_override",
+      "expected_hz": 1301,
+      "measurement_windows": 66,
+      "matching_windows": 66,
+      "median_hz": 1300.9,
+      "passed": true
+    },
+    {
+      "case": "second_default_change",
+      "expected_hz": 1709,
+      "measurement_windows": 86,
+      "matching_windows": 86,
+      "median_hz": 1708.9,
+      "passed": true
+    },
+    {
+      "case": "switch_back",
+      "expected_hz": 997,
+      "measurement_windows": 108,
+      "matching_windows": 107,
+      "median_hz": 997.0,
+      "passed": true
+    }
+  ],
+  "switches": [
+    {
+      "expected_hz": 1301,
+      "observed_change_seconds": 0.468
+    },
+    {
+      "expected_hz": 1709,
+      "observed_change_seconds": 0.547
+    },
+    {
+      "expected_hz": 997,
+      "observed_change_seconds": 0.547
+    }
+  ],
+  "native_capture_open_sequence_hz": [
+    997,
+    1301,
+    1709,
+    997
+  ],
+  "same_native_connection": true,
+  "automatic_reconnection_enabled": false,
+  "existing_owner_desktops_restarted": false,
+  "host_default_input_changed": false,
+  "test_processes_removed": true
+}

@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: b811082
+base_commit: fd18f3c
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,30 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-15 owner requests live microphone-switch follow-through and GitHub
+synchronization. R0: main retains cumulative work; the sanitized publication
+checkout is clean at 0c43198, one commit ahead of the last verified public main.
+This is the single blocking side task; return to M10.3. Acceptance: exercise
+default-input changes during one native Windows RDP connection, distinguish
+synthetic transport proof from physical-device acceptance, preserve explicit
+choices, and publish the reviewed microphone repair. Exclusions: no changes to
+the owner's active audio defaults, desktop connections or application windows;
+no network configuration changes or captured speech. Use disposable test
+processes and isolated desktops only. R1: process-local test instrumentation must
+never attach to an existing user process or weaken production authentication.
+R2/R3: an isolated Windows native RDP client processes synthetic default-input
+notifications and reopens its native capture stream. The same Linux connection
+receives the expected three generated tones and a switch back, without a desktop
+reconnect. Negative controls retain the previous input when no notification is
+sent or only the separate communications role changes. No host default is changed;
+no speech is retained. Repository checks pass; original workspaces and their active
+channels are preserved, and disposable test processes/listeners are removed.
+R4: microphone repair 0c43198 is published to GitHub main. This follow-through is
+closed with sanitized evidence in docs/status/WORKSPACE_AUDIO_RUNTIME_FIX.md;
+return to M10.3. No Windows binary changed, so no client reinstall is required.
+Physical device unplug/replug and individual driver behavior remain outside this
+synthetic native-client check.
 
 2026-10-15 follow-up: the owner reports missing microphone detection on the
 actual controller-to-workspace-3 connection. R0: main retains cumulative work;
@@ -48,9 +72,9 @@ R3/R4: twelve Linux tests, default-input regression, application routing and rep
 checks pass (Windows app build is unchanged). Server changes are persistent with
 private backups. This bounded microphone failure is closed; return to M10.3.
 Physical playback and live hardware switching are not implied by speech acceptance.
-Sanitized source is saved in the isolated public checkout. GitHub synchronization
-is pending: local Git and REST publishing transports fail during TLS exchange.
-The applied server repair and owner-accepted dictation are unaffected.
+The subsequent native follow-through above covers default-input notifications.
+Sanitized source is published as 0c43198. The temporary upload-transport fault is
+resolved using an existing authorized connection without host network changes.
 
 2026-10-15 owner confirms workspace selection is now correct, but audio is absent.
 R0: main retains cumulative release work; M10.3 remains the return point.
