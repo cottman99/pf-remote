@@ -44,6 +44,8 @@ The owner's connection-preset priority is tracked in
 point after this bounded usability repair and authorized release rollout.
 The follow-up exact-workspace repair is tracked in
 [Independent Linux workspace selection](../status/WORKSPACE_SELECTION_FIX.md).
+Alpha.111 is published and installed on both reachable Windows controllers;
+the offline controller retains its notice. Original workspaces are preserved.
 
 Alpha.102 is publicly available for Windows and managed Linux nodes. Two Windows
 installations and one Linux node independently updated from alpha.100 to alpha.102.

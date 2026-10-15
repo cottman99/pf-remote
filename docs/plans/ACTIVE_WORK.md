@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 7e0a2fc1f98bdd930e16330d1ef41cc17f8bb942
+base_commit: 73c12a9850957c7e148932479cd188d2b0566477
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -37,8 +37,15 @@ without saved credentials also permits xrdp's default-module login screen.
 R2: native conflicting-cache testing also reproduced cross-workspace selection.
 Each launch now uses a current-user DPAPI envelope rather than the shared native
 cache; the same native test reaches the requested backend. The three independent
-backends are confirmed without authenticating into a real desktop. Verify the
-final build, then publish and update available controllers.
+backends are confirmed without authenticating into a real desktop. R3/R4: full
+checks, 61 presentation tests, native isolated-window verification, package and
+upgrade/rollback checks pass. Alpha.111 (sequence 113) and sanitized source are
+published. Both reachable Windows controllers independently apply it, retain
+protected configuration and three workspace logins, and report current. The
+other controller remains management-offline with a retained notice. Original
+X servers and the existing viewer remain running. Evidence is in
+docs/status/WORKSPACE_SELECTION_FIX.md. Return to M10.3 owner experience acceptance
+on the next owner-initiated connection; do not switch the current desktop.
 
 2026-10-15 owner prioritizes personal connection presets and silent repeat access.
 R0: main retains existing dirty alpha.109/audio work. M10.3 remains the return

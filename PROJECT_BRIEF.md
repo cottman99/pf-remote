@@ -30,11 +30,13 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current Windows release: alpha.110 adds named connection presets, protected saved accounts
-and quiet repeat resource sharing; see docs/status/CONNECTION_PRESETS.md.
-The alpha.111 candidate fixes independent Linux workspace selection; see
+Current Windows release: alpha.111 fixes independent Linux workspace selection,
+retaining connection presets, protected saved accounts and quiet repeat resource
+sharing; see docs/status/CONNECTION_PRESETS.md and
 docs/status/WORKSPACE_SELECTION_FIX.md. Native testing found that the shared
-Windows credential cache could override the selected workspace.
+Windows credential cache could override the selected workspace; per-launch
+DPAPI envelopes preserve the exact selection. Both reachable Windows controllers
+are updated; the offline controller retains a durable notification.
 Windows Home signing and battery-powered startup remain supported. Shared RDP choices retain
 the corresponding TigerVNC workspace, with playback and explicit microphone
 forwarding by default. Hardware acceptance remains pending. Normal multi-workspace
