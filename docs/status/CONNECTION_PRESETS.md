@@ -1,6 +1,6 @@
 # Connection presets and quiet repeat access
 
-Release candidate: Windows alpha.110, publisher sequence 112.
+Released: Windows alpha.110, publisher sequence 112 (2026-10-15).
 
 ## User journey
 
@@ -48,7 +48,33 @@ New installations have an explicit repair button for this one-time setup.
 - The signed 542-file package and dependency/license verification pass. The
   upgrade verifier installs alpha.109, upgrades to alpha.110, saves a protected
   preset, rolls back, then re-upgrades. Identity, targets and encrypted account
-  settings remain readable. Online delivery is recorded below at closure.
+  settings remain readable.
+
+## Delivery
+
+The fixed GitHub release and the preview feed are published. All seven uploaded
+asset digests match the verified local files. The two reachable Windows
+controllers independently installed alpha.110 and report current. Their Center
+and daemon are responsive in the signed-in sessions; the new preset API works.
+All 24 and 27 private baseline files respectively match, including protected
+desktop passwords; both retain 14 targets and 50 recent records. Their exact
+local publisher chains pass code-signing use and reject TLS-server use.
+
+No foreground UI or user input was automated. The existing RDP server session
+remained connected across both installation completion times; its next recorded
+disconnect/reconnect occurred several minutes after installation. No viewer
+stop or reconnect was issued by deployment.
+
+The third Windows controller has a stale heartbeat and an unreachable management
+path. It remains unverified on alpha.109; the Gateway retains the update notice
+for independent catch-up. Its one-time publisher-chain preparation still needs
+completion when it becomes reachable. This is not reported as an updated host.
+The available Linux node remains on its latest platform release, alpha.104;
+this Windows-only change does not replace its node or shared-desktop services.
+
+M10.3 owner experience acceptance remains the roadmap return point. Existing
+Windows Credential Manager accounts can be reused. A new account is entered once
+on each controlling computer through the settings UI, never through Agent chat.
 
 Migration is additive: existing desktop passwords, identities, Gateway settings
 and records remain in the private user profile. Existing sessions keep their

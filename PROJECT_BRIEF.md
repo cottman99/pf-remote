@@ -30,7 +30,7 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current candidate: alpha.110 adds named connection presets, protected saved accounts
+Current Windows release: alpha.110 adds named connection presets, protected saved accounts
 and quiet repeat resource sharing; see docs/status/CONNECTION_PRESETS.md.
 Windows Home signing and battery-powered startup remain supported. Shared RDP choices retain
 the corresponding TigerVNC workspace, with playback and explicit microphone

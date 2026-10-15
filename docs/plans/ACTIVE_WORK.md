@@ -39,8 +39,15 @@ R2/R3: alpha.110 implements protected per-desktop account settings, exact defaul
 desktop selection and native credential projection. The certificate-chain failure
 is reproduced and fixed on an isolated desktop. Full repository checks and 61
 presentation tests pass; the native settings dialog is responsive and rendered.
-Package/rollback verification and authorized online rollout are the current step.
-See docs/status/CONNECTION_PRESETS.md. No active viewer is restarted.
+Package/rollback verification passes, including protected presets through rollback
+and re-upgrade. R4: alpha.110 (sequence 112) is published and independently applied
+on both reachable Windows controllers. Private baseline files, targets and history
+remain intact; native publisher trust is prepared. The third controller is
+management-offline, retains alpha.109 as its last observed version, and has a
+durable update notice; its trust preparation awaits reachability. Linux retains
+its current platform release. No foreground input or viewer restart is issued;
+server session events confirm continuity across the installation times.
+See docs/status/CONNECTION_PRESETS.md. Return to M10.3 owner experience acceptance.
 
 2026-10-14 owner prioritizes default playback on Linux desktop connections.
 R0: main is dirty with retained alpha.106/UI/audio work; preserve those edits.
