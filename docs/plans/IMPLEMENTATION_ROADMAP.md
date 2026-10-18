@@ -49,6 +49,12 @@ installed on both reachable Windows controllers with configuration and viewers
 preserved; the offline controller retains a notice. M10.3 remains the return point.
 The follow-up exact-workspace repair is tracked in
 [Independent Linux workspace selection](../status/WORKSPACE_SELECTION_FIX.md).
+The 2026-10-18 follow-through verifies all three saved workspace credentials and
+repairs audio discovery after boot. A guarded, owner-authorized focus recovery
+restores the affected application; the owner confirms keyboard input and
+intelligible dictation. See [Workspace input recovery](../status/WORKSPACE_INPUT_RECOVERY.md).
+Original desktops remain running; no Windows reinstall is needed.
+M10.3 remains the return point.
 Alpha.111 is published and installed on both reachable Windows controllers;
 the offline controller retains its notice. Original workspaces are preserved.
 

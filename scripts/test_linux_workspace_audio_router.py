@@ -125,6 +125,40 @@ class RuntimeSocketTests(unittest.TestCase):
         self.assertEqual(native.read_text(), 'existing server state')
         self.assertEqual(pipe.readlink(), self.root / 'someone-else')
 
+    def test_pulse_directory_created_at_boot_is_protected_by_runtime(self):
+        # pipewire-pulse.socket creates this child with the normal 0755 mode.
+        # The same-owner 0700 runtime still prevents access by other users.
+        (self.root / 'pulse').chmod(0o755)
+        created = router.ensure_runtime_audio(self.uid, [2, 3, 4], self.root)
+        self.assertEqual(len(created), 6)
+        self.assertTrue(all(path.is_socket() for path in created))
+        self.assertEqual((self.root / 'pulse').stat().st_mode & 0o777, 0o755)
+        router.remove_runtime_audio(self.uid, [2, 3, 4], self.root)
+        self.assertTrue(all(not path.is_symlink() for path in created))
+        self.assertTrue((self.root / 'pulse/native').is_socket())
+        self.assertEqual((self.root / 'pulse').stat().st_mode & 0o777, 0o755)
+
+    def test_rejects_redirected_source_directory_and_wrong_source_owner(self):
+        source = self.root / 'pulse'
+        moved = self.root / 'actual-pulse'
+        source.rename(moved)
+        source.symlink_to(moved, target_is_directory=True)
+        self.assertEqual(router.ensure_runtime_audio(self.uid, [2], self.root),
+                         [self.root / 'vnc-2/pipewire-0'])
+        source.unlink()
+        moved.rename(source)
+        real_stat = Path.lstat
+        def wrong_owner(path):
+            value = real_stat(path)
+            if path == source:
+                fields = list(value)
+                fields[4] = self.uid + 1
+                return os.stat_result(fields)
+            return value
+        with patch.object(Path, 'lstat', wrong_owner):
+            self.assertEqual(router.ensure_runtime_audio(self.uid, [3], self.root),
+                             [self.root / 'vnc-3/pipewire-0'])
+
     def test_rejects_unprotected_or_redirected_directories_and_wrong_owner(self):
         (self.root / 'vnc-2').chmod(0o755)
         (self.root / 'vnc-3/pulse').symlink_to(self.root / 'pulse')

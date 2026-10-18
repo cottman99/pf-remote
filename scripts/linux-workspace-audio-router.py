@@ -102,8 +102,13 @@ def ensure_runtime_audio(uid, displays, runtime=None):
                 continue
             for relative in ('pulse/native', 'pipewire-0'):
                 target, link = runtime / relative, workspace / relative
-                if relative.startswith('pulse/') and not protected_directory(target.parent, uid):
-                    continue
+                if relative.startswith('pulse/'):
+                    # The socket service normally creates pulse/ as 0755 at
+                    # boot. Its verified 0700 runtime ancestor protects it;
+                    # still reject a symlink or a different owner's directory.
+                    parent = target.parent.lstat()
+                    if not stat.S_ISDIR(parent.st_mode) or parent.st_uid != uid:
+                        continue
                 st = target.lstat()
                 if not stat.S_ISSOCK(st.st_mode) or st.st_uid != uid:
                     continue

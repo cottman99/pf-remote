@@ -24,6 +24,22 @@ survive. All intended available hosts converge and the owner can use the control
 
 ## Current step
 
+2026-10-18 bounded input-recovery side task is complete. R0: main at db1feba;
+M10.3 remains the return point. Acceptance: recover exact-workspace authentication,
+application audio discovery and the reported keyboard failure while preserving
+active desktops and viewers. All three saved credentials pass live challenges
+after correcting the affected preset through protected IPC. R1: accept the normal
+same-owner 0755 Pulse source directory only under a protected 0700 runtime; retain
+socket ownership checks and refusal of symlinks/conflicting endpoints. R2/R3: the
+boot-layout regression fails before repair; all fourteen Linux tests, paused audio
+checks on three workspaces and synthetic RDP round trips on two idle workspaces
+pass. Real key events reach the server but actual focus is stuck on the window
+manager's fallback. One explicitly owner-authorized focus recovery restores the
+current application; the owner confirms keyboard input and intelligible dictation.
+R4: preserve original X servers, channel/audio processes, application roots and
+viewers. Repository checks pass. No Windows binary or schema changes are needed.
+See docs/status/WORKSPACE_INPUT_RECOVERY.md. Return to M10.3.
+
 2026-10-15 owner prioritizes explicit display presets. R0: main contains the
 retained cumulative release work; sanitized public main is d03b738. This bounded
 side task returns to M10.3. Acceptance: native settings remembers windowed,
