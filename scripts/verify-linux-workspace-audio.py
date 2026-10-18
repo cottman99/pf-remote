@@ -14,10 +14,11 @@ import sys
 import time
 
 
-def check(display):
+def check(display, runtime_root=None):
     uid = os.getuid()
+    runtime_root = Path(runtime_root) if runtime_root is not None else Path('/run/user') / str(uid)
     os.environ['DISPLAY'] = ':' + str(display)
-    os.environ['XDG_RUNTIME_DIR'] = str(Path('/run/user') / str(uid) / ('vnc-' + str(display)))
+    os.environ['XDG_RUNTIME_DIR'] = str(runtime_root / ('vnc-' + str(display)))
     pulse = c.CDLL(c.util.find_library('pulse'))
     functions = [
         ('pa_mainloop_new', c.c_void_p, []),
@@ -70,7 +71,8 @@ def check(display):
 
     try:
         # NOAUTOSPAWN: do not create a different audio server to hide a failure.
-        if pulse.pa_context_connect(context, None, 1, None) < 0:
+        endpoint = ('unix:' + str(runtime_root / f'vnc-{display}/pulse/native')).encode()
+        if pulse.pa_context_connect(context, endpoint, 1, None) < 0:
             return report
         report['pulse_connected'] = iterate_until(lambda: pulse.pa_context_get_state(context) == 4, 3)
         if not report['pulse_connected']:
@@ -146,14 +148,15 @@ def check(display):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--display', type=int, required=True, choices=range(1, 100))
+    parser.add_argument('--runtime-root', type=Path, default=Path('/run/user') / str(os.getuid()))
     args = parser.parse_args()
-    runtime = str(Path('/run/user') / str(os.getuid()) / ('vnc-' + str(args.display)))
+    runtime = str(args.runtime_root / ('vnc-' + str(args.display)))
     if os.environ.get('DISPLAY') != ':' + str(args.display) or os.environ.get('XDG_RUNTIME_DIR') != runtime:
         env = os.environ.copy()
-        env.update(DISPLAY=':' + str(args.display), XDG_RUNTIME_DIR=runtime)
+        env.update(DISPLAY=':' + str(args.display), XDG_RUNTIME_DIR=runtime, PIPEWIRE_RUNTIME_DIR=runtime)
         # /proc/PID/environ reflects exec-time variables, as for real desktop apps.
         os.execve(sys.executable, [sys.executable, __file__, *sys.argv[1:]], env)
-    result = check(args.display)
+    result = check(args.display, args.runtime_root)
     result['passed'] = all(result[k] for k in ['pulse_connected', 'default_source_is_microphone',
                                              'playback_route', 'microphone_route'])
     print(json.dumps(result))

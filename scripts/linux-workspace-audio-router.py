@@ -84,6 +84,13 @@ def protected_directory(path, uid):
     return stat.S_ISDIR(st.st_mode) and st.st_uid == uid and st.st_mode & 0o077 == 0
 
 
+def owned_audio_socket(path, uid):
+    # Pulse's 0755 child is safe under the separately verified private runtime.
+    parent, endpoint = path.parent.lstat(), path.lstat()
+    return (stat.S_ISDIR(parent.st_mode) and parent.st_uid == uid and
+            stat.S_ISSOCK(endpoint.st_mode) and endpoint.st_uid == uid)
+
+
 def ensure_runtime_audio(uid, displays, runtime=None):
     """Share only audio sockets with existing private per-workspace runtimes.
 
@@ -102,15 +109,7 @@ def ensure_runtime_audio(uid, displays, runtime=None):
                 continue
             for relative in ('pulse/native', 'pipewire-0'):
                 target, link = runtime / relative, workspace / relative
-                if relative.startswith('pulse/'):
-                    # The socket service normally creates pulse/ as 0755 at
-                    # boot. Its verified 0700 runtime ancestor protects it;
-                    # still reject a symlink or a different owner's directory.
-                    parent = target.parent.lstat()
-                    if not stat.S_ISDIR(parent.st_mode) or parent.st_uid != uid:
-                        continue
-                st = target.lstat()
-                if not stat.S_ISSOCK(st.st_mode) or st.st_uid != uid:
+                if not owned_audio_socket(target, uid):
                     continue
                 if relative.startswith('pulse/'):
                     link.parent.mkdir(mode=0o700, exist_ok=True)
@@ -143,6 +142,45 @@ def remove_runtime_audio(uid, displays, runtime=None):
                     link.unlink()
         except OSError:
             continue
+
+
+def prepare_runtime(uid, displays, runtime=None, wait_seconds=20):
+    """Before starting apps, wait for their private sockets and real devices.
+
+    Called by the desktop startup hook, not on a running desktop. A delayed
+    audio service is retried without letting applications cache a failed start.
+    """
+    runtime = Path(runtime) if runtime is not None else Path('/run/user') / str(uid)
+    deadline = time.monotonic() + wait_seconds
+    env = dict(os.environ, XDG_RUNTIME_DIR=str(runtime), PIPEWIRE_RUNTIME_DIR=str(runtime),
+               PIPEWIRE_REMOTE='pipewire-0', LC_ALL='C')
+    while True:
+        try:
+            ensure_runtime_audio(uid, displays, runtime)
+            links_ready = protected_directory(runtime, uid) and all(
+                protected_directory(runtime / f'vnc-{d}', uid) and
+                protected_directory((runtime / f'vnc-{d}' / rel).parent, uid) and
+                owned_audio_socket(runtime / rel, uid) and
+                (runtime / f'vnc-{d}' / rel).is_symlink() and
+                (runtime / f'vnc-{d}' / rel).readlink() == runtime / rel and
+                (runtime / f'vnc-{d}' / rel).is_socket()
+                for d in displays for rel in ('pulse/native', 'pipewire-0'))
+            if links_ready:
+                # pw-dump is already a router dependency; pactl is optional on
+                # PipeWire-only desktops and must not block their boot.
+                graph = json.loads(subprocess.check_output(['pw-dump'], env=env,
+                    timeout=2, stderr=subprocess.DEVNULL, text=True))
+                devices = {x.get('info', {}).get('props', {}).get('node.name'):
+                           x.get('info', {}).get('props', {}).get('media.class')
+                           for x in graph if x.get('type') == 'PipeWire:Interface:Node'}
+                if all(devices.get(f'pfremote-mic-{d}') == 'Audio/Source' and
+                       devices.get(f'pfremote-speaker-{d}') == 'Audio/Sink' for d in displays):
+                    return True
+        except (OSError, ValueError, subprocess.SubprocessError):
+            pass
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(.2)
 
 
 def decisions(graph, uid, displays, display_reader=process_display):
@@ -188,9 +226,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--displays', nargs='+', type=int, default=[2, 3, 4])
     parser.add_argument('--remove-runtime-links', action='store_true')
+    parser.add_argument('--prepare-runtime', action='store_true')
+    parser.add_argument('--wait-seconds', type=float, default=20)
     args = parser.parse_args()
-    if os.getuid() == 0 or any(d < 1 or d > 99 for d in args.displays):
+    if os.getuid() == 0 or any(d < 1 or d > 99 for d in args.displays) or not 0 <= args.wait_seconds <= 60:
         parser.error('run as the desktop owner with declared displays 1..99')
+    if args.prepare_runtime:
+        if args.remove_runtime_links:
+            parser.error('preparation and rollback are separate operations')
+        ready = prepare_runtime(os.getuid(), args.displays, wait_seconds=args.wait_seconds)
+        print(json.dumps({'schema_version': 'pfremote.workspace-ready/v1', 'audio_ready': ready}))
+        raise SystemExit(0 if ready else 1)
     if args.remove_runtime_links:
         remove_runtime_audio(os.getuid(), args.displays)
         return

@@ -15,8 +15,9 @@ windows remain running; the repair does not stop or reconnect remote viewers.
 | Keyboard delivery | Real key events reach the X server, while the active application's actual keyboard focus remains on the window manager's fallback window. Minimizing and restoring does not recover it. | Restore the application's missing input hint, then perform one explicitly owner-authorized focus repair guarded by the current active window and original process identity. Actual focus then matches the application and the owner confirms typing works. No keyboard input is injected. |
 
 The keyboard failure was in application/window-manager focus delivery. The
-original trigger is not established. This recovery does not install a focus
-watcher or change normal window-selection behavior.
+original trigger is not established. This initial recovery was a one-time repair.
+Persistent reconnect/startup protection is tracked separately in
+[Workspace reconnect recovery](WORKSPACE_RECONNECT_RECOVERY.md).
 
 ## Verification
 

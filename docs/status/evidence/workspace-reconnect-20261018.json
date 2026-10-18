@@ -1,0 +1,369 @@
+{
+  "schema_version": "pfremote.workspace-recovery-evidence/v1",
+  "date": "2026-10-18",
+  "linux_unit_tests": 19,
+  "first_continuity_run": {
+    "fresh_runtimes": 6,
+    "rdp_connections": 9,
+    "passed": true
+  },
+  "native_click_recovery_run": {
+    "schema_version": "pfremote.workspace-lifecycle-check/v1",
+    "results": [
+      {
+        "workspace": 2,
+        "cold_start": 1,
+        "connections": [
+          {
+            "attempt": 1,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.98,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 21.02,
+              "startup_silence_ms": 21.02,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.98,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 21.16,
+              "startup_silence_ms": 21.16,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          }
+        ],
+        "live_mapping_matches_test_model": true,
+        "gate_waits_for_delayed_audio": true,
+        "gate_ready_before_app": true,
+        "boot_source_directory_mode": "0o755",
+        "app_initial_keyboard": true,
+        "physical_audio_devices": 0,
+        "audio_core_isolated": true,
+        "ordinary_app_audio_ready": true,
+        "passed": true,
+        "children_stopped": true
+      },
+      {
+        "workspace": 2,
+        "cold_start": 2,
+        "connections": [
+          {
+            "attempt": 1,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.98,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 21.04,
+              "startup_silence_ms": 21.04,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          }
+        ],
+        "live_mapping_matches_test_model": true,
+        "gate_waits_for_delayed_audio": true,
+        "gate_ready_before_app": true,
+        "boot_source_directory_mode": "0o755",
+        "app_initial_keyboard": true,
+        "physical_audio_devices": 0,
+        "audio_core_isolated": true,
+        "ordinary_app_audio_ready": true,
+        "passed": true,
+        "children_stopped": true
+      },
+      {
+        "workspace": 3,
+        "cold_start": 1,
+        "connections": [
+          {
+            "attempt": 1,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.98,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 21.02,
+              "startup_silence_ms": 21.02,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          }
+        ],
+        "live_mapping_matches_test_model": true,
+        "gate_waits_for_delayed_audio": true,
+        "gate_ready_before_app": true,
+        "boot_source_directory_mode": "0o755",
+        "app_initial_keyboard": true,
+        "physical_audio_devices": 0,
+        "audio_core_isolated": true,
+        "ordinary_app_audio_ready": true,
+        "passed": true,
+        "children_stopped": true
+      },
+      {
+        "workspace": 3,
+        "cold_start": 2,
+        "connections": [
+          {
+            "attempt": 1,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.98,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 21.02,
+              "startup_silence_ms": 21.02,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          }
+        ],
+        "live_mapping_matches_test_model": true,
+        "gate_waits_for_delayed_audio": true,
+        "gate_ready_before_app": true,
+        "boot_source_directory_mode": "0o755",
+        "app_initial_keyboard": true,
+        "physical_audio_devices": 0,
+        "audio_core_isolated": true,
+        "ordinary_app_audio_ready": true,
+        "passed": true,
+        "children_stopped": true
+      },
+      {
+        "workspace": 4,
+        "cold_start": 1,
+        "connections": [
+          {
+            "attempt": 1,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.98,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 21.16,
+              "startup_silence_ms": 21.16,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          }
+        ],
+        "live_mapping_matches_test_model": true,
+        "gate_waits_for_delayed_audio": true,
+        "gate_ready_before_app": true,
+        "boot_source_directory_mode": "0o755",
+        "app_initial_keyboard": true,
+        "physical_audio_devices": 0,
+        "audio_core_isolated": true,
+        "ordinary_app_audio_ready": true,
+        "passed": true,
+        "children_stopped": true
+      },
+      {
+        "workspace": 4,
+        "cold_start": 2,
+        "connections": [
+          {
+            "attempt": 1,
+            "client_alive": true,
+            "rdp_keyboard": true,
+            "focus_fault_reproduced": true,
+            "remote_click_recovers_keyboard": true,
+            "playback": {
+              "passed": true,
+              "tone_seconds": 5.96,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 0.02,
+              "startup_silence_ms": 0.02,
+              "steady_silence_ms": 0.02
+            },
+            "microphone": {
+              "passed": true,
+              "tone_seconds": 5.98,
+              "tone_hz": 997.0,
+              "longest_silence_ms": 21.02,
+              "startup_silence_ms": 21.02,
+              "steady_silence_ms": 0.02
+            },
+            "desktop_and_app_retained": true,
+            "passed": true
+          }
+        ],
+        "live_mapping_matches_test_model": true,
+        "gate_waits_for_delayed_audio": true,
+        "gate_ready_before_app": true,
+        "boot_source_directory_mode": "0o755",
+        "app_initial_keyboard": true,
+        "physical_audio_devices": 0,
+        "audio_core_isolated": true,
+        "ordinary_app_audio_ready": true,
+        "passed": true,
+        "children_stopped": true
+      }
+    ],
+    "passed": true
+  },
+  "isolated_focus_check": {
+    "normal_input": true,
+    "known_fault_reproduced": true,
+    "native_click_leaves_fault": true,
+    "no_unsolicited_focus_change": true,
+    "click_recovers_input": true,
+    "repeated_recovery": true,
+    "explicit_no_input_preserved": true,
+    "guard_alive": true,
+    "children_stopped": true,
+    "passed": true
+  },
+  "live_deployment": {
+    "workspace_count": 3,
+    "paused_audio_checks_passed": true,
+    "samples_read_or_played": 0,
+    "input_services_enabled_active": true,
+    "startup_hooks_loaded": true,
+    "installed_readiness_command_passed": true,
+    "original_processes_preserved": true,
+    "installed_source_hashes": {
+      "linux-shared-desktop.py": "b5e9ca0fef1a092e6681201e27557a0cb54d73285e861d17e8e0dc1f475c0e38",
+      "linux-workspace-audio-router.py": "6e879b16281e88f9e184df5ac00769ad8c788cb3b27e85c9b3ef64100ea676b1",
+      "linux-workspace-input-guard.py": "0faf240b8f6967947e3f16084cf8b4fe0670f1795b1c0bdbf8b49a9ecda31074"
+    },
+    "live_host_rebooted": false
+  },
+  "limitations": [
+    "Disposable process and runtime startup, not a physical host reboot",
+    "Generated audio verifies transport, not physical speaker hardware",
+    "Observed focus failure is covered; original application trigger is unknown"
+  ]
+}

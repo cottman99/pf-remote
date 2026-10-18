@@ -4,7 +4,7 @@ roadmap_item: M10.3
 roadmap_milestone: M10
 roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: c922269
+base_commit: 1c53176
 ---
 
 # Active work — fleet rollout and owner acceptance
@@ -23,6 +23,29 @@ and install independently; private identities, credentials, gateways and records
 survive. All intended available hosts converge and the owner can use the controls.
 
 ## Current step
+
+2026-10-18 reconnect/cold-start follow-through is the bounded side task. R0:
+main retains cumulative release work; public main is 1c53176. Return to M10.3.
+Acceptance: each shared workspace recovers keyboard and microphone automatically
+after reconnect and fresh runtime startup, with repeatable isolation tests and
+deployed startup/recovery behavior. Preserve the owner's active displays, viewers,
+focus, audio devices and application processes; do not reboot the live host.
+R1: reproduce focus loss before selecting a narrow recovery mechanism. Recovery
+must respect real user window selection and explicit audio-device choices; no
+unconditional focus forcing, key capture, recordings or host network changes.
+Use disposable display/audio/channel processes for destructive lifecycle tests.
+R2/R3: nineteen Linux tests pass. Two isolated lifecycle runs each pass six fresh
+runtimes and nine RDP connections; the second also induces focus loss on every
+connection and verifies that the native client's ordinary click restores typing.
+Both directions deliver generated audio. All three actual workspaces pass paused
+application audio checks without reading or playing samples. R4: persistent
+input services are enabled and startup readiness hooks loaded for all three.
+The original X, desktop, channel, audio-core and application processes survive;
+the existing viewer remains connected. Repository checks pass. Only Linux helpers
+and user service configuration change; no Windows reinstall or credential change.
+The live host was not rebooted. Public source/evidence contain no private
+deployment files. See docs/status/WORKSPACE_RECONNECT_RECOVERY.md. Side task closed; return
+to M10.3.
 
 2026-10-18 bounded input-recovery side task is complete. R0: main at db1feba;
 M10.3 remains the return point. Acceptance: recover exact-workspace authentication,

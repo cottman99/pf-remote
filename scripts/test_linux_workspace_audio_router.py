@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 from pathlib import Path
 import socket
@@ -158,6 +159,36 @@ class RuntimeSocketTests(unittest.TestCase):
         with patch.object(Path, 'lstat', wrong_owner):
             self.assertEqual(router.ensure_runtime_audio(self.uid, [3], self.root),
                              [self.root / 'vnc-3/pipewire-0'])
+
+    def test_startup_waits_for_late_devices_and_refuses_incomplete_audio(self):
+        (self.root / 'pulse').chmod(0o755)
+        calls = []
+        def query(args, **kwargs):
+            calls.append(args)
+            self.assertEqual(args, ['pw-dump'])
+            self.assertEqual(kwargs['env']['PIPEWIRE_RUNTIME_DIR'], str(self.root))
+            if len(calls) == 1:
+                return '[]'
+            return json.dumps([{'type': 'PipeWire:Interface:Node', 'info': {'props': {
+                'node.name': f'pfremote-{prefix}-{d}', 'media.class': kind}}}
+                for d in [2, 3, 4] for prefix, kind in [('mic', 'Audio/Source'), ('speaker', 'Audio/Sink')]])
+        with patch.object(router.subprocess, 'check_output', side_effect=query):
+            self.assertTrue(router.prepare_runtime(self.uid, [2, 3, 4], self.root, 1))
+        self.assertGreater(len(calls), 1)
+        with patch.object(router.subprocess, 'check_output', return_value='[]'):
+            self.assertFalse(router.prepare_runtime(self.uid, [2], self.root, 0))
+        self.root.chmod(0o755)
+        with patch.object(router.subprocess, 'check_output') as query:
+            self.assertFalse(router.prepare_runtime(self.uid, [2], self.root, 0))
+            query.assert_not_called()
+        self.root.chmod(0o700)
+        # A foreign or conflicting endpoint cannot make startup appear ready.
+        bad = self.root / 'vnc-3/pulse/native'
+        bad.unlink()
+        bad.write_text('unrelated endpoint')
+        with patch.object(router.subprocess, 'check_output') as query:
+            self.assertFalse(router.prepare_runtime(self.uid, [3], self.root, 0))
+            query.assert_not_called()
 
     def test_rejects_unprotected_or_redirected_directories_and_wrong_owner(self):
         (self.root / 'vnc-2').chmod(0o755)

@@ -109,12 +109,44 @@ WantedBy=default.target
 """
 
 
+def input_unit(home, display):
+    if not re.fullmatch(r"/[A-Za-z0-9_./-]+", home) or not 1 <= display <= 99:
+        raise ValueError("unsupported owner or display")
+    return f"""[Unit]
+Description=Restore clicked workspace {display} input after focus loss
+StartLimitIntervalSec=0
+
+[Service]
+Environment=XAUTHORITY={home}/.Xauthority
+ExecStart=/usr/bin/python3 {home}/.local/share/pfremote/shared-desktop-setup/linux-workspace-input-guard.py --display {display}
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
+"""
+
+
+def startup_dropin(home, display):
+    if not re.fullmatch(r"/[A-Za-z0-9_./-]+", home) or not 1 <= display <= 99:
+        raise ValueError("unsupported owner or display")
+    return f"""# PF Remote: prepare audio before starting desktop applications.
+[Unit]
+Wants=pipewire-pulse.socket wireplumber.service pfremote-shared-desktop-{display}-audio.service
+After=pipewire-pulse.socket wireplumber.service pfremote-shared-desktop-{display}-audio.service
+
+[Service]
+ExecStartPre=/usr/bin/python3 {home}/.local/share/pfremote/shared-desktop-setup/linux-workspace-audio-router.py --prepare-runtime --displays {display} --wait-seconds 20
+"""
+
+
 def main():
     import pwd
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["plan", "install", "rollback"])
     parser.add_argument("--user", required=True)
     parser.add_argument("--displays", nargs="+", type=int, default=[2, 3, 4])
+    parser.add_argument("--desktop-unit-template", help="existing owner desktop unit, e.g. vnc-desktop@.service")
     args = parser.parse_args()
     owner = pwd.getpwnam(args.user)
     uid = owner.pw_uid
@@ -122,12 +154,21 @@ def main():
     config = Path("/etc/xrdp/xrdp.ini")
     backup = Path("/etc/xrdp/xrdp.ini.pfremote-before-shared")
     units = Path(home) / ".config/systemd/user"
+    template = args.desktop_unit_template
+    if template is None and (units / 'vnc-desktop@.service').is_file():
+        template = 'vnc-desktop@.service'
+    if template is not None and (not re.fullmatch(r'[A-Za-z0-9_.-]+@\.service', template) or
+                                not (units / template).is_file() or (units / template).is_symlink()):
+        raise ValueError('an existing regular owner desktop template is required')
+    startup_paths = [(units / (template.replace('@.', '@' + str(d) + '.') + '.d') /
+                      '50-pfremote-workspace-ready.conf') for d in args.displays] if template else []
     def userctl(*a):
         subprocess.run(["runuser", "-u", args.user, "--", "env",
                         f"XDG_RUNTIME_DIR=/run/user/{uid}", "systemctl", "--user", *a], check=True)
     names = [f"pfremote-shared-desktop-{d}{suffix}.service"
              for d in args.displays for suffix in ("", "-audio")]
     names.append("pfremote-workspace-audio-router.service")
+    names.extend(f"pfremote-workspace-input-{d}.service" for d in args.displays)
     if args.action != "plan" and os.geteuid() != 0:
         raise ValueError("administrator privileges are required")
     if args.action == "rollback":
@@ -136,9 +177,16 @@ def main():
         # Only remove precisely the owned sections; retain subsequent admin edits.
         current = config.read_text()
         restored = remove_managed_config(current)
+        for d, path in zip(args.displays, startup_paths):
+            if (path.parent.is_symlink() or path.is_symlink() or
+                    (path.exists() and path.read_text() != startup_dropin(home, d))):
+                raise ValueError('startup hook has later edits; preserve it for review')
         for name in names:
-            userctl("disable", "--now", name)
-            (units / name).unlink()
+            if (units / name).exists():
+                userctl("disable", "--now", name)
+                (units / name).unlink()
+        for path in startup_paths:
+            path.unlink(missing_ok=True)
         router_path = Path(home) / ".local/share/pfremote/shared-desktop-setup/linux-workspace-audio-router.py"
         if router_path.is_file() and not router_path.is_symlink():
             subprocess.run(["runuser", "-u", args.user, "--", "python3", str(router_path),
@@ -152,16 +200,24 @@ def main():
     rendered = render_config(config.read_text(), uid, args.displays)
     rendered_units = [unit(d, uid, home, audio) for d in args.displays for audio in (False, True)]
     rendered_units.append(router_unit(home, args.displays))
+    rendered_units.extend(input_unit(home, d) for d in args.displays)
     if args.action == "plan":
         print(json.dumps({"schema_version": "pfremote.shared-desktop/v1", "state": "planned",
                           "displays": args.displays, "requires_admin": True,
-                          "audio_requires_live_rdp": True}))
+                          "audio_requires_live_rdp": True, "startup_gate_configured": bool(template)}))
         return
     import shutil
     import socket
     import glob
     router_source = Path(__file__).with_name("linux-workspace-audio-router.py")
     router_path = Path(home) / ".local/share/pfremote/shared-desktop-setup/linux-workspace-audio-router.py"
+    guard_source = Path(__file__).with_name('linux-workspace-input-guard.py')
+    guard_path = router_path.with_name(guard_source.name)
+    if not guard_source.is_file() or guard_source.is_symlink():
+        raise ValueError('workspace input guard is missing from the setup bundle')
+    for path in startup_paths:
+        if path.parent.is_symlink() or path.exists() or path.is_symlink():
+            raise ValueError('existing desktop startup hook must not be overwritten')
     if not router_source.is_file() or router_source.is_symlink():
         raise ValueError("workspace audio router is missing from the setup bundle")
     if router_source.resolve() != router_path.resolve():
@@ -170,6 +226,11 @@ def main():
         router_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(router_source, router_path)
         router_path.chmod(0o644)
+    if guard_source.resolve() != guard_path.resolve():
+        if guard_path.exists() or guard_path.is_symlink():
+            raise ValueError('existing workspace input guard must not be overwritten')
+        shutil.copyfile(guard_source, guard_path)
+        guard_path.chmod(0o644)
     if not glob.glob("/usr/lib*/pipewire-0.3/libpipewire-module-xrdp.so"):
         raise ValueError("install pipewire-module-xrdp before provisioning")
     if config.is_symlink() or backup.exists() or backup.is_symlink():
@@ -185,13 +246,19 @@ def main():
     # Use the owner's manager; never start a new login or a new X server.
     userctl("is-active", "pipewire.service")
     shutil.copy2(config, backup)
-    written = []
+    written, startup_written = [], []
     try:
         for name, content in zip(names, rendered_units):
             path = units / name
             path.write_text(content)
             os.chown(path, uid, owner.pw_gid)
             written.append(name)
+        for d, path in zip(args.displays, startup_paths):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            os.chown(path.parent, uid, owner.pw_gid)
+            path.write_text(startup_dropin(home, d))
+            os.chown(path, uid, owner.pw_gid)
+            startup_written.append((path, startup_dropin(home, d)))
         userctl("daemon-reload")
         for name in names:
             userctl("enable", "--now", name)
@@ -210,6 +277,9 @@ def main():
             except subprocess.CalledProcessError:
                 pass
             (units / name).unlink(missing_ok=True)
+        for path, content in startup_written:
+            if not path.is_symlink() and path.exists() and path.read_text() == content:
+                path.unlink()
         userctl("daemon-reload")
         subprocess.run(["systemctl", "restart", "xrdp"], check=False)
         raise

@@ -59,6 +59,18 @@ class SharedDesktopTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 shared.remove_managed_config(broken)
 
+    def test_startup_gate_precedes_apps_without_binding_desktop_lifetime(self):
+        for display in [2, 3, 4]:
+            hook = shared.startup_dropin('/home/example', display)
+            self.assertIn(f'--prepare-runtime --displays {display}', hook)
+            self.assertIn('After=pipewire-pulse.socket', hook)
+            self.assertNotIn('PartOf=', hook)
+            self.assertNotIn('BindsTo=', hook)
+            guard = shared.input_unit('/home/example', display)
+            self.assertIn(f'--display {display}', guard)
+            self.assertIn('Restart=on-failure', guard)
+            self.assertIn('StartLimitIntervalSec=0', guard)
+
 
 if __name__ == "__main__":
     unittest.main()

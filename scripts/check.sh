@@ -16,6 +16,8 @@ fi
 
 go run ./scripts/governancecheck
 
+python3 -m unittest discover -s scripts -p 'test_linux_*.py'
+
 unformatted=$(gofmt -l cmd internal pkg scripts/governancecheck)
 if [ -n "$unformatted" ]; then
   echo "Unformatted Go files:" >&2

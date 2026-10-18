@@ -54,6 +54,13 @@ repairs audio discovery after boot. A guarded, owner-authorized focus recovery
 restores the affected application; the owner confirms keyboard input and
 intelligible dictation. See [Workspace input recovery](../status/WORKSPACE_INPUT_RECOVERY.md).
 Original desktops remain running; no Windows reinstall is needed.
+The reconnect follow-through installs click-scoped input recovery and audio
+readiness before desktop application startup. Two isolated runs each pass six
+fresh runtimes and nine native RDP connections, including induced focus recovery
+in the second run. All three live workspaces pass paused audio checks; their
+enabled recovery services and startup hooks are verified without rebooting the
+host or disturbing its current viewer. See
+[Workspace reconnect recovery](../status/WORKSPACE_RECONNECT_RECOVERY.md).
 M10.3 remains the return point.
 Alpha.111 is published and installed on both reachable Windows controllers;
 the offline controller retains its notice. Original workspaces are preserved.
