@@ -383,3 +383,11 @@ work. If Gateway starts hosting content streams, add authoritative stream draini
 ## Evidence
 
 contracts/fleet-updates-v1.md and docs/status/FLEET_UPDATE_REPORT.md.
+
+## Authorized maintenance — packaged authorization renewal
+
+2026-10-28: integrate controlled-node renewal into the shipped daemon and Linux
+release. Preserve identity and active desktops. Acceptance: signed package,
+failed-refresh regression tests, upgrade with existing identity, packaged refresh
+without the temporary timer, and unchanged independent desktop/audio processes.
+Return to M10.3 owner acceptance after this bounded maintenance release.

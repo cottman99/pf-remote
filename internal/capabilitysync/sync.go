@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"time"
 
 	"github.com/cottman99/pf-remote/internal/enrollment"
 	"github.com/cottman99/pf-remote/internal/shellbinding"
@@ -19,6 +20,7 @@ type Gateway interface {
 }
 
 type Synchronizer struct {
+	Now                   func() time.Time
 	Gateway               Gateway
 	Random                func() (string, error)
 	Version               string
@@ -28,6 +30,7 @@ type Synchronizer struct {
 }
 
 type Result struct {
+	Renewed   bool
 	Published int
 	Imported  int
 }
@@ -71,7 +74,9 @@ func (s Synchronizer) Sync(ctx context.Context, snapshot state.Snapshot, signer 
 		result.Published++
 	}
 	if !s.Pull {
-		return snapshot, result, nil
+		updated, renewed, err := s.renewSelf(ctx, snapshot, signer)
+		result.Renewed = renewed
+		return updated, result, err
 	}
 	updated, imported, err := s.PullClaims(ctx, snapshot, signer)
 	if err != nil {

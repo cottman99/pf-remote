@@ -129,3 +129,7 @@ Persist/coalesce the latest hint for offline members; reconnect and periodic
 checks provide catch-up without broadcast loops. Hints never carry execution
 authority, trust keys or arbitrary download locations. Each recipient still
 verifies its own channel/platform release and installs locally at a safe time.
+
+Maintenance follow-through (2026-10-28): package controlled-node authorization
+renewal without reenrollment; see docs/status/CONTROLLED_NODE_AUTH_REFRESH.md.
+M10.3 scope and owner-acceptance gate remain unchanged.

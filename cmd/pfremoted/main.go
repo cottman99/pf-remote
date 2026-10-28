@@ -86,7 +86,11 @@ func (s connectionSettings) gatewayClient() enrollment.Client {
 }
 
 func connectionSyncDue(settingsChanged, pull, retry bool, lastPull, now time.Time) bool {
-	return settingsChanged || (pull && (retry || now.Sub(lastPull) >= 30*time.Second))
+	interval := time.Hour
+	if pull {
+		interval = 30 * time.Second
+	}
+	return settingsChanged || retry || now.Sub(lastPull) >= interval
 }
 
 type snapshotCommitter interface {
@@ -98,6 +102,27 @@ func commitImportedSnapshot(ctx context.Context, store snapshotCommitter, snapsh
 		return nil
 	}
 	return store.CommitSnapshot(ctx, snapshot)
+}
+
+func commitSynchronizedSnapshot(ctx context.Context, store snapshotCommitter, snapshot state.Snapshot, imported int, renewed bool) error {
+	if renewed {
+		clock, ok := store.(interface {
+			ObserveAuthorizationTime(context.Context, time.Time) (time.Time, error)
+		})
+		if !ok {
+			return errors.New("authorization clock is unavailable")
+		}
+		now := time.Now().UTC()
+		observed, err := clock.ObserveAuthorizationTime(ctx, now)
+		if err != nil {
+			return err
+		}
+		if observed.After(now) || snapshot.CapturedAt.After(now) {
+			return errors.New("clock rollback prevents authorization renewal")
+		}
+		return store.CommitSnapshot(ctx, snapshot)
+	}
+	return commitImportedSnapshot(ctx, store, snapshot, imported)
 }
 
 func main() {
@@ -209,11 +234,11 @@ func main() {
 		capabilitySynchronizer = &configuredSynchronizer
 		syncContext, cancelSync := context.WithTimeout(context.Background(), 5*time.Second)
 		if synced, result, syncErr := capabilitySynchronizer.Sync(syncContext, currentSnapshot, deviceIdentity); syncErr == nil {
-			if commitErr := commitImportedSnapshot(context.Background(), stateStore, synced, result.Imported); commitErr != nil {
+			if commitErr := commitSynchronizedSnapshot(context.Background(), stateStore, synced, result.Imported, result.Renewed); commitErr != nil {
 				setCapabilitySyncCheck("pending", "Connection service will retry after local state is writable")
 			} else {
 				setCapabilitySyncCheck("pass", "Connection service synchronized signed capabilities")
-				if result.Imported > 0 {
+				if result.Imported > 0 || result.Renewed {
 					currentSnapshot = synced
 				}
 			}
@@ -402,11 +427,14 @@ func main() {
 				syncContext, cancelSync := context.WithTimeout(ctx, 5*time.Second)
 				var synced state.Snapshot
 				var imported int
+				var renewed bool
 				var syncErr error
-				if settingsChanged {
+				// Controlled nodes must retry their signed publication, never the Owner-only pull.
+				if settingsChanged || !current.Pull {
 					var result capabilitysync.Result
 					synced, result, syncErr = synchronizer.Sync(syncContext, snapshot, deviceIdentity)
 					imported = result.Imported
+					renewed = result.Renewed
 				} else {
 					synced, imported, syncErr = synchronizer.PullClaims(syncContext, snapshot, deviceIdentity)
 				}
@@ -416,7 +444,7 @@ func main() {
 					lastPull = time.Now()
 					retrySync = false
 				}
-				if syncErr != nil || imported == 0 {
+				if syncErr != nil || (imported == 0 && !renewed) {
 					if syncErr != nil {
 						setCapabilitySyncCheck("pending", "Connection service will retry in the background")
 						retrySync = true
@@ -432,7 +460,7 @@ func main() {
 					}
 					legacyMu.Unlock()
 				} else {
-					if commitErr := commitImportedSnapshot(context.Background(), stateStore, synced, imported); commitErr != nil {
+					if commitErr := commitSynchronizedSnapshot(context.Background(), stateStore, synced, imported, renewed); commitErr != nil {
 						setCapabilitySyncCheck("pending", "Connection service will retry after local state is writable")
 						retrySync = true
 						continue

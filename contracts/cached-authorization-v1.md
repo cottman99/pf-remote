@@ -44,3 +44,14 @@ Center schedules a daemon refresh at the 24-hour threshold and exact expiry
 boundary; an expired or temporarily unavailable catalog is retried at a bounded
 interval so a long-running window cannot retain stale target actions
 indefinitely.
+
+## Controlled-node renewal
+
+A self-only controlled node (one matching Device and no Grants) confirms its
+existing signed identity with the Gateway on startup and hourly thereafter.
+Successful publication plus an active matching version-sync response permits
+renewal. Fabric/device/schema mismatches, revocation, version regression, network
+failures and persistent clock failures do not extend validity. Nodes retry failed
+synchronization on the next background cycle without Owner-only claim pulling.
+Snapshots containing other devices or grants are never renewed through this path.
+The packaged daemon owns renewal; no separate timer or enrollment is required.
