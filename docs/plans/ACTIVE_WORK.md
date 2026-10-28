@@ -391,3 +391,9 @@ release. Preserve identity and active desktops. Acceptance: signed package,
 failed-refresh regression tests, upgrade with existing identity, packaged refresh
 without the temporary timer, and unchanged independent desktop/audio processes.
 Return to M10.3 owner acceptance after this bounded maintenance release.
+
+R3/R4 complete: signed Linux alpha.113 (sequence 115) upgraded the existing node;
+packaged renewal succeeded with the temporary timer stopped. Identity bytes and
+independent desktop/audio service PIDs/start times are unchanged. Full Go/build/
+privacy/integration checks passed with SkipWindowsApp. Source and signed release
+are published; bounded maintenance is closed. Return to M10.3 owner acceptance.

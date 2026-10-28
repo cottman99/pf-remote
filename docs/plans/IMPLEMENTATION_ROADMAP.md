@@ -133,3 +133,5 @@ verifies its own channel/platform release and installs locally at a safe time.
 Maintenance follow-through (2026-10-28): package controlled-node authorization
 renewal without reenrollment; see docs/status/CONTROLLED_NODE_AUTH_REFRESH.md.
 M10.3 scope and owner-acceptance gate remain unchanged.
+Maintenance closure: alpha.113 Linux packaged renewal and session-preserving
+upgrade verified; M10.3 remains the active mainline item.
