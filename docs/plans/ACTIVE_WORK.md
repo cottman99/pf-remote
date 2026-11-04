@@ -31,7 +31,7 @@ require the Gateway and forward only remote loopback. Native viewer exit owns
 cleanup; local API completion must not interrupt it. R2/R3: lifecycle, rejection,
 legacy-compatibility tests and repository checks pass. A real Gateway-path pilot
 authenticates VNC and reads framebuffer metadata without pixels or input.
-Release candidate alpha.116 awaits deployment; the offline member stays pending.
+Release candidate alpha.117 awaits deployment; the offline member stays pending.
 
 2026-11-04 owner priority: converge available computers on the current client,
 use the migrated Gateway for Shell and Desktop, and retire obsolete installations.

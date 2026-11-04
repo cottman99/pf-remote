@@ -7,7 +7,7 @@ required Gateway cannot silently fall back to another network. Explicit Desktop
 route choices remain available for recovery. Diagnostics describe configured
 adapters instead of an obsolete development placeholder.
 
-Alpha.116 completes a native VNC path for a physical desktop that previously
+Alpha.117 completes a native VNC path for a physical desktop that previously
 opened an independent third-party application. The existing OpenSSH client
 authenticates the same Device and carries VNC through the Gateway end to end.
 Both Shell and Desktop authorization are required. The viewer owns forwarding

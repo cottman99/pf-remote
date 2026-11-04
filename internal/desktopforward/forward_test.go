@@ -65,14 +65,41 @@ type gateway struct {
 	closed      atomic.Int32
 	adapter     string
 	unavailable bool
+	request     route.Request
 }
 
-func (g *gateway) Acquire(context.Context, route.Request) (route.Acquisition, error) {
+func (g *gateway) Acquire(_ context.Context, request route.Request) (route.Acquisition, error) {
+	g.request = request
 	g.calls.Add(1)
 	if g.unavailable {
 		return nil, errors.New("unavailable")
 	}
 	return acquisition{route.Candidate{ID: "fixture-relay", Adapter: g.adapter, Network: "tcp", Address: "127.0.0.1", Port: 2222}, &g.closed}, nil
+}
+
+func TestMappedGatewayRetainsExistingIdentityAndLegacyRoutes(t *testing.T) {
+	f, e, _, g, _ := fixture(t)
+	request := route.Request{SubjectDeviceID: e.Session.SubjectDeviceID, CanonicalTarget: e.Session.CanonicalTarget, AuthorizationExpiry: e.Session.AuthorizationExpiry}
+	acquired, err := f.Config.GatewayProvider(g).Acquire(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = acquired.Close()
+	if g.request.CanonicalTarget != f.Config.Targets[0].ShellTarget || g.request.SubjectDeviceID != request.SubjectDeviceID || !g.request.AuthorizationExpiry.Equal(request.AuthorizationExpiry) {
+		t.Fatal("mapped route lost its target/authorization binding")
+	}
+	request.CanonicalTarget = f.Config.Targets[0].ShellTarget
+	acquired, err = f.Config.GatewayProvider(g).Acquire(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = acquired.Close()
+	if g.request.CanonicalTarget != request.CanonicalTarget {
+		t.Fatal("legacy Shell route changed")
+	}
+	if !f.Config.HasTarget(e.Session.CanonicalTarget) || f.Config.HasTarget(request.CanonicalTarget) {
+		t.Fatal("route availability included an unmapped target")
+	}
 }
 
 // This substitutes only native process execution. The real Shell coordinator,

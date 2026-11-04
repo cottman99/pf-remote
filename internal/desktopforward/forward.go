@@ -78,6 +78,39 @@ type Forwarder struct {
 	Factory func(uint16, chan<- route.Candidate) session.Executor
 }
 
+func (c Config) HasTarget(target string) bool {
+	for _, entry := range c.Targets {
+		if entry.DesktopTarget == target {
+			return true
+		}
+	}
+	return false
+}
+
+// GatewayProvider reuses the existing same-Device Shell route without changing
+// the legacy inventory from which stable Fabric and target identities derive.
+func (c Config) GatewayProvider(provider route.Provider) route.Provider {
+	return mappedGateway{config: c, provider: provider}
+}
+
+type mappedGateway struct {
+	config   Config
+	provider route.Provider
+}
+
+func (m mappedGateway) Acquire(ctx context.Context, request route.Request) (route.Acquisition, error) {
+	if m.provider == nil {
+		return nil, errors.New("Desktop Gateway is unavailable")
+	}
+	for _, entry := range m.config.Targets {
+		if entry.DesktopTarget == request.CanonicalTarget {
+			request.CanonicalTarget = entry.ShellTarget
+			break
+		}
+	}
+	return m.provider.Acquire(ctx, request)
+}
+
 func (f Forwarder) Prepare(ctx context.Context, execution desktop.Execution) (route.Candidate, func(), error) {
 	var selected *Mapping
 	for i := range f.Config.Targets {

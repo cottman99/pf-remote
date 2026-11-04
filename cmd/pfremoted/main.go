@@ -558,6 +558,7 @@ func main() {
 			service.Shell = activeLegacy.Shell.RoutedRunner(service.DeviceID, service.Catalog, activeLegacyRoutes, defaultSSHIdentityFile(), gatewayProvider, localRouting)
 			desktopExecutor.VNCForward = desktopforward.Forwarder{Config: desktopForwards, Resolver: service.Catalog, SubjectDeviceID: service.DeviceID, Gateway: gatewayProvider, RemoteUser: activeLegacy.Shell.RemoteUser, IdentityFile: defaultSSHIdentityFile()}
 			if gatewayProvider != nil {
+				gatewayProvider = desktopForwards.GatewayProvider(gatewayProvider)
 				gatewayProvider = legacyGatewayDesktopProvider{
 					Provider: gatewayProvider,
 					Protocol: func(target string) string {
@@ -617,7 +618,7 @@ func main() {
 						}
 						options = append(options, contracts.RouteOption{Adapter: adapter, Status: status, Order: len(options) + 1})
 					}
-					if gatewayProvider != nil && activeLegacy.Gateway.HasTarget(target) {
+					if gatewayProvider != nil && (activeLegacy.Gateway.HasTarget(target) || desktopForwards.HasTarget(target)) {
 						options = append(options, contracts.RouteOption{Adapter: "frp", Status: probeRouteStatus(gatewayProvider, target, 1500*time.Millisecond), Order: len(options) + 1})
 					}
 					return options
@@ -632,7 +633,7 @@ func main() {
 					}
 					options = append(options, contracts.RouteOption{Adapter: adapter, Status: status, Order: len(options) + 1})
 				}
-				if gatewayProvider != nil && activeLegacy.Gateway.HasTarget(target) {
+				if gatewayProvider != nil && (activeLegacy.Gateway.HasTarget(target) || desktopForwards.HasTarget(target)) {
 					options = append(options, contracts.RouteOption{Adapter: "frp", Status: probeRouteStatus(gatewayProvider, target, 1500*time.Millisecond), Order: len(options) + 1})
 				}
 				return options

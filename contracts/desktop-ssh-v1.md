@@ -19,5 +19,6 @@ revocation closes the forward. There is no direct-route or plaintext fallback.
 
 Absence preserves existing installations. Older clients do not understand the
 new mapping; deploy the supporting client before activating the private profile.
-The private route must point to the same Device's SSH service, so an older client
-cannot accidentally establish an unencrypted VNC session through that endpoint.
+The mapping reuses the existing Shell route without changing the legacy
+inventory or its derived Fabric identity. An older client has no native Gateway
+route for this Desktop and cannot establish a plaintext VNC fallback.
