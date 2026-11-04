@@ -152,6 +152,11 @@ func main() {
 		os.Exit(1)
 	}
 	defer stateStore.Close()
+	localRouting, routingErr := migration.LoadLocalRouting(statePath)
+	if routingErr != nil {
+		fmt.Fprintln(os.Stderr, "PF Remote daemon could not load private routing settings:", routingErr)
+		os.Exit(1)
+	}
 	var desktopCredentials *desktopcredential.Store
 	if runtime.GOOS == "windows" {
 		credentialRoot, credentialPathErr := desktopcredential.DefaultRoot()
@@ -259,6 +264,9 @@ func main() {
 		legacyMu.Lock()
 		defer legacyMu.Unlock()
 		legacyPath := explicitLegacyPath
+		if localRouting.CatalogPath != "" {
+			legacyPath = localRouting.CatalogPath
+		}
 		if legacyPath == "" {
 			enabled, enableErr := migration.LegacyCenterEnabled(activationPath)
 			if errors.Is(enableErr, os.ErrNotExist) {
@@ -512,7 +520,7 @@ func main() {
 			return effective
 		})
 		if activeLegacy != nil {
-			service.Shell = activeLegacy.Shell.Runner(service.DeviceID, service.Catalog, activeLegacyRoutes, defaultSSHIdentityFile())
+			service.RoutesConfigured = true
 			desktopExecutor := desktopexecutor.Executor{Credentials: desktopCredentials}
 			if desktopConfig != nil {
 				desktopExecutor.Trust = *desktopConfig
@@ -527,6 +535,9 @@ func main() {
 			tailscaleProvider := route.Selector{Providers: tailscaleProviders}
 			var gatewayProvider route.Provider
 			managedGatewayConfig, managedGatewayErr := migration.DefaultLegacyManagedFRPConfigPath()
+			if localRouting.FRPConfigPath != "" {
+				managedGatewayConfig, managedGatewayErr = localRouting.FRPConfigPath, nil
+			}
 			if managedGatewayErr == nil {
 				if info, statErr := os.Stat(managedGatewayConfig); statErr == nil && info.Mode().IsRegular() {
 					gatewayProvider = route.ReachableProvider{Provider: activeLegacy.Gateway.ManagedProvider(managedGatewayConfig), Samples: 3}
@@ -538,6 +549,7 @@ func main() {
 					gatewayProvider = activeLegacy.Gateway.Provider(frpcPath, filepath.Join(filepath.Dir(statePath), "route-sessions"))
 				}
 			}
+			service.Shell = activeLegacy.Shell.RoutedRunner(service.DeviceID, service.Catalog, activeLegacyRoutes, defaultSSHIdentityFile(), gatewayProvider, localRouting)
 			if gatewayProvider != nil {
 				gatewayProvider = legacyGatewayDesktopProvider{
 					Provider: gatewayProvider,
@@ -570,7 +582,7 @@ func main() {
 			routedDesktop := actions.SessionDesktop{
 				Coordinator: desktop.Coordinator{
 					SubjectDeviceID: service.DeviceID, Resolver: service.Catalog,
-					RouteProvider: route.Selector{Providers: smartProviders, EvaluateAll: true, Health: smartRouteHealth}, Executor: desktopExecutor,
+					RouteProvider: localRouting.Select(smartProviders, smartRouteHealth), Executor: desktopExecutor,
 				},
 				RouteCoordinators: routeCoordinators,
 			}
@@ -598,6 +610,9 @@ func main() {
 						}
 						options = append(options, contracts.RouteOption{Adapter: adapter, Status: status, Order: len(options) + 1})
 					}
+					if gatewayProvider != nil && activeLegacy.Gateway.HasTarget(target) {
+						options = append(options, contracts.RouteOption{Adapter: "frp", Status: probeRouteStatus(gatewayProvider, target, 1500*time.Millisecond), Order: len(options) + 1})
+					}
 					return options
 				}
 				probeContext, cancelProbe := context.WithTimeout(context.Background(), 1500*time.Millisecond)
@@ -616,6 +631,7 @@ func main() {
 				return options
 			}
 		} else if desktopConfig != nil {
+			service.RoutesConfigured = true
 			desktopExecutor := desktopexecutor.Executor{Trust: *desktopConfig, Credentials: desktopCredentials}
 			tailscaleProvider := route.ReachableProvider{Provider: desktopConfig.Provider("tailscale"), Timeout: 2 * time.Second, Samples: 3}
 			lanProvider := route.ReachableProvider{Provider: desktopConfig.Provider("lan"), Samples: 3}

@@ -5,6 +5,12 @@
 Choose a named computer, open its exact Desktop, or hand the same authorized
 target to an external Agent. Existing SSH/RDP/VNC clients perform the connection.
 
+## Current release
+
+Alpha.115 unifies private Gateway routing for Shell and Desktop and accepts mixed
+TCP/UDP visitor configurations. Deployment status is in
+docs/status/GATEWAY_FLEET_MIGRATION.md.
+
 ## Current phase
 
 Current milestone: M10

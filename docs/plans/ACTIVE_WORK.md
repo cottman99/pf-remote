@@ -24,6 +24,19 @@ survive. All intended available hosts converge and the owner can use the control
 
 ## Current step
 
+2026-11-04 owner priority: converge available computers on the current client,
+use the migrated Gateway for Shell and Desktop, and retire obsolete installations.
+R0: M10.3 remains the mainline; this sanitized checkout starts at the published
+controlled-node renewal release. R1: preserve canonical identities, protected
+personal state and active desktop/audio processes; do not change host networks.
+A private, versioned routing file selects the migrated catalog and managed
+visitors. Required Gateway routing fails closed; native protocol trust is intact.
+R2/R3: targeted routing/compatibility tests and repository checks pass. Package
+integrity and protected upgrade/preset retention pass. Live convergence and old
+client removal are being completed; an unreachable member remains pending.
+See docs/status/GATEWAY_FLEET_MIGRATION.md. Return point: M10.3 fleet completion.
+
+
 2026-10-18 reconnect/cold-start follow-through is the bounded side task. R0:
 main retains cumulative release work; public main is 1c53176. Return to M10.3.
 Acceptance: each shared workspace recovers keyboard and microphone automatically

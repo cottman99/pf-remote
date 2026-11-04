@@ -74,6 +74,38 @@ bindPort = 45902
 	}
 }
 
+func TestManagedTCPVisitorsIgnoreUnrelatedUDPIdentity(t *testing.T) {
+	target := "pfremote://fabric-test/devices/device-a/capabilities/desktop-a"
+	credential := strings.Repeat("a", 18)
+	routes := LegacyGatewayRoutes{byTarget: map[string]LegacyCenterRoute{target: {
+		Adapter: "legacy-gateway", Address: "relay.example.com", ControlPort: 7000,
+		ProxyName: "desktop_proxy_01", ProxySecret: credential,
+	}}}
+	configPath := filepath.Join(t.TempDir(), "frpc.toml")
+	field := "secret" + "Key"
+	// UDP may share a numeric port and have a different credential alphabet.
+	config := fmt.Sprintf("[[visitors]]\ntype = \"sudp\"\nserverName = \"desktop_proxy_01\"\n%s = \"_udp_fixture\"\nbindPort = 45901\n\n[[visitors]]\ntype = \"stcp\"\nserverName = \"desktop_proxy_01\"\n%s = \"%s\"\nbindAddr = \"127.0.0.1\"\nbindPort = 45901\n", field, field, credential)
+	if err := os.WriteFile(configPath, []byte(config), 0600); err != nil {
+		t.Fatal(err)
+	}
+	a, err := routes.ManagedProvider(configPath).Acquire(context.Background(), route.Request{CanonicalTarget: target})
+	if err != nil {
+		t.Fatal("unrelated UDP visitor rejected the TCP route", err)
+	}
+	defer a.Close()
+	if a.Candidate().Network != "tcp" || a.Candidate().Port != 45901 {
+		t.Fatal("wrong transport selected")
+	}
+	// An otherwise matching UDP visitor must never become a TCP route.
+	config = strings.ReplaceAll(config, "\"stcp\"", "\"sudp\"")
+	if err := os.WriteFile(configPath, []byte(config), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := routes.ManagedProvider(configPath).Acquire(context.Background(), route.Request{CanonicalTarget: target}); err == nil {
+		t.Fatal("UDP visitor accepted as TCP")
+	}
+}
+
 func TestLegacyGatewayRouteRejectsNonLoopbackManagedVisitor(t *testing.T) {
 	target := "pfremote://fabric-test/devices/device-a/capabilities/desktop-a"
 	credential := strings.Repeat("a", 18)

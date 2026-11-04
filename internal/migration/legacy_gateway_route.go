@@ -116,6 +116,7 @@ func (p legacyManagedGatewayProvider) Acquire(_ context.Context, request route.R
 }
 
 type legacyManagedVisitor struct {
+	Type       string
 	BindAddr   string
 	BindPort   uint16
 	ServerName string
@@ -137,6 +138,12 @@ func loadLegacyManagedVisitors(path string) ([]legacyManagedVisitor, error) {
 	var current *legacyManagedVisitor
 	flush := func() {
 		if current != nil {
+			// UDP and XTCP visitors are unrelated paths, not TCP candidates.
+			// Missing type remains compatible with the oldest managed files.
+			if current.Type != "" && current.Type != "stcp" {
+				current = nil
+				return
+			}
 			visitors = append(visitors, *current)
 			current = nil
 		}
@@ -162,6 +169,8 @@ func loadLegacyManagedVisitors(path string) ([]legacyManagedVisitor, error) {
 		}
 		key, value = strings.TrimSpace(key), strings.TrimSpace(value)
 		switch key {
+		case "type":
+			current.Type = unquoteLegacyTOML(value)
 		case "bindAddr":
 			current.BindAddr = unquoteLegacyTOML(value)
 		case "bindPort":

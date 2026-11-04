@@ -22,6 +22,7 @@ type Service struct {
 	AdditionalChecks   []contracts.Check
 	Activity           *activity.Store
 	RouteOptions       func(string) []contracts.RouteOption
+	RoutesConfigured   bool
 }
 
 type DesktopCredentialWriter interface {
@@ -124,11 +125,15 @@ func (s Service) Doctor() contracts.DoctorResponse {
 	if catalogAuthorization.Status == "expired" {
 		catalogCheck = contracts.Check{Name: "catalog", Status: "fail", Summary: "Cached authorization expired; refresh is required"}
 	}
+	routeCheck := contracts.Check{Name: "routes", Status: "pending", Summary: "No connection route is configured"}
+	if s.RoutesConfigured {
+		routeCheck = contracts.Check{Name: "routes", Status: "pass", Summary: "Connection route adapters are configured; each connection verifies its route and target"}
+	}
 	checks := []contracts.Check{
 		{Name: "runtime", Status: "pass", Summary: fmt.Sprintf("Go runtime %s on %s/%s", runtime.Version(), runtime.GOOS, runtime.GOARCH)},
 		catalogCheck,
 		identityCheck,
-		{Name: "routes", Status: "pending", Summary: "No real route adapters are enabled in the clean-room slice"},
+		routeCheck,
 	}
 	checks = append(checks, s.AdditionalChecks...)
 	return contracts.DoctorResponse{SchemaVersion: contracts.DoctorSchema, Overall: "development", Checks: checks}

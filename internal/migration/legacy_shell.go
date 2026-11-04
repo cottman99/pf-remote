@@ -51,12 +51,18 @@ func (s LegacyShellConnections) Runner(subjectDeviceID string, resolver session.
 	return legacyShellRunner{subjectDeviceID: subjectDeviceID, resolver: resolver, routes: routes, users: s.users, identityFile: identityFile}
 }
 
+func (s LegacyShellConnections) RoutedRunner(subjectDeviceID string, resolver session.Resolver, routes LegacyEndpointRoutes, identityFile string, gateway route.Provider, settings LocalRouting) actions.ShellRunner {
+	return legacyShellRunner{subjectDeviceID: subjectDeviceID, resolver: resolver, routes: routes, users: s.users, identityFile: identityFile, gateway: gateway, settings: settings}
+}
+
 type legacyShellRunner struct {
 	subjectDeviceID string
 	resolver        session.Resolver
 	routes          LegacyEndpointRoutes
 	users           map[string]string
 	identityFile    string
+	gateway         route.Provider
+	settings        LocalRouting
 }
 
 func (r legacyShellRunner) Run(ctx context.Context, target string, command []string) (actions.ShellRunResult, error) {
@@ -67,10 +73,17 @@ func (r legacyShellRunner) Run(ctx context.Context, target string, command []str
 	if r.resolver == nil || r.subjectDeviceID == "" {
 		return actions.ShellRunResult{}, errors.New("legacy Shell coordinator is unavailable")
 	}
-	routeProvider := route.Selector{Providers: []route.NamedProvider{
+	providers := []route.NamedProvider{
 		{Adapter: "tailscale", Provider: route.ReachableProvider{Provider: r.routes.Provider("tailscale"), Timeout: 2 * time.Second}},
 		{Adapter: "lan", Provider: route.ReachableProvider{Provider: r.routes.Provider("lan"), Timeout: 750 * time.Millisecond}},
-	}}
+	}
+	if r.gateway != nil {
+		providers = append(providers, route.NamedProvider{Adapter: "frp", Provider: r.gateway})
+	}
+	routeProvider := route.Selector{Providers: providers}
+	if r.settings.RequiredAdapter != "" {
+		routeProvider = r.settings.Select(providers, nil)
+	}
 	runner := actions.SessionShell{RemoteUser: user, IdentityFile: r.identityFile, Coordinator: session.Coordinator{
 		SubjectDeviceID: r.subjectDeviceID,
 		Resolver:        r.resolver,
