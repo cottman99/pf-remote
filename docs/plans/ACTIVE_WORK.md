@@ -31,7 +31,17 @@ require the Gateway and forward only remote loopback. Native viewer exit owns
 cleanup; local API completion must not interrupt it. R2/R3: lifecycle, rejection,
 legacy-compatibility tests and repository checks pass. A real Gateway-path pilot
 authenticates VNC and reads framebuffer metadata without pixels or input.
-Release candidate alpha.117 awaits deployment; the offline member stays pending.
+R4: alpha.117 is installed on both available controllers and the Linux node;
+the cloud control service and public downloads are current. Installed hashes,
+Gateway Shell paths, all workspace credentials and the encrypted physical-screen
+path pass without affecting the existing viewer or audio services. Obsolete
+clients are retired to protected private recovery storage. The fixed GitHub
+release and preview feed are hash-verified. All three available members report
+the latest verified release; Gateway notifications are live. The sole remaining
+deployment is the unavailable member's first client/Gateway migration when it
+reconnects. Resume by verifying its immutable identity, retaining its private
+state, installing the current signed package and testing its actual Gateway path.
+Evidence: docs/status/GATEWAY_FLEET_MIGRATION.md. M10.3 remains active.
 
 2026-11-04 owner priority: converge available computers on the current client,
 use the migrated Gateway for Shell and Desktop, and retire obsolete installations.

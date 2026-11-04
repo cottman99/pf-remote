@@ -9,8 +9,9 @@ target to an external Agent. Existing SSH/RDP/VNC clients perform the connection
 
 Alpha.117 adds an end-to-end SSH Desktop forward for an existing VNC server,
 retaining alpha.115's private Gateway routing and mixed TCP/UDP visitor support.
-Deployment status is in
-docs/status/GATEWAY_FLEET_MIGRATION.md.
+Both available Windows controllers, the Linux node and cloud control run
+alpha.117. Gateway paths are verified; one unavailable member still needs its
+first migration. See docs/status/GATEWAY_FLEET_MIGRATION.md for current evidence.
 
 ## Current phase
 

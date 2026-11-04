@@ -32,6 +32,13 @@ Evidence: [Interaction recovery report](../status/INTERACTION_RECOVERY_REPORT.md
 - [x] Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
 - [ ] Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 
+2026-11-04: alpha.117 converges all three available members and cloud control;
+required Gateway paths, private-state retention and obsolete-client retirement
+are verified. The fixed release and cloud download bundles are published.
+Preview-feed activation and latest-version reports pass on every online member.
+One unavailable member still needs its first client/Gateway migration.
+M10.3 stays open; see [Gateway fleet convergence](../status/GATEWAY_FLEET_MIGRATION.md).
+
 Paid code-signing services are not required for update authenticity. Public OS
 publisher reputation is separate. Existing private deployment remains usable;
 bootstrap older nodes once before they can participate in managed updates.
