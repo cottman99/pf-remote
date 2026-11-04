@@ -24,6 +24,15 @@ survive. All intended available hosts converge and the owner can use the control
 
 ## Current step
 
+2026-11-04 completion of the same fleet rollout adds a private same-Device
+OpenSSH forward for one existing native VNC screen. R0/R1: retain canonical
+identity, require both capabilities, verify the Device-signed SSH host binding,
+require the Gateway and forward only remote loopback. Native viewer exit owns
+cleanup; local API completion must not interrupt it. R2/R3: lifecycle, rejection,
+legacy-compatibility tests and repository checks pass. A real Gateway-path pilot
+authenticates VNC and reads framebuffer metadata without pixels or input.
+Release candidate alpha.116 awaits deployment; the offline member stays pending.
+
 2026-11-04 owner priority: converge available computers on the current client,
 use the migrated Gateway for Shell and Desktop, and retire obsolete installations.
 R0: M10.3 remains the mainline; this sanitized checkout starts at the published

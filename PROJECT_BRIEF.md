@@ -7,8 +7,9 @@ target to an external Agent. Existing SSH/RDP/VNC clients perform the connection
 
 ## Current release
 
-Alpha.115 unifies private Gateway routing for Shell and Desktop and accepts mixed
-TCP/UDP visitor configurations. Deployment status is in
+Alpha.116 adds an end-to-end SSH Desktop forward for an existing VNC server,
+retaining alpha.115's private Gateway routing and mixed TCP/UDP visitor support.
+Deployment status is in
 docs/status/GATEWAY_FLEET_MIGRATION.md.
 
 ## Current phase
@@ -36,7 +37,7 @@ Automatic wake certification, other native platform frontends, browser remote
 desktop and repeated cosmetic-only releases. Recovery and compatibility code
 remain because current deployments depend on them; they are not expansion work.
 
-Current Windows release: alpha.112 adds windowed, single-screen, all-screen and
+Earlier Windows release alpha.112 added windowed, single-screen, all-screen and
 selected-screen presets, remembered per controlling computer and exact target.
 Both reachable Windows controllers are updated with configuration, history and
 existing viewers preserved. See docs/status/DISPLAY_PRESETS.md.

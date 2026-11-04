@@ -12,6 +12,38 @@ import (
 	"github.com/cottman99/pf-remote/internal/route"
 )
 
+func TestViewerOwnsForwardCleanupAfterLaunchReturns(t *testing.T) {
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	closed := make(chan struct{}, 1)
+	ctx, cancel := context.WithCancel(context.Background())
+	err = (OSCommand{}).Run(ctx, Launch{Name: executable, Arguments: []string{"-test.run=^TestOSCommandDesktopClientHelper$", "--", "pfremote-desktop-client-helper"}, Cleanup: func() { closed <- struct{}{} }})
+	if err != nil {
+		t.Fatal(err)
+	}
+	cancel()
+	select {
+	case <-closed:
+		t.Fatal("API completion closed viewer forward")
+	case <-time.After(100 * time.Millisecond):
+	}
+	select {
+	case <-closed:
+	case <-time.After(5 * time.Second):
+		t.Fatal("viewer exit did not close forward")
+	}
+}
+
+func TestFailedViewerLaunchClosesPreparedForward(t *testing.T) {
+	closes := 0
+	err := (OSCommand{}).Run(context.Background(), Launch{Name: filepath.Join(t.TempDir(), "missing-viewer"), Cleanup: func() { closes++ }})
+	if err == nil || closes != 1 {
+		t.Fatalf("failed launch cleanup: err=%v closes=%d", err, closes)
+	}
+}
+
 func TestOSCommandReturnsAfterDesktopClientStarts(t *testing.T) {
 	executable, err := os.Executable()
 	if err != nil {

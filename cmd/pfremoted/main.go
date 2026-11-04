@@ -19,6 +19,7 @@ import (
 	"github.com/cottman99/pf-remote/internal/catalog"
 	"github.com/cottman99/pf-remote/internal/desktop"
 	"github.com/cottman99/pf-remote/internal/desktopcredential"
+	"github.com/cottman99/pf-remote/internal/desktopforward"
 	"github.com/cottman99/pf-remote/internal/desktopruntime"
 	"github.com/cottman99/pf-remote/internal/enrollment"
 	desktopexecutor "github.com/cottman99/pf-remote/internal/executor/desktop"
@@ -155,6 +156,11 @@ func main() {
 	localRouting, routingErr := migration.LoadLocalRouting(statePath)
 	if routingErr != nil {
 		fmt.Fprintln(os.Stderr, "PF Remote daemon could not load private routing settings:", routingErr)
+		os.Exit(1)
+	}
+	desktopForwards, forwardErr := desktopforward.Load(statePath)
+	if forwardErr != nil {
+		fmt.Fprintln(os.Stderr, "PF Remote daemon could not load private Desktop forwarding settings:", forwardErr)
 		os.Exit(1)
 	}
 	var desktopCredentials *desktopcredential.Store
@@ -550,6 +556,7 @@ func main() {
 				}
 			}
 			service.Shell = activeLegacy.Shell.RoutedRunner(service.DeviceID, service.Catalog, activeLegacyRoutes, defaultSSHIdentityFile(), gatewayProvider, localRouting)
+			desktopExecutor.VNCForward = desktopforward.Forwarder{Config: desktopForwards, Resolver: service.Catalog, SubjectDeviceID: service.DeviceID, Gateway: gatewayProvider, RemoteUser: activeLegacy.Shell.RemoteUser, IdentityFile: defaultSSHIdentityFile()}
 			if gatewayProvider != nil {
 				gatewayProvider = legacyGatewayDesktopProvider{
 					Provider: gatewayProvider,

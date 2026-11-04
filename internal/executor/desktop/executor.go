@@ -10,10 +10,12 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	session "github.com/cottman99/pf-remote/internal/desktop"
 	"github.com/cottman99/pf-remote/internal/desktopcredential"
 	"github.com/cottman99/pf-remote/internal/desktopdisplay"
+	"github.com/cottman99/pf-remote/internal/route"
 	"github.com/cottman99/pf-remote/pkg/contracts"
 )
 
@@ -26,6 +28,7 @@ type Launch struct {
 	Arguments   []string
 	Environment map[string]string
 	RDP         *RDPOptions
+	Cleanup     func()
 }
 
 type OSCommand struct {
@@ -40,12 +43,17 @@ func (runner OSCommand) Run(ctx context.Context, launch Launch) error {
 	}
 	arguments := append([]string(nil), launch.Arguments...)
 	cleanup := func() {}
+	if launch.Cleanup != nil {
+		cleanup = launch.Cleanup
+	}
 	if launch.RDP != nil {
 		path, remove, err := writeRDPProfile(*launch.RDP)
 		if err != nil {
+			cleanup()
 			return err
 		}
-		cleanup = remove
+		previousCleanup := cleanup
+		cleanup = func() { remove(); previousCleanup() }
 		sign := runner.SignRDP
 		if sign == nil {
 			sign = signRDPProfile
@@ -89,6 +97,9 @@ type Executor struct {
 	Lookup      func(string) (string, error)
 	GOOS        string
 	Displays    func() (contracts.DesktopMonitorLayout, error)
+	VNCForward  interface {
+		Prepare(context.Context, session.Execution) (route.Candidate, func(), error)
+	}
 }
 
 func (e Executor) Open(ctx context.Context, execution session.Execution) error {
@@ -185,7 +196,21 @@ func (e Executor) Open(ctx context.Context, execution session.Execution) error {
 			return &session.ExecutorFault{Code: "DESKTOP_CREDENTIAL_REQUIRED", Summary: "This desktop needs one-time setup.", Remediation: "Save the desktop password in PF Remote, then retry."}
 		}
 		defer clear(credential)
-		return command.Run(ctx, Launch{Name: client, Arguments: []string{vncEndpoint}, Environment: map[string]string{"VNC_PASSWORD": string(credential)}})
+		cleanup := func() {}
+		if e.VNCForward != nil {
+			forwarded, closeForward, forwardErr := e.VNCForward.Prepare(ctx, execution)
+			if forwardErr != nil {
+				return &session.ExecutorFault{Code: "DESKTOP_ENCRYPTED_ROUTE_FAILED", Summary: "The encrypted desktop connection could not be prepared.", Remediation: "Check this computer's connection and saved desktop setup, then retry."}
+			}
+			vncEndpoint = tigerVNCEndpoint(forwarded.Address, forwarded.Port)
+			var closeOnce sync.Once
+			cleanup = func() { closeOnce.Do(closeForward) }
+		}
+		if err := command.Run(ctx, Launch{Name: client, Arguments: []string{vncEndpoint}, Environment: map[string]string{"VNC_PASSWORD": string(credential)}, Cleanup: cleanup}); err != nil {
+			cleanup()
+			return err
+		}
+		return nil
 	default:
 		return &session.ExecutorFault{Code: "DESKTOP_PROFILE_UNSUPPORTED", Summary: "This desktop connection profile is incomplete.", Remediation: "Repair this computer connection and try again."}
 	}

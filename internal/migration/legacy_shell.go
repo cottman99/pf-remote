@@ -36,6 +36,12 @@ func (s LegacyShellConnections) HasTarget(target string) bool {
 	return exists
 }
 
+// RemoteUser is used only by a daemon-owned same-Device Desktop forward.
+func (s LegacyShellConnections) RemoteUser(target string) (string, bool) {
+	user, ok := s.users[target]
+	return user, ok
+}
+
 func (s LegacyShellConnections) rekeyTargets(targets map[string]string) LegacyShellConnections {
 	result := LegacyShellConnections{users: make(map[string]string, len(s.users))}
 	for target, user := range s.users {
