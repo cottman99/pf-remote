@@ -40,4 +40,3 @@ The other controller was unreachable through its current relay and direct
 routes during this delivery. It is not counted as updated; the signed preview
 feed permits its ordinary update when available. The previously deferred offline
 member remains deferred. No active viewer, remote desktop or proxy was restarted.
-
