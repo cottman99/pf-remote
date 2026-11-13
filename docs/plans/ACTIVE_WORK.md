@@ -429,3 +429,5 @@ packaged renewal succeeded with the temporary timer stopped. Identity bytes and
 independent desktop/audio service PIDs/start times are unchanged. Full Go/build/
 privacy/integration checks passed with SkipWindowsApp. Source and signed release
 are published; bounded maintenance is closed. Return to M10.3 owner acceptance.
+
+2026-11-13 R4: alpha.118 formally includes the recovered desktop status probe repair. Both available Windows controllers, Linux and cloud control are updated; signed artifacts and exact installed payloads pass. Existing sessions and private setup are retained. The unavailable member remains pending. See docs/status/DESKTOP_PROBE_CACHE.md.

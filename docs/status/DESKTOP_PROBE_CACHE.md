@@ -11,6 +11,23 @@ configuration enters the cache or release. No public schema or data migration
 is required. Existing alpha.117 clients remain protocol-compatible.
 
 Tests cover expiry, target/directory separation, mutation isolation, concurrent
-read coalescing, bounded storage and panic recovery. Publication and live upgrade
-evidence must be added after they complete; the historical same-version repair
-is not proof that alpha.118 is installed.
+read coalescing, bounded storage and panic recovery.
+
+## Published and deployed — 2026-11-13
+
+Full non-UI repository checks and package validation pass. Isolated upgrade and
+rollback preserve identity, target references, encrypted presets and selected
+screens. The fixed GitHub release and preview feed each have twelve hash-verified
+assets signed at sequence 120. Cloud control and download bundles are updated.
+
+Both available Windows controllers match all 542 installed files; the Linux
+controlled node's three binaries also match. Each Windows controller reaches all
+three online members through the required Gateway. Saved identity/credential
+files are unchanged; the existing RDP viewer and Linux virtual desktops/audio
+services remain running. Stable MCP target inspection and remote execution pass.
+
+Old Windows client processes and binaries were retired to protected recovery
+storage. An empty locked directory is scheduled for empty-only cleanup. One
+unavailable controller still needs first migration; no offline update is claimed.
+No foreground automation, host networking change or peer-management activation
+was performed. Physical audio and keyboard were not retested during this upgrade.

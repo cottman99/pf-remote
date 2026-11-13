@@ -142,3 +142,5 @@ renewal without reenrollment; see docs/status/CONTROLLED_NODE_AUTH_REFRESH.md.
 M10.3 scope and owner-acceptance gate remain unchanged.
 Maintenance closure: alpha.113 Linux packaged renewal and session-preserving
 upgrade verified; M10.3 remains the active mainline item.
+
+2026-11-13: alpha.118 is published and deployed on all available daily clients and cloud control. The recovered bounded-probe repair is now part of the signed release; existing configuration and sessions survive. M10.3 remains open for the unavailable member. Evidence: docs/status/DESKTOP_PROBE_CACHE.md.
