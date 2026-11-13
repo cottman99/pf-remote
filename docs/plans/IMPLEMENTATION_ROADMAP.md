@@ -26,11 +26,22 @@ Evidence: [Single instance report](../status/SINGLE_INSTANCE_REPORT.md).
 
 Evidence: [Interaction recovery report](../status/INTERACTION_RECOVERY_REPORT.md).
 
+## M11 — daily peer management
+
+- [x] Deliver peer management without mandatory central registration.
+
+The owner prioritizes daily VPS enrollment; offline fleet migration is deferred.
+
+Evidence: [Peer management delivery](../status/PEER_MANAGEMENT.md).
+
 ## M10 — zero-cost trusted updates
 
 - [x] Verify signed release metadata and artifacts against an independently provisioned publisher key.
 - [x] Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
-Deferred M10.3: offline fleet migration resumes when that member is available.
+- [ ] Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
+
+The remaining offline migration is deferred at the owner request; all online
+peer enrollment and release acceptance is complete.
 
 2026-11-13 follow-up: the owner returned priority to daily-client release and
 Gateway fleet closure. The same-version Windows hotfix was recovered and formally
@@ -52,12 +63,6 @@ bootstrap older nodes once before they can participate in managed updates.
 Evidence M10.1: [Trusted update foundation](../status/TRUSTED_UPDATE_REPORT.md).
 Evidence M10.2: [Live fleet update delivery](../status/FLEET_UPDATE_REPORT.md).
 Evidence: [Delivered update foundations](../status/FLEET_UPDATE_REPORT.md).
-
-## M11 — daily peer management
-
-- [ ] Deliver peer management without mandatory central registration.
-
-The owner prioritizes daily VPS enrollment; offline fleet migration is deferred.
 
 The owner's connection-preset priority is tracked in
 [Connection presets](../status/CONNECTION_PRESETS.md). M10.3 remains the return

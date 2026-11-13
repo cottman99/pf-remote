@@ -1,6 +1,6 @@
 # Peer management delivery
 
-Release candidate: alpha.120. Daily migration verification is in progress.
+Released: alpha.120. Daily installed-client migration verified on 2026-11-13.
 The earlier alpha.118-peer.2 pilot and internal alpha.119 acceptance package are
 not public release artifacts.
 
@@ -23,8 +23,18 @@ who deliberately replaces both programs and protected state.
 Targeted security, migration, rollback, missing-state and compatibility tests pass.
 The full repository check and isolated upgrade preserve encrypted accounts and
 screen presets. Daily Windows catalog/MCP and Linux execution now reach the newly
-admitted Shell with its original Device identity. Final package and publication
-verification follow before this report marks delivery complete.
+admitted Shell with its original Device identity. Both Windows payloads match all 542 release files. Both Linux installations match
+the signed binaries. Fixed and preview releases each verify all twelve required
+assets, and all online clients report current. The two Windows MCP instances list
+the unique new Shell and execute real commands. Peer synchronization remains
+current after update-driven service restarts; services are enabled at boot.
+Existing native viewers and proxy services retain their processes. Original
+Shell paths still succeed. The isolated pilot services are disabled.
+
+Private runtime state, host addresses, keys and acceptance evidence remain outside
+the repository. Package scanning found no deployment markers in 553 payloads.
+The offline member remains explicitly deferred; physical reboot and new desktop
+interaction were not performed.
 
 ## Limits
 

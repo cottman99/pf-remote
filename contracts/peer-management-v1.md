@@ -48,3 +48,7 @@ checked against signed approval time, not import time, to permit offline catch-u
 Old clients ignore the separate peer journal. Absence retains existing behavior.
 Explicit peer activation replaces authorization, never merges legacy grants into
 peer authority. Route and credential state stays private and is not journal data.
+
+Daily activation persists an authority floor. Supported installers reject legacy
+downgrade, and missing or empty activated authority fails closed. An administrator
+manually replacing protected state and programs is outside this application guard.

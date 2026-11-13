@@ -1,51 +1,55 @@
 ---
 schema_version: 1
-roadmap_item: M11.1
-roadmap_milestone: M11
-roadmap_text: Deliver peer management without mandatory central registration.
+roadmap_item: M10.3
+roadmap_milestone: M10
+roadmap_text: Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 status: active
-base_commit: 08db08f
+base_commit: 95e6182
 ---
 
-# Active work — daily peer enrollment
+# Active work — deferred offline migration
 
 ## Objective
 
-Admit the existing VPS identity through daily installed Center, CLI and MCP.
+Resume the remaining offline member migration only when it becomes available.
+The owner explicitly deferred it; do not request that it be powered on now.
 
 ## Acceptance criteria
 
-Distinct signed release, all original targets retained, unique VPS Shell,
-authenticated commands from both Windows controllers and Linux, persistent
-background services and synchronization. Preserve proxy and desktop processes.
-No extra VPS manager authority or copied private keys.
+Retain that member's identity and private settings, install the signed current
+release, reconcile exact peer grants and verify its actual authorized connections.
 
 ## Current step
 
-Prepare alpha.120 from public alpha.118 with peer management and downgrade guards.
-Verify packages and migration before daily cutover; keep the pilot separate.
+No online deployment work remains. M11.1 daily peer enrollment is complete:
+alpha.120 is published and installed on four online members. Existing identities,
+original fourteen targets, credentials and viewers remain. Both controllers list
+one new headless Shell and execute through daily CLI and MCP; the Linux manager
+also executes on it. All online update checks report current. Private evidence
+is stored outside Git. The offline member is not counted as upgraded.
 
 ## Out of scope
 
-Offline member, VPS desktop, global networking, foreground automation and
-administrator restoration of arbitrary old binaries.
+Powering on the offline member, foreground automation, global networking changes,
+new VPS desktop, GitHub Support contact and physical audio retesting.
 
 ## Blocking side task
 
-None. Supported recovery must preserve peer authority.
+None. Offline work is deferred by the owner, not an online-service failure.
 
 ## Review gates
 
-R0: original dirty workspace preserved; separate release checkout. R1: pinned
-root, immutable identity, exact grants and signed host binding. R2: fail-closed
-activation and supported installer downgrade guards. R3: full checks, packages,
-migration and real daily-runtime integration. R4: actual deployment evidence.
+R0/R1: distinct public source and pinned existing identities; no private key copy.
+R2: signed records, exact grants, fail-closed state loss and maintenance guards.
+R3: full checks, isolated upgrade, final file hashes and daily CLI/MCP execution.
+R4: anonymous source commits, signed public artifacts and sanitized delivery report.
 
 ## Deferred findings
 
-Root loss requires explicit recovery. Bounded journal checkpointing remains a
-scale limit. Offline migration resumes only when that device becomes available.
+Explicit root recovery and bounded journal checkpointing remain documented limits.
+Physical reboot was not performed; startup enablement and service restart passed.
 
 ## Evidence
 
-[Peer management](../status/PEER_MANAGEMENT.md).
+[Peer management delivery](../status/PEER_MANAGEMENT.md) and
+[Gateway fleet convergence](../status/GATEWAY_FLEET_MIGRATION.md).
