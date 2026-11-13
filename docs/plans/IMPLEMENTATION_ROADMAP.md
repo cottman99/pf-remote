@@ -38,7 +38,7 @@ Evidence: [Peer management delivery](../status/PEER_MANAGEMENT.md).
 
 - [x] Verify signed release metadata and artifacts against an independently provisioned publisher key.
 - [x] Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
-- [ ] Open a named headless computer in the local terminal using saved SSH access.
+- [x] Open a named headless computer in the local terminal using saved SSH access.
 - [ ] Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
 
 The owner prioritizes native terminal access as M10.3; the previously deferred
@@ -65,6 +65,7 @@ publisher reputation is separate. Existing private deployment remains usable;
 bootstrap older nodes once before they can participate in managed updates.
 
 Evidence M10.1: [Trusted update foundation](../status/TRUSTED_UPDATE_REPORT.md).
+Evidence M10.3: [Native SSH terminal](../status/NATIVE_TERMINAL.md).
 Evidence M10.2: [Live fleet update delivery](../status/FLEET_UPDATE_REPORT.md).
 Evidence: [Delivered update foundations](../status/FLEET_UPDATE_REPORT.md).
 

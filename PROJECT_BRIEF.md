@@ -7,17 +7,17 @@ target to an external Agent. Existing SSH/RDP/VNC clients perform the connection
 
 ## Current release and phase
 
-Alpha.120 delivers daily peer management on both online Windows controllers and
-two Linux nodes. Original targets and local private settings are retained; the
-new headless Shell is available through daily CLI/MCP and Center catalog data.
-The existing cloud transport remains compatible; public downloads are current.
-See docs/status/PEER_MANAGEMENT.md for evidence and limits.
+Alpha.121 adds Connect terminal for headless computers, opening local Windows
+SSH with saved access. The primary controller is updated and live native PTY
+verification passed. Private identity and settings are preserved. The other
+controller is currently unreachable; its update is not claimed complete.
+See docs/status/NATIVE_TERMINAL.md for evidence and verification limits.
 
 Current milestone: M10
-Current roadmap item: M10.3
+Current roadmap item: M10.4
 
-Online delivery is complete. The remaining offline member migration is deferred
-by the owner until it can be powered on. No user action is required now.
+The existing offline member remains deferred until available. Normal signed
+updates provide catch-up; no remote graphical desktop is being installed.
 
 ## Retained boundaries
 
