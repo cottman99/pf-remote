@@ -67,3 +67,11 @@ addresses, ports, credentials, and Desktop content. The field is optional for
 backward compatibility. This redacted local history is bounded and survives
 ordinary daemon restarts and upgrades. It is excluded from recovery exports and
 cleared when a recovery bundle replaces local state.
+
+## Desktop route status hints
+
+List and inspect may reuse route presentation hints for up to 60 seconds, keyed
+by canonical target and directory version. Concurrent requests share one probe;
+the cache is bounded. Authorization is evaluated on every request. Actual Shell
+and Desktop connections always acquire and validate their route independently;
+cached presentation hints never authorize a connection.

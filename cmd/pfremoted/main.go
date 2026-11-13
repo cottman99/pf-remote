@@ -486,6 +486,7 @@ func main() {
 	}(initialConnectionSettings)
 	activityStore := activity.NewPersistent(50, stateStore)
 	smartRouteHealth := route.NewHealthTracker(12)
+	desktopStatus := newDesktopStatusCache(time.Minute)
 	provider := func() (actions.Service, error) {
 		activeLegacy, legacyErr := loadLegacyCandidate()
 		if legacyErr != nil {
@@ -662,6 +663,7 @@ func main() {
 				return options
 			}
 		}
+		service.RouteOptions = desktopStatus.wrap(fmt.Sprintf("%s:%d", current.FabricID, current.DirectoryVersion), service.RouteOptions)
 		return service, nil
 	}
 	server := localapi.NewServerWithProvider(provider)
