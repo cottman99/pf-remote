@@ -1,5 +1,16 @@
 # Threat model
 
+## Peer-management upgrade under development
+
+The owner reprioritized peer management on 2026-11-13. The reviewed design in
+[Peer management](../architecture/PEER_MANAGEMENT.md) separates introductions,
+root appointments, manager approvals, Device capability signatures and transport.
+Its signed absolute grant expiry and permanent revocation rules supersede cache
+renewal only after explicit peer activation. Existing clients remain on the legacy
+model below. No deployed peer-mode security claim is made until integration gates
+pass. A partition can delay revocation and a compromised appointed manager can
+grant access until its revocation is learned. Duplicate data cannot renew leases.
+
 ## Assets
 
 - Owner and Device identities.

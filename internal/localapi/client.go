@@ -22,6 +22,12 @@ func (e *RemoteError) Error() string { return e.Failure.Summary }
 
 func NewClient() Client { return Client{dial: dial} }
 
+func (c Client) Peers(ctx context.Context, request json.RawMessage) (json.RawMessage, error) {
+	var response json.RawMessage
+	err := c.call(ctx, Request{Action: "peer-management", PeerRequest: request}, &response)
+	return response, err
+}
+
 func (c Client) DesktopPreset(ctx context.Context, target string, update *contracts.DesktopPresetUpdate) (contracts.DesktopPreset, error) {
 	var response contracts.DesktopPreset
 	err := c.call(ctx, Request{Action: "desktop-preset", Target: target, DesktopPreset: update}, &response)

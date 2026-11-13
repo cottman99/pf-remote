@@ -135,6 +135,19 @@ func (s Server) callTool(ctx context.Context, raw json.RawMessage) (any, *rpcErr
 	var value any
 	var err error
 	switch call.Name {
+	case "pfremote_peers":
+		var args struct {
+			Request json.RawMessage `json:"request"`
+		}
+		if err = decodeStrict(call.Arguments, &args); err == nil {
+			if client, ok := s.Client.(interface {
+				Peers(context.Context, json.RawMessage) (json.RawMessage, error)
+			}); ok {
+				value, err = client.Peers(ctx, args.Request)
+			} else {
+				err = errors.New("peer management requires a newer local client")
+			}
+		}
 	case "pfremote_list":
 		if err = requireNoArguments(call.Arguments); err == nil {
 			value, err = s.Client.List(ctx)
@@ -242,6 +255,7 @@ func toolDefinitions() []map[string]any {
 	}
 	noArguments := map[string]any{"type": "object", "additionalProperties": false, "properties": map[string]any{}}
 	return []map[string]any{
+		tool("pfremote_peers", "Manage trusted computers", "Manage peer enrollment and signed records through protected local IPC. Introduction is not approval. Bootstrap requires a separately verified root. Use only for the owner's requested management action; never copy private identity keys.", map[string]any{"type": "object", "additionalProperties": false, "properties": map[string]any{"request": map[string]any{"type": "object", "description": "Peer management request: status, join, bootstrap, appoint, approve, publish, grant, revoke-device, revoke-grant, export, import, activate or rollback."}}, "required": []string{"request"}}, false, true),
 		tool("pfremote_list", "List PF Remote targets", "List authorized named computers and capabilities. Use when the user did not supply an exact target.", noArguments, true, false),
 		tool("pfremote_inspect", "Inspect a PF Remote target", "Resolve and verify one exact authorized target without connecting to it.", targetSchema, true, false),
 		tool("pfremote_context", "Create Agent context", "Return the safe PF_REMOTE_TARGET envelope for one exact authorized target.", targetSchema, true, false),

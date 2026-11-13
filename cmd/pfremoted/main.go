@@ -26,6 +26,7 @@ import (
 	"github.com/cottman99/pf-remote/internal/identity"
 	"github.com/cottman99/pf-remote/internal/localapi"
 	"github.com/cottman99/pf-remote/internal/migration"
+	"github.com/cottman99/pf-remote/internal/peers"
 	"github.com/cottman99/pf-remote/internal/powerresume"
 	"github.com/cottman99/pf-remote/internal/releaseauth"
 	"github.com/cottman99/pf-remote/internal/route"
@@ -514,15 +515,31 @@ func main() {
 			}
 		}
 		service := actions.Service{DeviceID: deviceIdentity.DeviceID()}
+		peerSnapshot, peerActive, peerErr := peers.ActiveSnapshot(context.Background(), peers.PathForState(statePath), time.Now())
+		if peerErr != nil {
+			return actions.Service{}, peerErr
+		}
+		if peerActive {
+			if peerSnapshot.FabricID != current.FabricID && activeLegacy != nil {
+				return actions.Service{}, errors.New("peer authority does not match the configured Fabric")
+			}
+			current = peerSnapshot
+		}
 		service.Activity = activityStore
 		service.DesktopCredentials = desktopCredentials
 		service.DesktopPresets = desktopCredentials
 		service.AdditionalChecks = []contracts.Check{getCapabilitySyncCheck(), updates.Status()}
+		if peerActive {
+			service.AdditionalChecks = append(service.AdditionalChecks, contracts.Check{Name: "peer-management", Status: "pass", Summary: "Signed peer authority is active; central management is optional"})
+		}
 		service.Catalog = catalog.New(current.FabricID, current.Devices, current.Capabilities, current.Grants, service.DeviceID, current.CapturedAt, func() time.Time {
 			effective, err := stateStore.ObserveAuthorizationTime(context.Background(), time.Now())
 			if err != nil {
 				// A storage failure must not silently extend cached authority.
 				return current.CapturedAt.Add(catalog.DefaultAuthorizationTTL)
+			}
+			if peerActive && effective.Before(current.CapturedAt) {
+				return current.CapturedAt
 			}
 			return effective
 		})
@@ -663,12 +680,22 @@ func main() {
 				return options
 			}
 		}
+		if peerActive {
+			cfg, err := peers.LoadTransports(peers.TransportPath(statePath))
+			if err != nil {
+				return actions.Service{}, err
+			}
+			service.Shell = peers.ShellRunner{Config: cfg, Catalog: service.Catalog, Subject: service.DeviceID, Fallback: service.Shell}
+			service.RoutesConfigured = service.RoutesConfigured || len(cfg.Peers) > 0
+		}
 		service.RouteOptions = desktopStatus.wrap(fmt.Sprintf("%s:%d", current.FabricID, current.DirectoryVersion), service.RouteOptions)
 		return service, nil
 	}
 	server := localapi.NewServerWithProvider(provider)
 	server.Handler.Gate = updateGate
 	server.Handler.Updates = fleet.action
+	server.Handler.Peers = (peers.Service{Path: peers.PathForState(statePath), Signer: deviceIdentity}).Handle
+	go (peers.Service{Path: peers.PathForState(statePath), Signer: deviceIdentity}).RunSynchronization(ctx, peers.TransportPath(statePath))
 	if err := server.Serve(ctx, listener); err != nil {
 		fmt.Fprintln(os.Stderr, "PF Remote daemon stopped:", err)
 		os.Exit(1)

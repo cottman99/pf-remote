@@ -1,5 +1,15 @@
 # Product definition
 
+## Owner-prioritized peer management upgrade
+
+The 2026-11-13 direction removes the requirement for a continuously available
+central management service. An explicitly appointed second manager may approve
+new computers and renew access while the original controller is offline.
+Introduction alone grants no management privilege. The device list, one-click
+access and Agent target handoff remain the user-facing contract. Existing relays
+remain optional transport components. This is under development; see
+[delivery status](../status/PEER_MANAGEMENT.md) for actual usability and limits.
+
 ## One sentence
 
 PF Remote is a self-hosted personal compute fabric that turns a device's Shell

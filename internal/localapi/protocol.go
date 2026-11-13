@@ -25,6 +25,7 @@ type Request struct {
 	RouteAdapter  string                         `json:"route_adapter,omitempty"`
 	AudioCapture  bool                           `json:"audio_capture,omitempty"`
 	DesktopPreset *contracts.DesktopPresetUpdate `json:"desktop_preset,omitempty"`
+	PeerRequest   json.RawMessage                `json:"peer_request,omitempty"`
 }
 
 type Response struct {
@@ -40,6 +41,7 @@ type Handler struct {
 	Provider ServiceProvider
 	Gate     *ActionGate
 	Updates  func(context.Context, string) (any, error)
+	Peers    func(context.Context, json.RawMessage) (any, error)
 }
 
 func NewHandler() Handler {
@@ -63,6 +65,23 @@ func (h Handler) HandleContext(ctx context.Context, request Request) Response {
 		result, err := h.Updates(ctx, request.Action)
 		if err != nil {
 			return failed("UPDATE_UNAVAILABLE", "updates", "The connection service could not receive the notification.", "Check the connection service and retry.")
+		}
+		return Response{SchemaVersion: SchemaVersion, Result: result}
+	}
+	if request.Action == "peer-management" {
+		if h.Peers == nil {
+			return failed("PEER_UNAVAILABLE", "peer-management", "Peer management is unavailable.", "Update this client.")
+		}
+		if h.Gate != nil {
+			leave, ok := h.Gate.Enter()
+			if !ok {
+				return failed("UPDATE_IN_PROGRESS", "maintenance", "PF Remote is updating.", "Retry shortly.")
+			}
+			defer leave()
+		}
+		result, err := h.Peers(ctx, request.PeerRequest)
+		if err != nil {
+			return failed("PEER_REQUEST_REJECTED", "peer-management", "Peer management could not verify or persist this request.", "Check manager authority, signed records and local storage before retrying.")
 		}
 		return Response{SchemaVersion: SchemaVersion, Result: result}
 	}

@@ -1,5 +1,10 @@
 # Architecture
 
+The owner-authorized peer management upgrade is described in
+[Peer management v1](PEER_MANAGEMENT.md). It is additive and under development;
+the Gateway-authority model below remains the deployed compatibility path until
+an explicitly verified migration activates signed peer authority.
+
 ## System boundary
 
 PF Remote separates stable product concepts from changeable transport details.

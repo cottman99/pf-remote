@@ -14,6 +14,13 @@ The server supports the MCP 2026-07-28 `server/discover` path and the
 - `pfremote_connect`
 - `pfremote_exec`
 - `pfremote_open`
+- `pfremote_peers` (additive peer-management candidate)
+
+The peer tool carries typed management operations through protected local IPC.
+It does not accept a private identity or route override. Root bootstrap and
+migration require the Owner's independently verified anchor; device introductions
+do not grant approval power. See [peer management](peer-management-v1.md).
+Older daemons reject the new action without changing their existing behavior.
 
 Every tool calls the same protected local daemon action used by Center and the
 CLI. Target arguments accept only an alias or stable `pfremote://` reference;

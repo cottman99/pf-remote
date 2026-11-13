@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/cottman99/pf-remote/internal/peerguard"
 	"io"
 	"os"
 	"path/filepath"
@@ -84,6 +85,9 @@ func install(root, archivePath, manifestPath, expectedArchiveHash, expectedManif
 		return Result{}, err
 	}
 
+	if err := peerguard.CheckVersion(manifest.Version); err != nil {
+		return Result{}, err
+	}
 	versions := filepath.Join(root, "versions")
 	if err := os.MkdirAll(versions, 0o700); err != nil {
 		return Result{}, errors.New("installation directory could not be created")
@@ -200,6 +204,9 @@ func rollback(root string) (Result, error) {
 	}
 	if _, err := os.Stat(filepath.Join(root, "versions", state.Previous, "PFRemoteCenter.exe")); err != nil {
 		return Result{}, errors.New("previous version is unavailable")
+	}
+	if err := peerguard.CheckVersion(state.Previous); err != nil {
+		return Result{}, err
 	}
 	next := State{SchemaVersion: StateSchema, Current: state.Previous, Previous: state.Current}
 	if err := writeJSONAtomic(filepath.Join(root, "current.json"), next); err != nil {

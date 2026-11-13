@@ -4,6 +4,7 @@ package linuxinstaller
 import (
 	"encoding/json"
 	"errors"
+	"github.com/cottman99/pf-remote/internal/peerguard"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,7 +13,8 @@ import (
 var names = []string{"pfremote", "pfremoted", "pfremote-update"}
 
 type journal struct {
-	Existing map[string]bool `json:"existing"`
+	PeerCompatible bool            `json:"peer_compatible,omitempty"`
+	Existing       map[string]bool `json:"existing"`
 }
 
 func atomicCopy(source, target string) error {
@@ -55,6 +57,13 @@ func Recover(root string) error {
 	if json.Unmarshal(b, &j) != nil || len(j.Existing) != len(names) {
 		return errors.New("invalid update recovery record")
 	}
+	required, guardErr := peerguard.Required()
+	if guardErr != nil {
+		return guardErr
+	}
+	if required && !j.PeerCompatible {
+		return errors.New("legacy recovery cannot restore peer authority")
+	}
 	for _, name := range names {
 		if _, ok := j.Existing[name]; !ok {
 			return errors.New("incomplete update recovery record")
@@ -81,7 +90,11 @@ func Upgrade(root, stage string, activate func() error) error {
 	if err := os.MkdirAll(work, 0700); err != nil {
 		return err
 	}
-	j := journal{Existing: map[string]bool{}}
+	required, err := peerguard.Required()
+	if err != nil {
+		return err
+	}
+	j := journal{Existing: map[string]bool{}, PeerCompatible: required}
 	for _, name := range names {
 		j.Existing[name] = false
 		path := filepath.Join(root, name)

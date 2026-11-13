@@ -75,3 +75,5 @@ by canonical target and directory version. Concurrent requests share one probe;
 the cache is bounded. Authorization is evaluated on every request. Actual Shell
 and Desktop connections always acquire and validate their route independently;
 cached presentation hints never authorize a connection.
+
+Peer management uses the additive protected action in peer-management-v1.md.

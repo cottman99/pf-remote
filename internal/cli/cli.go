@@ -22,6 +22,7 @@ Usage:
   pfremote inspect <target-or-alias> [--json]
   pfremote context <target-or-alias> [--task <text>] [--constraint <text>] [--json]
   pfremote doctor [--updates|--check-updates|--notify-updates] [--json]
+  pfremote doctor --peer-stdin --json
   pfremote connect|exec|open ...
 `
 
@@ -92,6 +93,20 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 		}
 		value, err = client.Context(ctx, rest[0], task, constraints)
 	case "doctor":
+		if len(rest) == 1 && rest[0] == "--peer-stdin" {
+			peer, ok := client.(interface {
+				Peers(context.Context, json.RawMessage) (json.RawMessage, error)
+			})
+			if !ok {
+				return writeError(stderr, jsonOutput, "PEER_UNAVAILABLE", "peer-management", "Peer management is unavailable.", "Update this client.")
+			}
+			b, readErr := io.ReadAll(io.LimitReader(stdin, 900001))
+			if readErr != nil || len(b) > 900000 || !json.Valid(b) {
+				return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "peer-management", "Invalid peer request.", "Send bounded versioned JSON on stdin.")
+			}
+			value, err = peer.Peers(ctx, b)
+			break
+		}
 		if len(rest) == 0 {
 			value, err = client.Doctor(ctx)
 		} else {

@@ -15,8 +15,12 @@ first migration. See docs/status/GATEWAY_FLEET_MIGRATION.md for current evidence
 
 ## Current phase
 
-Current milestone: M10
-Current roadmap item: M10.3
+Latest priority: daily VPS enrollment using a distinct peer-capable release.
+Offline fleet migration remains deferred.
+
+
+Current milestone: M11
+Current roadmap item: M11.1
 
 The owner replaced the old expansion roadmap with a focused closeout.
 See docs/plans/ACTIVE_WORK.md and docs/status/CLOSEOUT_REPORT.md.

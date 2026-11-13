@@ -3,6 +3,7 @@ package windowsinstaller
 import (
 	"encoding/json"
 	"errors"
+	"github.com/cottman99/pf-remote/internal/peerguard"
 	"os"
 	"path/filepath"
 )
@@ -127,6 +128,9 @@ func recoverUpgrade(root string, activate Activate) (Result, error) {
 	var pending pendingUpgrade
 	if json.Unmarshal(input, &pending) != nil || pending.Schema != "pfremote.pending-upgrade/v1" || pending.Before.SchemaVersion != StateSchema || !safeVersion(pending.Before.Current) || (pending.Before.Previous != "" && !safeVersion(pending.Before.Previous)) {
 		return Result{}, errors.New("upgrade recovery record invalid")
+	}
+	if err := peerguard.CheckVersion(pending.Before.Current); err != nil {
+		return Result{}, err
 	}
 	old := resultFor(root, pending.Before)
 	info, err := os.Stat(old.AppPath)

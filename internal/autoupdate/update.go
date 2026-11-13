@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"github.com/cottman99/pf-remote/internal/peerguard"
 	"io"
 	"net/http"
 	"os"
@@ -183,6 +184,9 @@ func Stage(ctx context.Context, r releaseauth.Release, client *http.Client, base
 }
 
 func VerifyPackage(directory, version string) (releaseauth.Release, error) {
+	if err := peerguard.CheckVersion(version); err != nil {
+		return releaseauth.Release{}, err
+	}
 	p, err := Policy()
 	if err != nil {
 		return releaseauth.Release{}, err

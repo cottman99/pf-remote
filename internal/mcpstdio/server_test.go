@@ -57,7 +57,7 @@ func TestServerSupportsModernDiscoveryAndToolListing(t *testing.T) {
 		t.Fatalf("discovery=%#v", discovery)
 	}
 	list := responses[1]["result"].(map[string]any)
-	if len(list["tools"].([]any)) != 7 || list["cacheScope"] != "private" {
+	if len(list["tools"].([]any)) != 8 || list["cacheScope"] != "private" {
 		t.Fatalf("tools/list=%#v", list)
 	}
 }

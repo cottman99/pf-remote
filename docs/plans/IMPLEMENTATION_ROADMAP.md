@@ -4,7 +4,7 @@ The owner replaced the previous feature-expansion roadmap on 2026-09-19.
 Historical completion claims and the unfinished sleep work are retained in
 [the archived roadmap](ARCHIVED_ROADMAP.md), not in the active delivery queue.
 
-## M7 — focused local closeout
+## M7 historical completion
 
 - [x] Consolidate the source branches, stabilize exact-target UI actions, and deliver a private local candidate with a separate sanitized source export.
 
@@ -30,7 +30,13 @@ Evidence: [Interaction recovery report](../status/INTERACTION_RECOVERY_REPORT.md
 
 - [x] Verify signed release metadata and artifacts against an independently provisioned publisher key.
 - [x] Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
-- [ ] Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
+Deferred M10.3: offline fleet migration resumes when that member is available.
+
+2026-11-13 follow-up: the owner returned priority to daily-client release and
+Gateway fleet closure. The same-version Windows hotfix was recovered and formally
+published in alpha.118; all available members and cloud control are updated.
+Exact payload and Gateway path checks pass. The unavailable member stays pending.
+See ACTIVE_WORK.md and the fleet status report.
 
 2026-11-04: alpha.117 converges all three available members and cloud control;
 required Gateway paths, private-state retention and obsolete-client retirement
@@ -45,6 +51,13 @@ bootstrap older nodes once before they can participate in managed updates.
 
 Evidence M10.1: [Trusted update foundation](../status/TRUSTED_UPDATE_REPORT.md).
 Evidence M10.2: [Live fleet update delivery](../status/FLEET_UPDATE_REPORT.md).
+Evidence: [Delivered update foundations](../status/FLEET_UPDATE_REPORT.md).
+
+## M11 — daily peer management
+
+- [ ] Deliver peer management without mandatory central registration.
+
+The owner prioritizes daily VPS enrollment; offline fleet migration is deferred.
 
 The owner's connection-preset priority is tracked in
 [Connection presets](../status/CONNECTION_PRESETS.md). M10.3 remains the return
@@ -53,10 +66,16 @@ The owner's display-mode follow-up is tracked in
 [Display presets](../status/DISPLAY_PRESETS.md), with four locally remembered
 modes and recovery when selected screens change. Alpha.112 is published and
 installed on both reachable Windows controllers with configuration and viewers
-preserved; the offline controller retains a notice. M10.3 remains the return point.
+preserved; the offline controller retains a notice. On 2026-10-16 the third
+controller is verified on alpha.112; its missing one-time local publisher trust
+is repaired and ordinary-user native launch passes on an isolated desktop.
+This is a deployment repair, with no new binary. M10.3 remains the return point.
 The follow-up exact-workspace repair is tracked in
 [Independent Linux workspace selection](../status/WORKSPACE_SELECTION_FIX.md).
-The 2026-10-18 follow-through verifies all three saved workspace credentials and
+Its 2026-10-18 deployment follow-up repairs one controller's mismatched saved
+workspace password, with authentication-only before/after evidence and existing
+desktops preserved. This does not change the released binary or server password.
+The same-day follow-through verifies all three saved workspace credentials and
 repairs audio discovery after boot. A guarded, owner-authorized focus recovery
 restores the affected application; the owner confirms keyboard input and
 intelligible dictation. See [Workspace input recovery](../status/WORKSPACE_INPUT_RECOVERY.md).
@@ -137,10 +156,6 @@ checks provide catch-up without broadcast loops. Hints never carry execution
 authority, trust keys or arbitrary download locations. Each recipient still
 verifies its own channel/platform release and installs locally at a safe time.
 
-Maintenance follow-through (2026-10-28): package controlled-node authorization
-renewal without reenrollment; see docs/status/CONTROLLED_NODE_AUTH_REFRESH.md.
-M10.3 scope and owner-acceptance gate remain unchanged.
-Maintenance closure: alpha.113 Linux packaged renewal and session-preserving
-upgrade verified; M10.3 remains the active mainline item.
-
-2026-11-13: alpha.118 is published and deployed on all available daily clients and cloud control. The recovered bounded-probe repair is now part of the signed release; existing configuration and sessions survive. M10.3 remains open for the unavailable member. Evidence: docs/status/DESKTOP_PROBE_CACHE.md.
+2026-10-28 maintenance closed: packaged Linux authorization renewal released as
+alpha.113; existing-identity upgrade and desktop/audio preservation verified.
+M10.3 remains the active item. See docs/status/CONTROLLED_NODE_AUTH_REFRESH.md.
