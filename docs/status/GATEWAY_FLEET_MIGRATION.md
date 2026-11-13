@@ -1,5 +1,14 @@
 # Gateway fleet convergence
 
+## Current client release — alpha.120
+
+Daily peer enrollment now runs on the available controllers and two Linux nodes.
+Original Gateway Shell paths still pass; client update checks report current.
+The existing cloud control service remains compatible and unchanged, while its
+public download bundles are updated. The offline member is explicitly deferred.
+See [Peer delivery](PEER_MANAGEMENT.md) for the current acceptance evidence.
+
+
 The owner requested one current client family, Gateway-backed connections and
 removal of obsolete clients while retaining personal setup and active desktops.
 Alpha.115 adds private routing configuration shared by Shell and Desktop. A
