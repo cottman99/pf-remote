@@ -37,6 +37,7 @@ type Response struct {
 type ServiceProvider func() (actions.Service, error)
 
 type Handler struct {
+	Lifetime context.Context
 	Service  actions.Service
 	Provider ServiceProvider
 	Gate     *ActionGate
@@ -101,6 +102,8 @@ func (h Handler) HandleContext(ctx context.Context, request Request) Response {
 		}
 	}
 	switch request.Action {
+	case "terminal":
+		return h.startTerminal(ctx, service, request.Target)
 	case "desktop-preset":
 		result, err := service.DesktopPreset(request.Target, request.DesktopPreset)
 		if err != nil {

@@ -28,6 +28,7 @@ func NewServerWithProvider(provider ServiceProvider) *Server {
 }
 
 func (s *Server) Serve(ctx context.Context, listener net.Listener) error {
+	s.Handler.Lifetime = ctx
 	defer s.wg.Wait()
 	go func() {
 		<-ctx.Done()

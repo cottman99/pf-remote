@@ -44,6 +44,32 @@ func TestOpenSSHOptionPathQuotesWhitespace(t *testing.T) {
 	}
 }
 
+func TestInteractiveSSHRequiresPTYAndKeepsPinnedIdentity(t *testing.T) {
+	runner := &captureRunner{}
+	e := Executor{Interactive: true, Binary: filepath.Join(t.TempDir(), "ssh-test"), StateDir: t.TempDir(), Runner: runner}
+	execution := session.Execution{
+		Session:    session.Session{CanonicalTarget: "pfremote://fabric-example/devices/device-example/capabilities/shell-main"},
+		Route:      route.Candidate{ID: "local", Adapter: "local", Network: "tcp", Address: "127.0.0.1", Port: 2222},
+		Binding:    contracts.SSHCapabilityBinding{SchemaVersion: contracts.SSHCapabilityBindingSchema, FabricID: "fabric-example", DeviceID: "device-example", CapabilityID: "shell-main", BindingVersion: 1, Signature: base64.RawURLEncoding.EncodeToString(bytes.Repeat([]byte{0x11}, 64)), HostKeys: []contracts.SSHHostKey{testHostKey("ssh-ed25519", 0x42)}},
+		RemoteUser: "operator", IdentityFile: filepath.Join(t.TempDir(), "private key"),
+	}
+	if _, err := e.Execute(context.Background(), execution); err != nil {
+		t.Fatal(err)
+	}
+	for _, option := range []string{"RequestTTY=force", "StrictHostKeyChecking=yes", "BatchMode=yes", "IdentitiesOnly=yes", "ForwardAgent=no", "ClearAllForwardings=yes", "ConnectTimeout=12"} {
+		if !hasOption(runner.args, option) {
+			t.Fatalf("missing %s", option)
+		}
+	}
+	if runner.args[len(runner.args)-1] != "127.0.0.1" || !slices.Contains(runner.args, execution.IdentityFile) {
+		t.Fatal("lost destination or key")
+	}
+	execution.Command = []string{"unwanted command"}
+	if _, err := e.Execute(context.Background(), execution); err == nil || runner.calls != 1 {
+		t.Fatal("interactive command accepted")
+	}
+}
+
 func TestExecuteUsesIsolatedStrictHostKeyPolicyAndCleansFile(t *testing.T) {
 	runner := &captureRunner{}
 	executor := Executor{Binary: filepath.Join(t.TempDir(), "ssh-test"), StateDir: t.TempDir(), Runner: runner}

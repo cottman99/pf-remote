@@ -169,3 +169,18 @@ host-key controls:
 - [RFC 4253 SSH transport security](https://www.rfc-editor.org/rfc/rfc4253.html)
 - [OpenSSH `ssh_config` host-key controls](https://man.openbsd.org/ssh_config.5)
 - [OpenSSH `ssh` client behavior](https://man.openbsd.org/ssh.1)
+
+## Interactive Windows terminal
+
+`connect <target> --terminal` requests the additive protected API action
+`terminal`. It opens the local OpenSSH console with saved SSH access, isolated
+configuration, strict signed host-key binding and a forced PTY. It accepts no
+remote command or caller-provided route, username or key. Other platforms
+return a terminal startup error. Existing connect and exec behavior is unchanged.
+
+`launched` confirms native process creation after an authentication preflight;
+it does not assert completion of the interactive login. Terminal bytes stay in
+the console, outside management IPC and durable activity. The daemon retains
+the route and maintenance lease for the process lifetime. Authorization expiry,
+revocation, invalid fresh state, daemon shutdown or process exit closes ownership.
+Windows Session 0 is rejected. No automatic replay follows an ambiguous launch.

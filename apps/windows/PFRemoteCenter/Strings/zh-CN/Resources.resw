@@ -75,7 +75,7 @@
   <data name="DeviceOnlineLabel" xml:space="preserve"><value>在线</value></data>
   <data name="DeviceOfflineLabel" xml:space="preserve"><value>暂时离线</value></data>
   <data name="DesktopAndAgentCapabilitiesLabel" xml:space="preserve"><value>可打开 {0} 个远程桌面 · 可由 Agent 操作</value></data>
-  <data name="AgentOnlyCapabilitiesLabel" xml:space="preserve"><value>可由 Agent 操作</value></data>
+  <data name="AgentOnlyCapabilitiesLabel" xml:space="preserve"><value>终端与 Agent</value></data>
   <data name="SetupRequiredCapabilitiesLabel" xml:space="preserve"><value>远程操作正在接入</value></data>
   <data name="OpenDesktopButtonLabel" xml:space="preserve"><value>智能连接</value></data>
   <data name="SetupAndOpenDesktopButtonLabel" xml:space="preserve"><value>设置并打开桌面</value></data>
@@ -373,4 +373,8 @@
   <data name="PresetAdjacentScreens" xml:space="preserve"><value>请选择相邻的屏幕，不能跳过中间屏幕。</value></data>
   <data name="PresetDisplaysChanged" xml:space="preserve"><value>屏幕连接或布局已变化。请刷新并重新选择，或改用单屏全屏。</value></data>
   <data name="PresetRemotePrimaryScreen" xml:space="preserve"><value>远程主屏：屏幕 {0}。</value></data>
+<data name="ConnectTerminalButton.Content" xml:space="preserve"><value>连接终端</value></data>
+<data name="TerminalOpenedStatus" xml:space="preserve"><value>SSH 终端已打开，可直接输入命令。</value></data>
+<data name="TerminalFailedTitle" xml:space="preserve"><value>终端未能连接</value></data>
+<data name="TerminalFailedStatus" xml:space="preserve"><value>请确认主机在线且 SSH 账号已配置，再点击连接终端重试。</value></data>
 </root>

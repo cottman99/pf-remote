@@ -71,13 +71,13 @@ type legacyShellRunner struct {
 	settings        LocalRouting
 }
 
-func (r legacyShellRunner) Run(ctx context.Context, target string, command []string) (actions.ShellRunResult, error) {
+func (r legacyShellRunner) prepare(target string) (actions.SessionShell, error) {
 	user, exists := r.users[target]
 	if !exists {
-		return actions.ShellRunResult{}, &actions.Fault{Code: "SHELL_NOT_READY", Stage: "session", Summary: "Remote work is not configured for this computer.", Remediation: "Finish Shell setup for this computer and try again."}
+		return actions.SessionShell{}, &actions.Fault{Code: "SHELL_NOT_READY", Stage: "session", Summary: "Remote work is not configured for this computer.", Remediation: "Finish Shell setup for this computer and try again."}
 	}
 	if r.resolver == nil || r.subjectDeviceID == "" {
-		return actions.ShellRunResult{}, errors.New("legacy Shell coordinator is unavailable")
+		return actions.SessionShell{}, errors.New("legacy Shell coordinator is unavailable")
 	}
 	providers := []route.NamedProvider{
 		{Adapter: "tailscale", Provider: route.ReachableProvider{Provider: r.routes.Provider("tailscale"), Timeout: 2 * time.Second}},
@@ -96,7 +96,22 @@ func (r legacyShellRunner) Run(ctx context.Context, target string, command []str
 		RouteProvider:   routeProvider,
 		Executor:        opensshexecutor.Executor{},
 	}}
-	return runner.Run(ctx, target, command)
+	return runner, nil
+}
+
+func (r legacyShellRunner) Run(ctx context.Context, target string, command []string) (actions.ShellRunResult, error) {
+	s, e := r.prepare(target)
+	if e != nil {
+		return actions.ShellRunResult{}, e
+	}
+	return s.Run(ctx, target, command)
+}
+func (r legacyShellRunner) RunTerminal(ctx context.Context, target string, started func(session.Session)) (actions.ShellRunResult, error) {
+	s, e := r.prepare(target)
+	if e != nil {
+		return actions.ShellRunResult{}, e
+	}
+	return s.RunTerminal(ctx, target, started)
 }
 
 var _ actions.ShellRunner = legacyShellRunner{}

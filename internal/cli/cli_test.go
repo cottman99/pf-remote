@@ -12,6 +12,26 @@ import (
 
 type testClient struct{ service actions.Service }
 
+type terminalClient struct {
+	testClient
+	target string
+}
+
+func (c *terminalClient) Terminal(_ context.Context, target string) (contracts.ShellActionResponse, error) {
+	c.target = target
+	return contracts.ShellActionResponse{SchemaVersion: contracts.ShellActionSchema, Action: "terminal", Status: "launched"}, nil
+}
+func TestConnectTerminalOptIn(t *testing.T) {
+	var out, errs bytes.Buffer
+	c := &terminalClient{testClient: newTestClient()}
+	if code := run([]string{"connect", "compute-node/shell", "--terminal", "--json"}, bytes.NewReader(nil), &out, &errs, c); code != 0 || c.target != "compute-node/shell" {
+		t.Fatalf("%d %s", code, errs.String())
+	}
+	if code := run([]string{"connect", "compute-node/shell", "--terminal", "extra", "--json"}, bytes.NewReader(nil), &out, &errs, c); code == 0 {
+		t.Fatal("unexpected argument accepted")
+	}
+}
+
 type testDesktop struct{}
 
 func (testDesktop) Run(context.Context, string) (actions.DesktopRunResult, error) {

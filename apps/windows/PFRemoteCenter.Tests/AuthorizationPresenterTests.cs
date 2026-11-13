@@ -19,6 +19,22 @@ public sealed class AuthorizationPresenterTests
             PfRemoteCliClient.CreateOpenArguments(target, "lan", microphone: true).ToArray());
         Assert.IsFalse(PfRemoteCliClient.CreateOpenArguments(target, "lan").Contains("--microphone"));
     }
+    [TestMethod]
+    public void HeadlessComputerOffersExactSavedTerminalTarget()
+    {
+        var device = new DeviceSummary("device-example", "example", "Example", "online");
+        var shell = new TargetSummary("pfremote://fabric-example/devices/device-example/capabilities/shell-main",
+            "example/shell", device, new CapabilitySummary("shell-main", "shell", "Shell", "shell", "available", null),
+            true, Authorization("active", Now.AddDays(1)));
+        var model = DeviceCatalogPresenter.Create([shell], DeviceResource, _ => ("label", "automation"))[0];
+        Assert.IsTrue(model.HasTerminal);
+        Assert.IsTrue(model.CanOpenTerminal);
+        CollectionAssert.AreEqual(new[] { "connect", shell.Canonical, "--terminal", "--json" },
+            PfRemoteCliClient.CreateTerminalArguments(model.AgentCanonical).ToArray());
+        var offline = DeviceCatalogPresenter.Create([shell with { Device = device with { State = "offline" } }], DeviceResource, _ => ("label", "automation"))[0];
+        Assert.IsFalse(offline.CanOpenTerminal);
+    }
+
     private static readonly DateTimeOffset Now = new(2026, 8, 18, 12, 0, 0, TimeSpan.Zero);
     private static readonly JsonSerializerOptions WebJson = new(JsonSerializerDefaults.Web);
     private static readonly string[] CliListArguments = ["list", "--json"];

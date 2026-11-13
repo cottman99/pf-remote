@@ -27,9 +27,11 @@ type Runner interface {
 }
 
 type Executor struct {
-	Binary   string
-	StateDir string
-	Runner   Runner
+	Interactive bool
+	OnStarted   func(session.Session)
+	Binary      string
+	StateDir    string
+	Runner      Runner
 }
 
 func (e Executor) Execute(ctx context.Context, execution session.Execution) (int, error) {
@@ -65,9 +67,28 @@ func (e Executor) Execute(ctx context.Context, execution session.Execution) (int
 		binary = resolved
 	}
 	args := buildArgs(execution, alias, knownHostsPath)
+	if e.Interactive {
+		if len(execution.Command) != 0 {
+			return -1, errors.New("interactive session cannot carry a command")
+		}
+		for i, a := range args {
+			if a == "RequestTTY=no" {
+				args[i] = "RequestTTY=force"
+			}
+		}
+		args = append([]string{"-o", "ConnectTimeout=12", "-o", "ServerAliveInterval=30", "-o", "ServerAliveCountMax=3"}, args...)
+	}
 	runner := e.Runner
 	if runner == nil {
-		runner = processRunner{}
+		if e.Interactive {
+			runner = consoleRunner{started: func() {
+				if e.OnStarted != nil {
+					e.OnStarted(execution.Session)
+				}
+			}}
+		} else {
+			runner = processRunner{}
+		}
 	}
 	exitCode, err := runner.Run(ctx, binary, args, execution.Stdin, execution.Stdout, execution.Stderr)
 	if err != nil {

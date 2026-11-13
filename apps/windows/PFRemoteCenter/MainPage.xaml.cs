@@ -1527,6 +1527,32 @@ public sealed partial class MainPage : Page
         return await ShowDialogAsync(dialog) == ContentDialogResult.Primary ? password.Password : null;
     }
 
+    private async void ConnectTerminalButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_catalogFeedback.IsUnavailable || sender is not Button { DataContext: DeviceViewModel bound } button) return;
+        var current = _allDevices.FirstOrDefault(d => d.Device.Id == bound.Device.Id);
+        if (current is null || !current.CanOpenTerminal) return;
+        button.IsEnabled = false;
+        try
+        {
+            // A terminal launch is not replayed after an ambiguous transport failure.
+            var response = await _client.TerminalAsync(current.AgentCanonical);
+            if (response.Status != "launched") throw new InvalidOperationException();
+            OperationStatus = _resources.GetString("TerminalOpenedStatus");
+            DesktopActionInfoBar.IsOpen = false;
+        }
+        catch (Exception)
+        {
+            OperationStatus = _resources.GetString("TerminalFailedStatus");
+            DesktopActionInfoBar.Title = _resources.GetString("TerminalFailedTitle");
+            DesktopActionInfoBar.Message = _resources.GetString("TerminalFailedStatus");
+            DesktopActionInfoBar.Severity = InfoBarSeverity.Error;
+            RecoverDesktopButton.Visibility = Visibility.Collapsed;
+            DesktopActionInfoBar.IsOpen = true;
+        }
+        finally { button.IsEnabled = !_catalogFeedback.IsUnavailable && button.DataContext is DeviceViewModel latest && latest.CanOpenTerminal; }
+    }
+
     private async void HandToAgentButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button { DataContext: DeviceViewModel bound } button)

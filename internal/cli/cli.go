@@ -123,6 +123,19 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer, client action
 			value, err = updater.Updates(ctx, actions[rest[0]])
 		}
 	case "connect":
+		if requested, args := takeFlag(rest, "--terminal"); requested {
+			if len(args) != 1 {
+				return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "terminal", "Choose one terminal target.", "Select the computer again.")
+			}
+			terminal, ok := client.(interface {
+				Terminal(context.Context, string) (contracts.ShellActionResponse, error)
+			})
+			if !ok {
+				return writeError(stderr, jsonOutput, "TERMINAL_UNAVAILABLE", "terminal", "Terminal startup is unavailable.", "Update this client.")
+			}
+			value, err = terminal.Terminal(ctx, args[0])
+			break
+		}
 		if len(rest) != 1 {
 			return writeError(stderr, jsonOutput, "INVALID_ARGUMENT", "connect", "connect requires one computer target.", "Choose one visible Shell target.")
 		}

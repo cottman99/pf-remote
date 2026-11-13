@@ -38,7 +38,11 @@ Evidence: [Peer management delivery](../status/PEER_MANAGEMENT.md).
 
 - [x] Verify signed release metadata and artifacts against an independently provisioned publisher key.
 - [x] Deliver autonomous per-device GitHub update discovery, verified installation, data preservation and automatic failure rollback.
+- [ ] Open a named headless computer in the local terminal using saved SSH access.
 - [ ] Deliver cross-device version visibility, independent offline catch-up and compatibility gates.
+
+The owner prioritizes native terminal access as M10.3; the previously deferred
+offline migration is now M10.4. See [Native SSH terminal](../status/NATIVE_TERMINAL.md).
 
 The remaining offline migration is deferred at the owner request; all online
 peer enrollment and release acceptance is complete.

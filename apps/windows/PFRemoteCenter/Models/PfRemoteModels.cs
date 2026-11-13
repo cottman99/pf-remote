@@ -126,6 +126,10 @@ internal sealed record DeviceViewModel(
 
 	public bool CanOpenPrimaryDesktop => DesktopOptions.Any(option => option.CanOpen);
 
+	public bool HasTerminal => !HasPrimaryDesktop && AgentTarget.Capability.Kind == "shell";
+    public bool CanOpenTerminal => HasTerminal && IsOnline && AgentTarget.IsGranted && AgentTarget.Authorization.Status == "active" && AgentTarget.Capability.State == "available";
+    public string TerminalAutomationId => $"terminal-{Device.Id}";
+
 	public bool HasPrimaryDesktop => DesktopOptions.Any(option => option.Canonical is not null);
 
 	public IReadOnlyList<DesktopOptionViewModel> ExpandedDesktops => DesktopOptions.Where(option => option.Canonical is not null).ToArray();

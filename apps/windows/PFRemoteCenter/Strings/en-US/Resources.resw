@@ -75,7 +75,7 @@
   <data name="DeviceOnlineLabel" xml:space="preserve"><value>Online</value></data>
   <data name="DeviceOfflineLabel" xml:space="preserve"><value>Temporarily offline</value></data>
   <data name="DesktopAndAgentCapabilitiesLabel" xml:space="preserve"><value>{0} remote desktops · Agent control</value></data>
-  <data name="AgentOnlyCapabilitiesLabel" xml:space="preserve"><value>Agent control</value></data>
+  <data name="AgentOnlyCapabilitiesLabel" xml:space="preserve"><value>Terminal and Agent</value></data>
   <data name="SetupRequiredCapabilitiesLabel" xml:space="preserve"><value>Remote actions are being prepared</value></data>
   <data name="OpenDesktopButtonLabel" xml:space="preserve"><value>Smart connect</value></data>
   <data name="SetupAndOpenDesktopButtonLabel" xml:space="preserve"><value>Set up and open desktop</value></data>
@@ -373,4 +373,8 @@
   <data name="PresetAdjacentScreens" xml:space="preserve"><value>Choose adjacent screens without skipping a screen between them.</value></data>
   <data name="PresetDisplaysChanged" xml:space="preserve"><value>The connected screens or layout changed. Refresh and select again, or choose single screen.</value></data>
   <data name="PresetRemotePrimaryScreen" xml:space="preserve"><value>Remote primary: screen {0}.</value></data>
+<data name="ConnectTerminalButton.Content" xml:space="preserve"><value>Connect terminal</value></data>
+<data name="TerminalOpenedStatus" xml:space="preserve"><value>SSH terminal opened. You can enter commands now.</value></data>
+<data name="TerminalFailedTitle" xml:space="preserve"><value>Terminal could not connect</value></data>
+<data name="TerminalFailedStatus" xml:space="preserve"><value>Check that the computer is online and SSH access is configured, then try Connect terminal again.</value></data>
 </root>

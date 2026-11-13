@@ -621,6 +621,11 @@
                                                 <TextBlock Text="{x:Bind PrimaryDesktopActionLabel}" />
                                             </StackPanel>
                                         </SplitButton>
+                                        <Button x:Uid="ConnectTerminalButton" MinWidth="250" MinHeight="42"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            Visibility="{x:Bind HasTerminal}" IsEnabled="{x:Bind CanOpenTerminal}"
+                                            AutomationProperties.AutomationId="{x:Bind TerminalAutomationId}"
+                                            Click="ConnectTerminalButton_Click" />
                                         <Button
                                             x:Name="HandToAgentButton"
                                             x:Uid="HandToAgentButton"

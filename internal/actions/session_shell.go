@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/cottman99/pf-remote/internal/executor/openssh"
 	"github.com/cottman99/pf-remote/internal/session"
 )
 
@@ -66,3 +67,14 @@ func (w *boundedOutput) String() string {
 }
 
 var _ ShellRunner = SessionShell{}
+
+// RunTerminal shares authorization and route ownership with ordinary Shell actions.
+func (s SessionShell) RunTerminal(ctx context.Context, target string, started func(session.Session)) (ShellRunResult, error) {
+	c, ok := s.Coordinator.(session.Coordinator)
+	if !ok {
+		return ShellRunResult{}, errors.New("terminal coordinator unavailable")
+	}
+	c.Executor = openssh.Executor{Interactive: true, OnStarted: started}
+	s.Coordinator = c
+	return s.Run(ctx, target, nil)
+}

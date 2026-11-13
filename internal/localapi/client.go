@@ -142,3 +142,9 @@ func (c Client) call(ctx context.Context, request Request, destination any) erro
 	}
 	return nil
 }
+
+func (c Client) Terminal(ctx context.Context, target string) (contracts.ShellActionResponse, error) {
+	var r contracts.ShellActionResponse
+	e := c.call(ctx, Request{Action: "terminal", Target: target}, &r)
+	return r, e
+}

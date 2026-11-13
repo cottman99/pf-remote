@@ -203,3 +203,16 @@ func (s Service) RunSynchronization(ctx context.Context, configPath string) {
 		}
 	}
 }
+
+func (s ShellRunner) RunTerminal(ctx context.Context, target string, started func(session.Session)) (actions.ShellRunResult, error) {
+	for _, p := range s.Config.Peers {
+		if p.Target == target {
+			runner := actions.SessionShell{RemoteUser: p.User, IdentityFile: p.IdentityFile, Coordinator: session.Coordinator{SubjectDeviceID: s.Subject, Resolver: s.Catalog, RouteProvider: fixedRoute{p.Route}, Executor: openssh.Executor{}}}
+			return runner.RunTerminal(ctx, target, started)
+		}
+	}
+	if fallback, ok := s.Fallback.(actions.TerminalRunner); ok {
+		return fallback.RunTerminal(ctx, target, started)
+	}
+	return actions.ShellRunResult{}, errors.New("terminal transport unavailable")
+}

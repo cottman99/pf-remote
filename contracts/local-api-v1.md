@@ -77,3 +77,12 @@ and Desktop connections always acquire and validate their route independently;
 cached presentation hints never authorize a connection.
 
 Peer management uses the additive protected action in peer-management-v1.md.
+
+## Terminal launch
+
+The optional `terminal` action carries only the exact Shell target and returns
+`pfremote.shell-action/v1` with `action: terminal`, `status: launched` and a
+session ID. Before launch, caller disconnection cancels startup. After launch,
+the native process owns the lifetime independently of the completed request;
+authorization and daemon lifetime still bound it. No terminal bytes cross IPC.
+Older clients do not request this action; older daemons reject it as unknown.

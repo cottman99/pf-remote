@@ -31,6 +31,9 @@ internal sealed class PfRemoteCliClient
     public Task<ContextResponse> ContextAsync(string target, CancellationToken cancellationToken = default) =>
         RunAsync<ContextResponse>(CreateContextArguments(target), cancellationToken);
 
+    internal static IReadOnlyList<string> CreateTerminalArguments(string target) => ["connect", target, "--terminal", "--json"];
+    public Task<ShellActionResponse> TerminalAsync(string target) => RunAsync<ShellActionResponse>(CreateTerminalArguments(target), default);
+
     public Task<ShellActionResponse> ConnectAsync(string target, CancellationToken cancellationToken = default) =>
         RunAsync<ShellActionResponse>(["connect", target, "--json"], cancellationToken);
 
